@@ -1,0 +1,2290 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E1433">
+<meta name="description" content="Clever Clogs: a family quiz you play together, each on your own phone.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Clever Clogs">
+<title>Clever Clogs</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230E1433'/%3E%3Ctext x='50' y='70' font-size='62' text-anchor='middle'%3E%F0%9F%A7%A0%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shrikhand&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Doto:wght@900&display=swap">
+<style>
+/* Clever Clogs — Saturday-night telly studio. One committed dark theme. */
+:root {
+  color-scheme: dark;
+  --studio: #0E1433;
+  --panel: #161F4D;
+  --panel-2: #1D2860;
+  --rim: #2F3D86;
+  --ink: #070A1E;
+  --chalk: #F6F3FF;
+  --haze: #A9B2DE;
+  --bulb: #FFD35C;
+  --bulb-deep: #C28F1B;
+  --tomato: #FF5E57;
+  --azure: #4AA3FF;
+  --mint: #3FE0A2;
+  --ticket: #FFE6B3;
+  --ticket-ink: #6B2A17;
+  --display: "Shrikhand", "Cooper Black", "Futura", "Trebuchet MS", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --led: "Doto", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; min-height: 100vh; min-height: 100dvh;
+  padding-inline: 16px; padding-block: 0 40px;
+  background-color: var(--studio);
+  background-image:
+    radial-gradient(110% 50% at 50% -10%, rgba(70, 96, 230, 0.36) 0%, rgba(70, 96, 230, 0) 62%),
+    radial-gradient(70% 40% at 100% 100%, rgba(180, 121, 255, 0.1), rgba(180, 121, 255, 0) 70%);
+  background-attachment: fixed;
+  color: var(--chalk);
+  font-family: var(--body); font-size: 17px; line-height: 1.45;
+  -webkit-tap-highlight-color: transparent;
+}
+button, input { font: inherit; color: inherit; }
+button { touch-action: manipulation; }
+:focus-visible { outline: 3px solid var(--azure); outline-offset: 3px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+#app { max-width: 600px; margin-inline: auto; padding-block: 14px 24px; }
+.screen { display: flex; flex-direction: column; gap: 18px; animation: rise 0.28s ease-out both; }
+@keyframes rise { from { opacity: 0.01; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ---------- LED digits ---------- */
+.led { font-family: var(--body); font-weight: 700; color: var(--bulb); text-shadow: 0 0 12px rgba(255, 211, 92, 0.4); font-variant-numeric: tabular-nums; }
+/* the dot-matrix face is kept for the big displays only */
+.ticket-code, .code-input, .secs, .ready-num, .num-answer-value, .num-input { font-family: var(--led); font-weight: 900; }
+
+/* ---------- marquee sign ---------- */
+.marquee {
+  position: relative; margin: 18px 6px 4px; padding: 30px 18px 26px; border-radius: 22px; text-align: center;
+  background: linear-gradient(180deg, #1C276B 0%, #121A4A 100%);
+  box-shadow: inset 0 0 0 2px #34449E, 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+.marquee .bulbs { position: absolute; inset: 0; pointer-events: none; }
+.marquee .bulbs i {
+  position: absolute; width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #FFF7DA 0 22%, var(--bulb) 48%, #D39A1F 100%);
+  box-shadow: 0 0 10px 2px rgba(255, 211, 92, 0.6);
+  animation: chase 1.2s steps(1, end) infinite;
+}
+@keyframes chase { 0% { opacity: 1; } 66.6% { opacity: 0.2; box-shadow: none; } }
+.marquee-eyebrow { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--haze); }
+.logo {
+  margin: 10px 0 8px; display: flex; flex-direction: column; align-items: center;
+  font-family: var(--display); font-weight: 400; font-size: clamp(56px, 17vw, 94px); line-height: 0.86; letter-spacing: 0.005em;
+  color: var(--chalk); transform: rotate(-3deg);
+  text-shadow: 3px 3px 0 var(--tomato), 6px 6px 0 #7A1E2B, 9px 11px 18px rgba(0, 0, 0, 0.45);
+}
+.logo span:last-child { color: var(--bulb); margin-left: 0.55em; }
+.marquee-tag { margin: 6px 0 0; font-size: 13px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--bulb); }
+.marquee.small { padding: 22px 14px 18px; }
+.marquee.small .logo { font-size: clamp(40px, 11vw, 60px); }
+
+/* ---------- buttons ---------- */
+.btn {
+  appearance: none; border: 0; border-radius: 16px; padding: 14px 20px; min-height: 52px;
+  font-weight: 700; font-size: 18px; line-height: 1.2; cursor: pointer; background: transparent; color: var(--chalk);
+  transition: transform 0.08s, box-shadow 0.08s, background 0.15s;
+}
+.btn-big { width: 100%; min-height: 60px; font-size: 20px; }
+.btn-primary { background: var(--bulb); color: var(--ink); box-shadow: 0 5px 0 var(--bulb-deep), 0 12px 24px rgba(255, 211, 92, 0.16); }
+.btn-primary:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--bulb-deep); }
+.btn-ghost { box-shadow: inset 0 0 0 2px var(--rim); }
+.btn-ghost:active { background: rgba(255, 255, 255, 0.04); }
+.btn-quiet { color: var(--haze); text-decoration: underline; text-underline-offset: 3px; min-height: 44px; }
+.btn-danger { background: var(--tomato); color: #fff; box-shadow: 0 5px 0 #A8322D; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; transform: none; }
+.actions { display: grid; gap: 12px; }
+.link-btn { background: none; border: 0; padding: 4px; color: var(--azure); font-size: 14px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+/* ---------- home ---------- */
+.lede { margin: 0; text-align: center; font-size: 18px; text-wrap: balance; max-width: 34ch; margin-inline: auto; }
+.facts { list-style: none; margin: 2px 0 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; color: var(--haze); font-size: 14px; }
+.facts strong { color: var(--chalk); }
+.card { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 16px; border-radius: 18px; background: var(--panel); box-shadow: inset 0 0 0 1.5px var(--rim); }
+.card-kicker { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--haze); }
+.card-title { margin: 2px 0 0; font-weight: 700; }
+.card-title .led { font-size: 22px; }
+.resume-actions { display: flex; gap: 8px; align-items: center; }
+.notice { margin: 0; padding: 12px 14px; border-radius: 14px; background: rgba(255, 194, 61, 0.12); box-shadow: inset 0 0 0 1.5px rgba(255, 194, 61, 0.4); color: #FFE3A0; }
+@media (min-width: 560px) { .home .actions { grid-template-columns: 1fr 1fr; } }
+
+/* ---------- setup ---------- */
+.back { align-self: flex-start; border: 0; background: none; color: var(--haze); font-size: 16px; padding: 8px 0; cursor: pointer; }
+.title { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(32px, 9vw, 42px); line-height: 1.05; text-wrap: balance; }
+.sub { margin: -8px 0 0; color: var(--haze); }
+.form { display: flex; flex-direction: column; gap: 8px; }
+.field-label { margin: 12px 0 0; font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--haze); }
+.field-hint { margin: 0; font-size: 14px; color: var(--haze); }
+.text-input, .code-input, .num-input {
+  width: 100%; border: 2px solid var(--rim); border-radius: 14px; padding: 14px 16px;
+  background: var(--panel-2); color: var(--chalk); font-size: 20px;
+}
+.code-input {
+  font-family: var(--led); font-weight: 900; font-size: 42px; line-height: 1.1; letter-spacing: 0.38em; text-align: center; text-transform: uppercase;
+  color: var(--bulb); padding: 10px 0 10px 0.38em;
+}
+.code-input::placeholder, .num-input::placeholder { color: #3D4A94; }
+.text-input:focus, .code-input:focus, .num-input:focus { outline: none; border-color: var(--bulb); box-shadow: 0 0 0 4px rgba(255, 211, 92, 0.18); }
+.av-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.av-pick {
+  aspect-ratio: 1; width: 100%; max-width: 64px; justify-self: center; border: 0; border-radius: 50%; padding: 0; cursor: pointer;
+  background: var(--av); font-size: 26px; line-height: 1; display: grid; place-items: center;
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.18); transition: transform 0.12s, box-shadow 0.12s;
+}
+.av-pick[aria-checked="true"] { box-shadow: 0 0 0 3px var(--studio), 0 0 0 6px var(--bulb); transform: scale(1.06); }
+.form-error { margin: 8px 0 0; padding: 10px 12px; border-radius: 12px; background: rgba(255, 94, 87, 0.14); color: #FFBDB8; font-weight: 700; }
+.form .btn { margin-top: 14px; }
+
+/* ---------- connecting / ended ---------- */
+.connecting, .ended { text-align: center; align-items: center; padding-top: 24px; }
+.connecting .sub, .ended .sub { margin: 0; max-width: 34ch; }
+.conn-help { margin: 0; max-width: 34ch; color: #FFE3A0; }
+.bulb-spinner { position: relative; width: 96px; height: 96px; margin: 24px auto 8px; }
+.bulb-spinner i { position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px; border-radius: 50%; background: var(--bulb); box-shadow: 0 0 12px rgba(255, 211, 92, 0.7); animation: spin-fade 0.96s linear infinite; }
+.bulb-spinner i:nth-child(1) { transform: rotate(0deg) translateY(-38px); animation-delay: 0s; }
+.bulb-spinner i:nth-child(2) { transform: rotate(45deg) translateY(-38px); animation-delay: -0.84s; }
+.bulb-spinner i:nth-child(3) { transform: rotate(90deg) translateY(-38px); animation-delay: -0.72s; }
+.bulb-spinner i:nth-child(4) { transform: rotate(135deg) translateY(-38px); animation-delay: -0.6s; }
+.bulb-spinner i:nth-child(5) { transform: rotate(180deg) translateY(-38px); animation-delay: -0.48s; }
+.bulb-spinner i:nth-child(6) { transform: rotate(225deg) translateY(-38px); animation-delay: -0.36s; }
+.bulb-spinner i:nth-child(7) { transform: rotate(270deg) translateY(-38px); animation-delay: -0.24s; }
+.bulb-spinner i:nth-child(8) { transform: rotate(315deg) translateY(-38px); animation-delay: -0.12s; }
+@keyframes spin-fade { 0% { opacity: 1; } 100% { opacity: 0.15; } }
+.ended .btn { max-width: 420px; }
+
+/* ---------- gantry (top bar in a game) ---------- */
+.gantry {
+  position: sticky; top: 0; z-index: 5; margin: -14px -16px 0; padding: 10px 16px;
+  display: grid; grid-template-columns: auto 1fr auto auto; align-items: center; gap: 12px;
+  background: rgba(14, 20, 51, 0.88); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(47, 61, 134, 0.8);
+}
+.code-chip {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 1px; border: 0; cursor: pointer;
+  padding: 5px 9px 4px; border-radius: 8px; background: var(--ticket); color: var(--ticket-ink); line-height: 1;
+}
+.code-chip-label { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; }
+.code-chip .led { color: var(--ticket-ink); text-shadow: none; font-size: 17px; letter-spacing: 0.12em; }
+.g-mid { color: var(--haze); font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.g-score { display: flex; flex-direction: column; align-items: flex-end; line-height: 1; }
+.g-score-label { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--haze); }
+.g-score .led { font-size: 22px; }
+.lamp { position: relative; width: 44px; height: 40px; border: 0; border-radius: 12px; background: var(--panel-2); cursor: pointer; display: grid; place-items: center; }
+.lamp i { position: absolute; top: 7px; right: 7px; width: 8px; height: 8px; border-radius: 50%; background: var(--haze); }
+.lamp[data-state="good"] i { background: var(--mint); box-shadow: 0 0 8px var(--mint); }
+.lamp[data-state="part"] i { background: #FFC23D; box-shadow: 0 0 8px #FFC23D; }
+.lamp[data-state="bad"] i { background: var(--tomato); box-shadow: 0 0 8px var(--tomato); animation: blink 0.8s steps(1) infinite; }
+.lamp-dots { font-size: 14px; letter-spacing: 1px; color: var(--chalk); margin-top: 2px; }
+.banner { margin: 10px 0 0; padding: 10px 14px; border-radius: 12px; background: rgba(255, 194, 61, 0.14); box-shadow: inset 0 0 0 1px rgba(255, 194, 61, 0.4); color: #FFE3A0; font-weight: 700; font-size: 15px; }
+.banner + .screen { margin-top: 12px; }
+.gantry + .banner[hidden] + .screen { margin-top: 16px; }
+@keyframes blink { 50% { opacity: 0.25; } }
+
+/* ---------- panels ---------- */
+.panel { padding: 16px; border-radius: 18px; background: var(--panel); box-shadow: inset 0 0 0 1.5px rgba(47, 61, 134, 0.85); }
+.section-label { margin: 0 0 12px; display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--haze); }
+.count { min-width: 1.8em; padding: 1px 7px; border-radius: 99px; background: var(--panel-2); color: var(--chalk); letter-spacing: 0; text-align: center; }
+
+/* ---------- lobby: the ticket ---------- */
+.ticket {
+  position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; margin: 4px 4px 0;
+  background: var(--ticket); color: var(--ticket-ink); border-radius: 16px; transform: rotate(-1deg);
+  filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.35));
+  -webkit-mask: radial-gradient(circle 13px at 0 50%, #0000 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 13px at 100% 50%, #0000 97%, #000) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle 13px at 0 50%, #0000 97%, #000) left / 51% 100% no-repeat, radial-gradient(circle 13px at 100% 50%, #0000 97%, #000) right / 51% 100% no-repeat;
+}
+.ticket-main { display: flex; flex-direction: column; gap: 2px; padding: 16px 10px 16px 28px; min-width: 0; }
+.ticket-label { font-size: 12px; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase; }
+.ticket-code { font-family: var(--led); font-weight: 900; font-size: clamp(44px, 13.5vw, 64px); line-height: 1; letter-spacing: 0.12em; }
+.ticket-small { font-size: 13px; opacity: 0.75; }
+.ticket-side { display: flex; flex-direction: column; justify-content: center; gap: 8px; padding: 14px 26px 14px 14px; border-left: 2px dashed rgba(107, 42, 23, 0.35); }
+.ticket-btn { border: 0; border-radius: 10px; padding: 10px 12px; min-height: 44px; font-size: 15px; font-weight: 700; cursor: pointer; background: var(--ticket-ink); color: var(--ticket); white-space: nowrap; }
+.ticket-btn + .ticket-btn { background: transparent; color: var(--ticket-ink); box-shadow: inset 0 0 0 2px rgba(107, 42, 23, 0.4); }
+
+/* ---------- players ---------- */
+.players { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.player { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 14px; background: rgba(255, 255, 255, 0.035); animation: popin 0.35s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+.player.away { opacity: 0.55; }
+@keyframes popin { from { transform: scale(0.9); opacity: 0.01; } to { transform: none; opacity: 1; } }
+.av { width: 40px; height: 40px; flex: none; border-radius: 50%; background: var(--av); display: grid; place-items: center; font-size: 22px; line-height: 1; box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.18); }
+.av.mini { width: 28px; height: 28px; font-size: 16px; }
+.av.big { width: 64px; height: 64px; font-size: 36px; }
+.pname { flex: 1; min-width: 0; font-weight: 700; overflow-wrap: anywhere; }
+.tag { flex: none; padding: 3px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; background: rgba(255, 211, 92, 0.16); color: var(--bulb); }
+.tag.you { background: rgba(74, 163, 255, 0.18); color: #A9D2FF; }
+.away-note { font-size: 13px; color: var(--haze); }
+.kick { flex: none; border: 0; border-radius: 10px; padding: 6px 10px; min-height: 36px; font-size: 13px; font-weight: 700; color: var(--haze); background: transparent; box-shadow: inset 0 0 0 1.5px var(--rim); cursor: pointer; }
+
+/* ---------- lobby: settings ---------- */
+.settings { display: grid; gap: 16px; }
+.settings .section-label { margin-bottom: 0; }
+.setting { display: grid; gap: 8px; }
+.setting-name { display: flex; align-items: center; justify-content: space-between; font-weight: 700; }
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 4px; padding: 4px; border-radius: 14px; background: var(--panel-2); }
+.seg button { border: 0; border-radius: 10px; padding: 8px 4px; min-height: 46px; background: transparent; color: var(--haze); font-weight: 700; cursor: pointer; line-height: 1.15; }
+.seg button small { display: block; font-size: 12px; font-weight: 400; opacity: 0.85; }
+.seg button[aria-checked="true"] { background: var(--bulb); color: var(--ink); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 0; border-radius: 99px; padding: 8px 13px; min-height: 40px; font-size: 15px; font-weight: 700; cursor: pointer; background: var(--panel-2); color: var(--haze); box-shadow: inset 0 0 0 1.5px var(--rim); }
+.chip[aria-pressed="true"] { background: rgba(255, 211, 92, 0.15); color: var(--bulb); box-shadow: inset 0 0 0 1.5px rgba(255, 211, 92, 0.6); }
+.toggle { position: relative; display: flex; align-items: center; gap: 12px; min-height: 44px; font-weight: 700; cursor: pointer; }
+.toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.toggle-ui { position: relative; flex: none; width: 50px; height: 30px; border-radius: 99px; background: var(--panel-2); box-shadow: inset 0 0 0 2px var(--rim); transition: background 0.15s; }
+.toggle-ui::after { content: ""; position: absolute; top: 4px; left: 4px; width: 22px; height: 22px; border-radius: 50%; background: var(--haze); transition: transform 0.15s, background 0.15s; }
+.toggle input:checked + .toggle-ui { background: rgba(255, 211, 92, 0.22); box-shadow: inset 0 0 0 2px var(--bulb); }
+.toggle input:checked + .toggle-ui::after { transform: translateX(20px); background: var(--bulb); }
+.toggle input:focus-visible + .toggle-ui { outline: 3px solid var(--azure); outline-offset: 3px; }
+.hint { margin: -6px 0 0; text-align: center; font-size: 14px; color: var(--haze); text-wrap: balance; }
+.waiting { margin: 0; font-weight: 700; text-align: center; }
+.summary { margin: 6px 0 0; text-align: center; color: var(--haze); font-size: 15px; }
+
+/* ---------- question ---------- */
+.q-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.q-count { font-weight: 700; white-space: nowrap; }
+.q-count span { color: var(--haze); font-weight: 400; }
+.q-cat { font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bulb); text-align: right; }
+.dbl { align-self: flex-start; margin: -6px 0 -4px; font-family: var(--display); font-size: 21px; color: var(--tomato); transform: rotate(-2deg); }
+.q-text { margin: 0; font-size: clamp(23px, 6.2vw, 32px); line-height: 1.22; font-weight: 700; text-wrap: balance; }
+.q-text.small { font-size: clamp(19px, 5vw, 24px); }
+.q-kind { margin: -8px 0 0; font-size: 14px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--haze); }
+.timer { display: flex; align-items: center; gap: 14px; }
+.bulbrow { flex: 1; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 4px; align-items: center; }
+.bulbrow i { justify-self: center; width: 100%; max-width: 16px; aspect-ratio: 1; border-radius: 50%; background: #29336E; transition: background 0.25s, box-shadow 0.25s; }
+.bulbrow i.on { background: var(--bulb); box-shadow: 0 0 10px rgba(255, 211, 92, 0.55); }
+.bulbrow i.on.warn { background: var(--tomato); box-shadow: 0 0 10px rgba(255, 94, 87, 0.65); }
+.timer.urgent .bulbrow i.on { animation: blink 0.5s steps(1) infinite; }
+.secs { min-width: 2.2ch; text-align: right; font-size: 30px; line-height: 1; }
+[data-stage="timeup"] .secs, [data-stage="locked"] .secs { color: var(--haze); text-shadow: none; }
+.answer-zone { position: relative; }
+.ready { display: none; }
+[data-stage="intro"] .ready { position: absolute; inset: 0; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+[data-stage="intro"] .opts, [data-stage="intro"] .numform { visibility: hidden; }
+.ready-label { font-size: 13px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--haze); }
+.ready-num { font-size: 72px; line-height: 1; }
+.opts { display: grid; gap: 10px; }
+.opt {
+  position: relative; display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 12px;
+  width: 100%; min-height: 66px; padding: 10px 14px 10px 12px; border: 0; border-radius: 18px; text-align: left;
+  font-size: 19px; font-weight: 700; line-height: 1.2; color: #fff; background: var(--tile); box-shadow: 0 5px 0 var(--tile-deep);
+  cursor: pointer; transition: transform 0.1s, box-shadow 0.1s, opacity 0.2s, filter 0.2s;
+}
+.opt:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 var(--tile-deep); }
+.opt:disabled { cursor: default; }
+.o-a { --tile: #EC4A43; --tile-deep: #A52D28; }
+.o-b { --tile: #2A83E8; --tile-deep: #1A5AA6; }
+.o-c { --tile: #FFBE2E; --tile-deep: #B98313; color: #2A1A00; }
+.o-d { --tile: #9458F2; --tile-deep: #6435B4; }
+.o-true { --tile: #2A83E8; --tile-deep: #1A5AA6; }
+.o-false { --tile: #EC4A43; --tile-deep: #A52D28; }
+.opt .letter { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: rgba(0, 0, 0, 0.2); font-weight: 700; font-size: 20px; }
+.otext { overflow-wrap: anywhere; }
+[data-stage="locked"] .opt:not(.picked), [data-stage="timeup"] .opt { opacity: 0.3; filter: saturate(0.6); }
+.opt.picked { box-shadow: 0 0 0 4px var(--studio), 0 0 0 7px var(--chalk); }
+.opts.tf { grid-template-columns: 1fr 1fr; }
+.opts.tf .opt { grid-template-columns: 1fr; justify-items: center; text-align: center; min-height: 104px; font-size: 22px; gap: 6px; }
+@media (min-width: 640px) { .opts.mc { grid-template-columns: 1fr 1fr; } }
+.q-status { margin: 0; min-height: 1.45em; text-align: center; font-weight: 700; }
+[data-stage="timeup"] .q-status { color: var(--tomato); }
+.answered { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.answered li { position: relative; opacity: 0.4; transition: opacity 0.2s; }
+.answered li.done { opacity: 1; }
+.answered .tick { position: absolute; right: -5px; bottom: -5px; width: 17px; height: 17px; border-radius: 50%; display: none; place-items: center; background: var(--mint); color: var(--ink); font-size: 11px; font-weight: 900; }
+.answered li.done .tick { display: grid; }
+.numform { display: grid; gap: 10px; }
+.numform .field-label { margin-top: 0; }
+.num-row { display: flex; align-items: center; gap: 12px; }
+.num-input { font-family: var(--led); font-weight: 900; font-size: 42px; line-height: 1.1; text-align: center; letter-spacing: 0.06em; color: var(--bulb); padding: 10px 12px; }
+.unit { flex: none; font-weight: 700; color: var(--haze); }
+[data-stage="locked"] .num-input { border-color: var(--chalk); opacity: 1; }
+
+/* ---------- reveal ---------- */
+.verdict { text-align: center; padding: 4px 0 0; }
+.verdict-title { margin: 0; font-family: var(--display); font-size: clamp(40px, 12vw, 58px); line-height: 1.05; transform: rotate(-2deg); }
+.verdict.ok .verdict-title { color: var(--mint); text-shadow: 3px 3px 0 #0B5E43; }
+.verdict.no .verdict-title, .verdict.miss .verdict-title { color: var(--tomato); text-shadow: 3px 3px 0 #6E1C1A; }
+.verdict.meh .verdict-title { color: var(--bulb); text-shadow: 3px 3px 0 #6B4B0B; }
+.verdict-sub { margin: 8px 0 0; font-weight: 700; text-wrap: balance; }
+.revealed .opt { cursor: default; }
+.revealed .opt.dim { opacity: 0.34; filter: saturate(0.5); }
+.revealed .opt.mine.dim { opacity: 0.7; }
+.revealed .opt.mine.dim .otext { text-decoration: line-through; text-decoration-thickness: 2px; }
+.revealed .opt.correct { box-shadow: 0 0 0 4px var(--studio), 0 0 0 7px var(--mint), 0 0 30px rgba(63, 224, 162, 0.4); }
+.ribbon { position: absolute; top: -10px; right: 14px; padding: 2px 9px; border-radius: 99px; background: var(--mint); color: var(--ink); font-size: 11px; font-weight: 900; letter-spacing: 0.14em; text-transform: uppercase; }
+.pickers { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 3px; }
+.pickers .av.mini { width: 26px; height: 26px; font-size: 15px; box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.22); }
+.opts.tf.revealed .opt { min-height: 96px; }
+.num-answer { padding: 16px; border-radius: 18px; text-align: center; background: var(--panel); box-shadow: inset 0 0 0 1.5px var(--rim); }
+.num-answer-label { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--haze); }
+.num-answer-value { display: block; margin-top: 4px; font-size: clamp(38px, 11vw, 58px); line-height: 1.1; }
+.guesses { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.guesses li { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 14px; background: rgba(255, 255, 255, 0.04); }
+.guesses li.win { background: rgba(63, 224, 162, 0.12); box-shadow: inset 0 0 0 1.5px rgba(63, 224, 162, 0.5); }
+.guess { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pts { min-width: 4.2ch; text-align: right; font-weight: 700; color: var(--mint); white-space: nowrap; }
+.fact { margin: 0; padding: 14px 16px; border-radius: 16px; background: rgba(74, 163, 255, 0.1); box-shadow: inset 0 0 0 1.5px rgba(74, 163, 255, 0.35); }
+.fact-label { display: block; margin-bottom: 4px; font-size: 12px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #A9D2FF; }
+.standings { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.standings li { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 12px; }
+.standings li.is-me { background: rgba(255, 211, 92, 0.1); box-shadow: inset 0 0 0 1.5px rgba(255, 211, 92, 0.45); }
+.standings li.away { opacity: 0.6; }
+.place { width: 1.4em; flex: none; text-align: center; font-weight: 700; color: var(--haze); }
+.streak { font-size: 14px; white-space: nowrap; }
+.delta { flex: none; font-size: 15px; font-weight: 700; color: var(--mint); }
+.delta.zero { color: var(--haze); }
+.pscore { flex: none; min-width: 4ch; text-align: right; font-size: 21px; }
+.reactions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.react { width: 50px; height: 50px; border: 0; border-radius: 50%; background: var(--panel); box-shadow: inset 0 0 0 1.5px var(--rim); font-size: 24px; line-height: 1; cursor: pointer; transition: transform 0.1s; }
+.react:active { transform: scale(0.88); }
+.next-wrap { display: grid; }
+.sticky-action {
+  position: sticky; bottom: 0; z-index: 4; margin-inline: -16px; padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--studio) 72%, rgba(14, 20, 51, 0));
+}
+.actions.sticky-action { gap: 10px; }
+.final .btn-quiet { align-self: center; }
+.float-emoji { position: fixed; bottom: 14vh; z-index: 30; display: flex; flex-direction: column; align-items: center; gap: 2px; pointer-events: none; animation: floatup 2.6s ease-out forwards; }
+.fe-emoji { font-size: 46px; line-height: 1; }
+.fe-name { padding: 2px 8px; border-radius: 99px; background: rgba(7, 10, 30, 0.75); font-size: 12px; font-weight: 700; }
+@keyframes floatup { 0% { transform: translateY(0) scale(0.6); opacity: 0; } 12% { transform: translateY(-4vh) scale(1.12); opacity: 1; } 100% { transform: translateY(-60vh) scale(1); opacity: 0; } }
+
+/* ---------- final ---------- */
+.eyebrow { margin: 10px 0 0; text-align: center; font-size: 14px; font-weight: 700; letter-spacing: 0.26em; text-transform: uppercase; color: var(--haze); }
+.winner { margin: -6px 0 0; text-align: center; font-family: var(--display); font-weight: 400; font-size: clamp(46px, 14vw, 76px); line-height: 1.05; color: var(--bulb); transform: rotate(-3deg); overflow-wrap: anywhere; text-shadow: 3px 3px 0 var(--tomato), 6px 6px 0 #7A1E2B; }
+.podium { display: grid; grid-template-columns: 1fr 1.15fr 1fr; align-items: end; gap: 8px; }
+.step { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; text-align: center; }
+.step-name { font-weight: 700; overflow-wrap: anywhere; line-height: 1.2; }
+.step-score { font-size: 18px; }
+.step-block { width: 100%; display: grid; place-items: center; border-radius: 14px 14px 4px 4px; font-family: var(--display); font-size: 34px; color: var(--ink); }
+.step-1 .step-block { height: 120px; background: var(--bulb); box-shadow: 0 0 34px rgba(255, 211, 92, 0.35); }
+.step-2 .step-block { height: 86px; background: #D9DEF3; }
+.step-3 .step-block { height: 62px; background: #E6A870; }
+.step.empty { visibility: hidden; }
+.awards { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.awards li { display: flex; align-items: center; gap: 12px; }
+.award-title { display: block; font-weight: 700; }
+.award-who { display: block; color: var(--haze); font-size: 15px; }
+
+/* ---------- sheet, toast, confetti ---------- */
+.sheet { position: fixed; inset: 0; z-index: 40; display: flex; align-items: flex-end; justify-content: center; padding: 16px; background: rgba(5, 8, 24, 0.62); }
+.sheet[hidden] { display: none; }
+.sheet-card { width: 100%; max-width: 480px; display: grid; gap: 12px; padding: 20px; border-radius: 22px; background: var(--panel); box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.4), inset 0 0 0 1.5px var(--rim); animation: rise 0.22s ease-out both; }
+.sheet-title { margin: 0; font-family: var(--display); font-weight: 400; font-size: 28px; }
+.sheet-body { margin: 0; color: var(--haze); }
+.sheet-list { display: grid; gap: 6px; }
+.sheet-item { border: 0; border-radius: 12px; padding: 14px; min-height: 48px; text-align: left; font-weight: 700; background: var(--panel-2); cursor: pointer; }
+.sheet-item.danger { color: #FFB6B0; }
+.sheet .actions { grid-template-columns: 1fr 1fr; }
+.how summary { cursor: pointer; font-weight: 700; color: var(--haze); padding: 6px 0; }
+.how p { margin: 6px 0 0; font-size: 15px; color: var(--haze); }
+.net-line { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 14px; color: var(--haze); }
+.lamp-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--mint); }
+.lamp-dot[data-state="part"] { background: #FFC23D; }
+.lamp-dot[data-state="bad"] { background: var(--tomato); }
+.toast { position: fixed; left: 50%; bottom: 24px; z-index: 50; max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 99px; background: var(--chalk); color: var(--ink); font-weight: 700; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); opacity: 0; transform: translate(-50%, 20px); transition: opacity 0.2s, transform 0.2s; pointer-events: none; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.confetti { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 45; pointer-events: none; }
+
+@media (min-width: 720px) {
+  #app { max-width: 680px; }
+  body { font-size: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+
+</style>
+</head>
+<body>
+<main id="app"></main>
+<noscript><p style="padding:24px;font:18px system-ui">Clever Clogs needs JavaScript switched on.</p></noscript>
+<script>
+"use strict";
+/* ---- questions.js ---- */
+/* Clever Clogs — question bank.
+   Multiple choice: {c, d, q, a, w:[3 wrong], f?}
+   True/false:      {c, d, t:"tf", q, a:true|false, f?}
+   Nearest number:  {c, d, t:"num", q, a:Number, u:unit|"year", f?}
+   c = category key, d = difficulty (1 easy, 2 medium, 3 hard), f = optional fact shown at the reveal. */
+const CATEGORIES = {
+  gk: "General Knowledge",
+  food: "Food & Drink",
+  screen: "Film & TV",
+  music: "Music",
+  geo: "Geography",
+  hist: "History",
+  sci: "Science",
+  nature: "Animals & Nature",
+  sport: "Sport",
+  wales: "Wales",
+  words: "Words & Phrases"
+};
+
+const QUESTION_BANK = [
+/* ---------- General Knowledge ---------- */
+{c:"gk",d:1,q:"How many days are there in a leap year?",a:"366",w:["365","364","367"]},
+{c:"gk",d:1,q:"What colour do you get by mixing blue and yellow paint?",a:"Green",w:["Purple","Orange","Brown"]},
+{c:"gk",d:1,q:"How many sides does a hexagon have?",a:"Six",w:["Five","Seven","Eight"]},
+{c:"gk",d:1,q:"In the nursery rhyme, who sat on a wall and had a great fall?",a:"Humpty Dumpty",w:["Jack and Jill","Little Bo Peep","Georgie Porgie"]},
+{c:"gk",d:2,q:"Strictly speaking, ‘Big Ben’ is the name of what?",a:"The great bell",w:["The clock tower","The clock’s minute hand","The Palace of Westminster"],f:"The tower itself was renamed the Elizabeth Tower in 2012."},
+{c:"gk",d:1,q:"What is the traditional gift for a 25th wedding anniversary?",a:"Silver",w:["Gold","Pearl","Ruby"]},
+{c:"gk",d:2,q:"Which wedding anniversary is the ‘ruby’ one?",a:"40th",w:["25th","30th","50th"]},
+{c:"gk",d:1,q:"Which fictional detective lived at 221B Baker Street?",a:"Sherlock Holmes",w:["Hercule Poirot","Miss Marple","Inspector Morse"]},
+{c:"gk",d:1,q:"Who wrote ‘Romeo and Juliet’?",a:"William Shakespeare",w:["Charles Dickens","Christopher Marlowe","Jane Austen"]},
+{c:"gk",d:2,q:"On a UK Monopoly board, which is the most expensive property?",a:"Mayfair",w:["Park Lane","Bond Street","Oxford Street"]},
+{c:"gk",d:1,q:"Which bear was created by the author Michael Bond?",a:"Paddington",w:["Rupert","Winnie-the-Pooh","Baloo"],f:"Paddington first appeared in ‘A Bear Called Paddington’ in 1958."},
+{c:"gk",d:1,q:"What does the ‘C’ in BBC stand for?",a:"Corporation",w:["Company","Channel","Council"]},
+{c:"gk",d:1,q:"What is the currency of Japan?",a:"Yen",w:["Yuan","Won","Ringgit"]},
+{c:"gk",d:1,q:"How many cards are in a standard deck, not counting jokers?",a:"52",w:["48","54","56"]},
+{c:"gk",d:2,q:"In the NATO phonetic alphabet, which word stands for the letter E?",a:"Echo",w:["Easy","Eagle","Edward"]},
+{c:"gk",d:1,q:"What is a fedora?",a:"A hat",w:["A scarf","A shoe","A coat"]},
+{c:"gk",d:2,q:"How many sides does a UK 50p coin have?",a:"Seven",w:["Six","Eight","Nine"]},
+{c:"gk",d:1,q:"On what date is Bonfire Night in the UK?",a:"5 November",w:["31 October","1 November","11 November"]},
+{c:"gk",d:1,q:"Who painted the Mona Lisa?",a:"Leonardo da Vinci",w:["Michelangelo","Raphael","Botticelli"]},
+{c:"gk",d:1,q:"Which fairy-tale character left a glass slipper at the ball?",a:"Cinderella",w:["Snow White","Sleeping Beauty","Rapunzel"]},
+{c:"gk",d:1,q:"In which game would you say ‘checkmate’?",a:"Chess",w:["Draughts","Backgammon","Poker"]},
+{c:"gk",d:1,q:"The Prime Minister lives at number 10 on which London street?",a:"Downing Street",w:["Whitehall","Baker Street","Pall Mall"]},
+{c:"gk",d:2,q:"What is the name of Peter Pan’s fairy friend?",a:"Tinker Bell",w:["Silvermist","Titania","Sugar Plum"]},
+{c:"gk",d:3,q:"On a standard dartboard, which number sits directly to the left of 20?",a:"5",w:["1","12","19"],f:"Clockwise from the top the numbers go 20, 1, 18… and finish with 5 on the other side of 20."},
+{c:"gk",d:1,q:"In the story, how many dwarfs does Snow White live with?",a:"Seven",w:["Five","Six","Eight"]},
+{c:"gk",d:2,q:"Which famous London department store is in Knightsbridge?",a:"Harrods",w:["Selfridges","Liberty","Hamleys"]},
+{c:"gk",d:1,q:"What colour is the ‘M’ in the McDonald’s logo?",a:"Yellow",w:["Red","White","Orange"]},
+{c:"gk",d:2,q:"Which toy takes its name from the Danish words for ‘play well’?",a:"LEGO",w:["Meccano","K’NEX","Playmobil"]},
+{c:"gk",d:1,q:"Which precious stone is traditionally red?",a:"Ruby",w:["Emerald","Sapphire","Topaz"]},
+
+/* ---------- Food & Drink ---------- */
+{c:"food",d:1,q:"Paella is a traditional dish from which country?",a:"Spain",w:["Italy","Portugal","Mexico"]},
+{c:"food",d:1,q:"What is the main ingredient of guacamole?",a:"Avocado",w:["Peas","Cucumber","Lime"]},
+{c:"food",d:1,q:"Which nut is used to make marzipan?",a:"Almond",w:["Hazelnut","Cashew","Walnut"]},
+{c:"food",d:2,q:"Which type of pastry is used to make profiteroles?",a:"Choux",w:["Puff","Filo","Shortcrust"]},
+{c:"food",d:2,q:"Which fruit is used in a classic tarte Tatin?",a:"Apple",w:["Pear","Plum","Peach"]},
+{c:"food",d:2,q:"Which spice gives paella its golden colour?",a:"Saffron",w:["Turmeric","Paprika","Cumin"]},
+{c:"food",d:2,q:"What is the Japanese dish of thinly sliced raw fish served without rice?",a:"Sashimi",w:["Sushi","Tempura","Ramen"]},
+{c:"food",d:2,q:"Which vegetable gives borscht its deep red colour?",a:"Beetroot",w:["Red cabbage","Red pepper","Tomato"]},
+{c:"food",d:2,q:"Halloumi cheese originally comes from which country?",a:"Cyprus",w:["Greece","Turkey","Lebanon"]},
+{c:"food",d:2,q:"Bubble and squeak is traditionally made from leftover what?",a:"Potato and cabbage",w:["Rice and peas","Bread and butter","Pork and apple"]},
+{c:"food",d:1,q:"Which herb is the star of a classic pesto?",a:"Basil",w:["Parsley","Coriander","Mint"]},
+{c:"food",d:1,q:"Gouda cheese comes from which country?",a:"The Netherlands",w:["Belgium","Switzerland","Denmark"]},
+{c:"food",d:2,q:"What is tofu made from?",a:"Soya beans",w:["Rice","Chickpeas","Wheat"]},
+{c:"food",d:1,q:"A classic Victoria sponge is filled with jam and what?",a:"Cream",w:["Custard","Lemon curd","Chocolate spread"],f:"It’s named after Queen Victoria, who is said to have enjoyed a slice with her afternoon tea."},
+{c:"food",d:1,q:"Which fruit is dried to make a prune?",a:"Plum",w:["Grape","Apricot","Fig"]},
+{c:"food",d:2,q:"Which drink is made by fermenting honey?",a:"Mead",w:["Cider","Perry","Kombucha"]},
+{c:"food",d:2,q:"Which chocolate bar was called Marathon in the UK until 1990?",a:"Snickers",w:["Twix","Mars","Bounty"]},
+{c:"food",d:2,q:"Opal Fruits were renamed in 1998. What are they called now?",a:"Starburst",w:["Skittles","Chewits","Fruit Pastilles"]},
+{c:"food",d:1,q:"What is the main ingredient of hummus?",a:"Chickpeas",w:["Lentils","Butter beans","Peas"]},
+{c:"food",d:2,q:"Which of these is a bread rather than a pasta?",a:"Focaccia",w:["Farfalle","Fusilli","Orecchiette"]},
+{c:"food",d:1,q:"Which dish is traditionally served on Burns Night?",a:"Haggis",w:["Cullen skink","Black pudding","Scotch broth"]},
+{c:"food",d:2,q:"Which bread is traditionally baked on the wall of a tandoor oven?",a:"Naan",w:["Chapati","Paratha","Poppadom"]},
+{c:"food",d:2,q:"Traditional mozzarella is made from the milk of which animal?",a:"Water buffalo",w:["Goat","Sheep","Camel"]},
+{c:"food",d:1,q:"What do Americans call a courgette?",a:"Zucchini",w:["Eggplant","Squash","Okra"]},
+{c:"food",d:2,q:"Earl Grey tea is flavoured with oil from which fruit?",a:"Bergamot orange",w:["Lemon","Lime","Grapefruit"]},
+{c:"food",d:2,q:"The pavlova dessert is named after a famous what?",a:"Ballerina",w:["Opera singer","Queen","Racehorse"],f:"It honours the Russian ballerina Anna Pavlova."},
+{c:"food",d:1,q:"What is a Pink Lady?",a:"A variety of apple",w:["A type of pear","A variety of plum","A kind of potato"]},
+{c:"food",d:2,q:"Alongside yoghurt, what is the main ingredient of tzatziki?",a:"Cucumber",w:["Aubergine","Chickpeas","Red pepper"]},
+{c:"food",d:2,q:"Which country grows the most coffee in the world?",a:"Brazil",w:["Colombia","Vietnam","Ethiopia"]},
+{c:"food",d:2,q:"Which cocktail is made with rum, lime, sugar, mint and soda water?",a:"Mojito",w:["Daiquiri","Piña colada","Caipirinha"]},
+{c:"food",d:2,q:"Cavendish and Lady Finger are varieties of which fruit?",a:"Banana",w:["Grape","Apple","Pineapple"]},
+{c:"food",d:2,q:"Which Italian dessert’s name means ‘pick me up’?",a:"Tiramisu",w:["Panna cotta","Cannoli","Zabaglione"]},
+{c:"food",d:3,q:"Stilton can only be made in three English counties. Which of these is one?",a:"Leicestershire",w:["Somerset","Yorkshire","Cheshire"],f:"The others are Derbyshire and Nottinghamshire — it can’t even be made in the village of Stilton, which is in Cambridgeshire."},
+
+/* ---------- Film & TV ---------- */
+{c:"screen",d:1,q:"In the 1939 film ‘The Wizard of Oz’, what colour are Dorothy’s slippers?",a:"Ruby red",w:["Silver","Gold","Emerald green"],f:"In L. Frank Baum’s original book they were silver."},
+{c:"screen",d:1,q:"What is the name of the snowman in Disney’s ‘Frozen’?",a:"Olaf",w:["Sven","Kristoff","Hans"]},
+{c:"screen",d:2,q:"Which film features the line ‘Here’s looking at you, kid’?",a:"Casablanca",w:["Gone with the Wind","The Maltese Falcon","Citizen Kane"]},
+{c:"screen",d:1,q:"Who played the title role in ‘Mrs Doubtfire’?",a:"Robin Williams",w:["Steve Martin","Tom Hanks","Billy Crystal"]},
+{c:"screen",d:1,q:"What is the name of the coffee shop in ‘Friends’?",a:"Central Perk",w:["Moe’s","The Daily Grind","Café Nervosa"]},
+{c:"screen",d:1,q:"In ‘Gavin & Stacey’, which town is Stacey from?",a:"Barry",w:["Cardiff","Swansea","Newport"]},
+{c:"screen",d:1,q:"Which of these is Nessa’s catchphrase in ‘Gavin & Stacey’?",a:"What’s occurring?",w:["Lovely jubbly!","Don’t tell him, Pike!","I don’t believe it!"]},
+{c:"screen",d:1,q:"Which sitcom starred Del Boy and Rodney Trotter?",a:"Only Fools and Horses",w:["Porridge","Minder","Steptoe and Son"]},
+{c:"screen",d:2,q:"In ‘Only Fools and Horses’, what does Trigger always call Rodney?",a:"Dave",w:["Dan","Derek","Darren"]},
+{c:"screen",d:1,q:"What kind of fish is Nemo in ‘Finding Nemo’?",a:"A clownfish",w:["An angelfish","A pufferfish","A blue tang"]},
+{c:"screen",d:1,q:"Who played Jack in ‘Titanic’ (1997)?",a:"Leonardo DiCaprio",w:["Brad Pitt","Matt Damon","Johnny Depp"]},
+{c:"screen",d:1,q:"What is the name of the pub in ‘EastEnders’?",a:"The Queen Vic",w:["The Rovers Return","The Woolpack","The Bull"]},
+{c:"screen",d:1,q:"Who voices Donkey in ‘Shrek’?",a:"Eddie Murphy",w:["Mike Myers","Chris Rock","Jim Carrey"]},
+{c:"screen",d:1,q:"What is the name of the lion in ‘The Lion, the Witch and the Wardrobe’?",a:"Aslan",w:["Simba","Mufasa","Leo"]},
+{c:"screen",d:2,q:"Which was Daniel Craig’s first James Bond film?",a:"Casino Royale",w:["Quantum of Solace","Skyfall","Spectre"]},
+{c:"screen",d:1,q:"What is the name of Peppa Pig’s little brother?",a:"George",w:["Freddie","Richard","Danny"]},
+{c:"screen",d:1,q:"On ‘The Great British Bake Off’, the week’s best baker is crowned what?",a:"Star Baker",w:["Top Baker","Head Chef","Master Baker"]},
+{c:"screen",d:2,q:"Who hosted ‘Blind Date’ on ITV from 1985 to 2003?",a:"Cilla Black",w:["Lulu","Anthea Turner","Sue Pollard"]},
+{c:"screen",d:3,q:"Which film won the very first Oscar for Best Animated Feature?",a:"Shrek",w:["Monsters, Inc.","Toy Story","Spirited Away"],f:"It won at the 2002 ceremony; ‘Spirited Away’ won the year after."},
+{c:"screen",d:1,q:"In ‘Toy Story’, what is the name of the boy who owns Woody and Buzz?",a:"Andy",w:["Sid","Bonnie","Max"]},
+{c:"screen",d:1,q:"Who played Hermione Granger in the Harry Potter films?",a:"Emma Watson",w:["Emma Stone","Bonnie Wright","Evanna Lynch"]},
+{c:"screen",d:2,q:"In which English seaside town is ‘Fawlty Towers’ set?",a:"Torquay",w:["Blackpool","Brighton","Scarborough"]},
+{c:"screen",d:2,q:"Which ‘Strictly Come Dancing’ judge was famous for bellowing ‘Seven!’?",a:"Len Goodman",w:["Craig Revel Horwood","Bruno Tonioli","Arlene Phillips"]},
+{c:"screen",d:1,q:"In ‘The Simpsons’, what is the family’s home town called?",a:"Springfield",w:["Shelbyville","Quahog","Riverdale"]},
+{c:"screen",d:1,q:"Who directed ‘Jaws’, ‘E.T.’ and ‘Jurassic Park’?",a:"Steven Spielberg",w:["George Lucas","James Cameron","Ridley Scott"]},
+{c:"screen",d:2,q:"What was the name of the talking car in ‘Knight Rider’?",a:"KITT",w:["Herbie","Eleanor","General Lee"]},
+{c:"screen",d:1,q:"What colour is the TARDIS in ‘Doctor Who’?",a:"Blue",w:["Red","Green","Black"]},
+{c:"screen",d:1,q:"Which ‘Friends’ character insists ‘We were on a break!’?",a:"Ross",w:["Joey","Chandler","Rachel"]},
+{c:"screen",d:1,q:"How does Mary Poppins arrive at the Banks family’s house in the 1964 film?",a:"Floating down with her umbrella",w:["On a flying carpet","By hot-air balloon","Riding a carousel horse"]},
+{c:"screen",d:1,q:"What is the name of Harry Potter’s owl?",a:"Hedwig",w:["Errol","Pigwidgeon","Crookshanks"]},
+{c:"screen",d:2,q:"In the film ‘Speed’, the bomb goes off if the bus drops below what speed?",a:"50 mph",w:["30 mph","60 mph","70 mph"]},
+{c:"screen",d:2,q:"The TV series ‘Stranger Things’ is set in which fictional town?",a:"Hawkins",w:["Riverdale","Twin Peaks","Sunnydale"]},
+{c:"screen",d:2,q:"In ‘Line of Duty’, what does AC-12 investigate?",a:"Police corruption",w:["Organised crime","Terrorism","Cold cases"]},
+{c:"screen",d:2,q:"Which Welsh actor played Hannibal Lecter in ‘The Silence of the Lambs’?",a:"Anthony Hopkins",w:["Richard Burton","Michael Sheen","Rhys Ifans"],f:"Sir Anthony Hopkins was born in Port Talbot."},
+{c:"screen",d:1,q:"Which 1980s film features a DeLorean time machine?",a:"Back to the Future",w:["Ghostbusters","The Terminator","Big"]},
+{c:"screen",d:1,q:"In ‘The Wizard of Oz’, what does the Tin Man want from the Wizard?",a:"A heart",w:["A brain","Courage","A way home"]},
+{c:"screen",d:1,q:"Which Disney film features the song ‘Hakuna Matata’?",a:"The Lion King",w:["The Jungle Book","Aladdin","Tarzan"]},
+
+/* ---------- Music ---------- */
+{c:"music",d:1,q:"How many strings does a violin have?",a:"Four",w:["Five","Six","Three"]},
+{c:"music",d:1,q:"Which band recorded ‘Bohemian Rhapsody’?",a:"Queen",w:["The Beatles","ABBA","Led Zeppelin"]},
+{c:"music",d:1,q:"Which Welsh singer is famous for ‘It’s Not Unusual’ and ‘Delilah’?",a:"Tom Jones",w:["Shakin’ Stevens","Bonnie Tyler","Shirley Bassey"]},
+{c:"music",d:2,q:"Which Welsh singer had a worldwide hit with ‘Total Eclipse of the Heart’?",a:"Bonnie Tyler",w:["Shirley Bassey","Duffy","Cerys Matthews"]},
+{c:"music",d:2,q:"Which Welsh singer has sung the theme songs for three James Bond films?",a:"Shirley Bassey",w:["Tom Jones","Bonnie Tyler","Katherine Jenkins"],f:"‘Goldfinger’, ‘Diamonds Are Forever’ and ‘Moonraker’."},
+{c:"music",d:1,q:"Benny, Björn, Agnetha and Anni-Frid made up which band?",a:"ABBA",w:["Roxette","Ace of Base","The Cardigans"]},
+{c:"music",d:1,q:"Which country won Eurovision in 1974 with ABBA’s ‘Waterloo’?",a:"Sweden",w:["Norway","Denmark","United Kingdom"]},
+{c:"music",d:1,q:"Who was known as the ‘King of Pop’?",a:"Michael Jackson",w:["Elvis Presley","Prince","Justin Timberlake"]},
+{c:"music",d:2,q:"Which Beatles album cover shows the band walking over a zebra crossing?",a:"Abbey Road",w:["Let It Be","Revolver","Help!"]},
+{c:"music",d:1,q:"How many Spice Girls were there?",a:"Five",w:["Four","Six","Three"]},
+{c:"music",d:1,q:"Which Spice Girl was known as Posh Spice?",a:"Victoria Beckham",w:["Emma Bunton","Geri Halliwell","Melanie Chisholm"]},
+{c:"music",d:1,q:"Which singer’s albums are called ‘19’, ‘21’, ‘25’ and ‘30’?",a:"Adele",w:["Amy Winehouse","Lady Gaga","Dua Lipa"]},
+{c:"music",d:2,q:"Which Taylor Swift album is named after the year she was born?",a:"1989",w:["1999","1984","2001"]},
+{c:"music",d:2,q:"In music, what does ‘forte’ mean?",a:"Loud",w:["Soft","Fast","Slow"]},
+{c:"music",d:2,q:"Which Welsh band released ‘A Design for Life’?",a:"Manic Street Preachers",w:["Stereophonics","Super Furry Animals","Catatonia"]},
+{c:"music",d:2,q:"Which Welsh band had a number one with ‘Dakota’?",a:"Stereophonics",w:["Manic Street Preachers","Feeder","Catatonia"]},
+{c:"music",d:2,q:"What was the name of Elvis Presley’s Memphis mansion?",a:"Graceland",w:["Neverland","Paisley Park","Sunnyside"]},
+{c:"music",d:1,q:"Who is often called the ‘Queen of Pop’?",a:"Madonna",w:["Cher","Kylie Minogue","Whitney Houston"]},
+{c:"music",d:1,q:"Which band had hits with ‘Wonderwall’ and ‘Don’t Look Back in Anger’?",a:"Oasis",w:["Blur","Pulp","The Verve"]},
+{c:"music",d:2,q:"The song ‘Memory’ comes from which musical?",a:"Cats",w:["Evita","The Phantom of the Opera","Les Misérables"]},
+{c:"music",d:2,q:"Which Andrew Lloyd Webber musical tells the story of Eva Perón?",a:"Evita",w:["Sunset Boulevard","Aspects of Love","Starlight Express"]},
+{c:"music",d:2,q:"Which drummer went on to become Genesis’s lead singer and a solo star?",a:"Phil Collins",w:["Ringo Starr","Roger Taylor","Dave Grohl"]},
+{c:"music",d:1,q:"Who was the drummer in The Beatles?",a:"Ringo Starr",w:["George Harrison","Paul McCartney","John Lennon"]},
+{c:"music",d:2,q:"What nationality is the singer Björk?",a:"Icelandic",w:["Norwegian","Swedish","Finnish"]},
+{c:"music",d:2,q:"Where does the Last Night of the Proms take place?",a:"The Royal Albert Hall",w:["The Royal Festival Hall","Wembley Arena","The O2"]},
+{c:"music",d:1,q:"Which boy band had hits with ‘Back for Good’ and ‘Relight My Fire’?",a:"Take That",w:["Boyzone","Westlife","East 17"]},
+{c:"music",d:1,q:"Harry Styles first found fame in which band?",a:"One Direction",w:["The Wanted","JLS","Busted"]},
+{c:"music",d:1,q:"What does a metronome do?",a:"Keeps a steady beat",w:["Tunes strings","Measures volume","Records sound"]},
+{c:"music",d:2,q:"Which instrument is often called the national instrument of Wales?",a:"The harp",w:["The bagpipes","The fiddle","The accordion"]},
+{c:"music",d:2,q:"Which Welsh singer had a hit with ‘Mercy’ in 2008?",a:"Duffy",w:["Cerys Matthews","Charlotte Church","Katherine Jenkins"]},
+{c:"music",d:1,q:"Who released ‘Shape of You’ in 2017?",a:"Ed Sheeran",w:["Sam Smith","Lewis Capaldi","Shawn Mendes"]},
+{c:"music",d:1,q:"How many musicians play in a quartet?",a:"Four",w:["Three","Five","Eight"]},
+{c:"music",d:2,q:"Which composer wrote ‘The Four Seasons’?",a:"Vivaldi",w:["Mozart","Bach","Handel"]},
+{c:"music",d:2,q:"Which Welsh singer found fame aged 12 with the album ‘Voice of an Angel’?",a:"Charlotte Church",w:["Katherine Jenkins","Duffy","Aled Jones"]},
+
+/* ---------- Geography ---------- */
+{c:"geo",d:1,q:"What is the capital of Australia?",a:"Canberra",w:["Sydney","Melbourne","Perth"]},
+{c:"geo",d:1,q:"What is the largest ocean on Earth?",a:"The Pacific",w:["The Atlantic","The Indian","The Arctic"]},
+{c:"geo",d:2,q:"Mount Everest sits on the border between Nepal and which other country?",a:"China",w:["India","Bhutan","Pakistan"]},
+{c:"geo",d:1,q:"What is the capital of Canada?",a:"Ottawa",w:["Toronto","Vancouver","Montreal"]},
+{c:"geo",d:1,q:"Which is the smallest country in the world?",a:"Vatican City",w:["Monaco","San Marino","Liechtenstein"]},
+{c:"geo",d:1,q:"What is the capital of Scotland?",a:"Edinburgh",w:["Glasgow","Aberdeen","Stirling"]},
+{c:"geo",d:1,q:"What is the highest mountain in the UK?",a:"Ben Nevis",w:["Yr Wyddfa (Snowdon)","Scafell Pike","Slieve Donard"]},
+{c:"geo",d:2,q:"Which is the longest river in the UK?",a:"The Severn",w:["The Thames","The Trent","The Wye"]},
+{c:"geo",d:1,q:"Marrakesh is a city in which country?",a:"Morocco",w:["Egypt","Tunisia","Algeria"]},
+{c:"geo",d:1,q:"What is the largest hot desert in the world?",a:"The Sahara",w:["The Gobi","The Kalahari","The Arabian"]},
+{c:"geo",d:3,q:"Which country has the most pyramids?",a:"Sudan",w:["Egypt","Ethiopia","Libya"],f:"Sudan has around 200–250 Nubian pyramids, roughly twice as many as Egypt."},
+{c:"geo",d:1,q:"What is the capital of Portugal?",a:"Lisbon",w:["Porto","Madrid","Faro"]},
+{c:"geo",d:2,q:"Which US state is nicknamed the ‘Sunshine State’?",a:"Florida",w:["California","Arizona","Hawaii"]},
+{c:"geo",d:2,q:"The Great Barrier Reef lies off the coast of which Australian state?",a:"Queensland",w:["New South Wales","Western Australia","Victoria"]},
+{c:"geo",d:3,q:"Which European capital is built across 14 islands?",a:"Stockholm",w:["Copenhagen","Amsterdam","Helsinki"]},
+{c:"geo",d:2,q:"Which river flows through Dublin?",a:"The Liffey",w:["The Shannon","The Lagan","The Boyne"]},
+{c:"geo",d:2,q:"What is the capital of New Zealand?",a:"Wellington",w:["Auckland","Christchurch","Queenstown"]},
+{c:"geo",d:3,q:"Which country has the most lakes in the world?",a:"Canada",w:["Finland","Russia","USA"]},
+{c:"geo",d:2,q:"What is the capital of Iceland?",a:"Reykjavík",w:["Oslo","Helsinki","Nuuk"]},
+{c:"geo",d:3,q:"Which two countries share the world’s longest international border?",a:"Canada and the USA",w:["Russia and China","Chile and Argentina","India and Bangladesh"]},
+{c:"geo",d:2,q:"Which strait separates Spain from Morocco?",a:"The Strait of Gibraltar",w:["The Bosphorus","The Strait of Messina","The Dardanelles"]},
+{c:"geo",d:1,q:"Which river flows through Paris?",a:"The Seine",w:["The Loire","The Rhône","The Danube"]},
+{c:"geo",d:2,q:"In which ocean is Madagascar?",a:"The Indian Ocean",w:["The Atlantic Ocean","The Pacific Ocean","The Southern Ocean"]},
+{c:"geo",d:2,q:"What is the largest island in the Mediterranean?",a:"Sicily",w:["Sardinia","Cyprus","Crete"]},
+{c:"geo",d:2,q:"Which Scottish city is known as the Granite City?",a:"Aberdeen",w:["Edinburgh","Dundee","Inverness"]},
+{c:"geo",d:2,q:"Which of these countries is landlocked?",a:"Switzerland",w:["Portugal","Belgium","Croatia"]},
+{c:"geo",d:1,q:"Which country’s flag is a red circle on a white background?",a:"Japan",w:["Bangladesh","South Korea","China"]},
+{c:"geo",d:1,q:"Which country is shaped like a boot?",a:"Italy",w:["Greece","Spain","Chile"]},
+{c:"geo",d:1,q:"Which is the largest country in South America?",a:"Brazil",w:["Argentina","Peru","Colombia"]},
+{c:"geo",d:2,q:"What is the capital of Turkey?",a:"Ankara",w:["Istanbul","Izmir","Antalya"]},
+{c:"geo",d:2,q:"Which UK city stands on the River Clyde?",a:"Glasgow",w:["Edinburgh","Newcastle","Belfast"]},
+{c:"geo",d:3,q:"Which African country was once known as Abyssinia?",a:"Ethiopia",w:["Eritrea","Somalia","Sudan"]},
+
+/* ---------- History ---------- */
+{c:"hist",d:2,q:"The Titanic was sailing to which city when it sank?",a:"New York",w:["Boston","Halifax","Quebec"]},
+{c:"hist",d:1,q:"Who was the first person to walk on the Moon?",a:"Neil Armstrong",w:["Buzz Aldrin","Yuri Gagarin","Michael Collins"]},
+{c:"hist",d:1,q:"How many wives did Henry VIII have?",a:"Six",w:["Four","Five","Eight"]},
+{c:"hist",d:1,q:"Who was Britain’s Prime Minister for most of the Second World War?",a:"Winston Churchill",w:["Neville Chamberlain","Clement Attlee","Anthony Eden"]},
+{c:"hist",d:1,q:"In which year did the Second World War end?",a:"1945",w:["1944","1946","1939"]},
+{c:"hist",d:2,q:"In which year was the Great Fire of London?",a:"1666",w:["1066","1605","1707"]},
+{c:"hist",d:1,q:"Which famous battle took place in 1066?",a:"The Battle of Hastings",w:["The Battle of Agincourt","The Battle of Bosworth","The Battle of Waterloo"]},
+{c:"hist",d:1,q:"Who was the UK’s first woman Prime Minister?",a:"Margaret Thatcher",w:["Theresa May","Barbara Castle","Shirley Williams"]},
+{c:"hist",d:2,q:"Which of the Seven Wonders of the Ancient World is still standing?",a:"The Great Pyramid of Giza",w:["The Hanging Gardens of Babylon","The Colossus of Rhodes","The Lighthouse of Alexandria"]},
+{c:"hist",d:1,q:"Which empire built Hadrian’s Wall?",a:"The Romans",w:["The Vikings","The Normans","The Anglo-Saxons"]},
+{c:"hist",d:2,q:"Who was on the throne before Queen Elizabeth II?",a:"George VI",w:["Edward VIII","George V","Victoria"]},
+{c:"hist",d:2,q:"On which ship did Charles Darwin make his famous voyage?",a:"HMS Beagle",w:["HMS Victory","HMS Endeavour","The Golden Hind"]},
+{c:"hist",d:1,q:"Who is credited with inventing the telephone?",a:"Alexander Graham Bell",w:["Thomas Edison","Nikola Tesla","Guglielmo Marconi"]},
+{c:"hist",d:2,q:"In which city was President John F. Kennedy assassinated?",a:"Dallas",w:["Washington DC","Houston","Los Angeles"]},
+{c:"hist",d:1,q:"Which country gave the Statue of Liberty to the USA?",a:"France",w:["Britain","Spain","Italy"]},
+{c:"hist",d:2,q:"What was the first artificial satellite, launched in 1957?",a:"Sputnik 1",w:["Apollo 1","Explorer 1","Vostok 1"]},
+{c:"hist",d:1,q:"Which nurse was known as ‘The Lady with the Lamp’?",a:"Florence Nightingale",w:["Mary Seacole","Edith Cavell","Clara Barton"]},
+{c:"hist",d:2,q:"Which Tudor queen was nicknamed ‘Bloody Mary’?",a:"Mary I",w:["Mary, Queen of Scots","Elizabeth I","Lady Jane Grey"]},
+{c:"hist",d:1,q:"In which year did the UK vote to leave the EU?",a:"2016",w:["2015","2017","2019"]},
+{c:"hist",d:3,q:"Where did the Wright brothers make the first powered aeroplane flight?",a:"Kitty Hawk, North Carolina",w:["Dayton, Ohio","Cape Canaveral, Florida","Chicago, Illinois"]},
+{c:"hist",d:2,q:"Which Roman emperor is said to have fiddled while Rome burned?",a:"Nero",w:["Caligula","Augustus","Hadrian"]},
+{c:"hist",d:1,q:"Pompeii was destroyed by which volcano?",a:"Mount Vesuvius",w:["Mount Etna","Stromboli","Mount Olympus"]},
+{c:"hist",d:1,q:"Whose tomb did Howard Carter discover in 1922?",a:"Tutankhamun",w:["Ramesses II","Cleopatra","Khufu"]},
+{c:"hist",d:2,q:"Who was king when the First World War began?",a:"George V",w:["Edward VII","George VI","Victoria"]},
+{c:"hist",d:1,q:"Who was the first person in space?",a:"Yuri Gagarin",w:["Neil Armstrong","Alan Shepard","John Glenn"]},
+{c:"hist",d:1,q:"Which ship carried the Pilgrims to America in 1620?",a:"The Mayflower",w:["The Santa Maria","The Endeavour","The Golden Hind"]},
+{c:"hist",d:2,q:"Which king agreed to Magna Carta in 1215?",a:"King John",w:["Henry II","Richard I","Edward I"]},
+{c:"hist",d:2,q:"Which building housed the Great Exhibition of 1851?",a:"The Crystal Palace",w:["The Royal Albert Hall","The Natural History Museum","Alexandra Palace"]},
+{c:"hist",d:1,q:"Who led the Soviet Union during the Second World War?",a:"Joseph Stalin",w:["Vladimir Lenin","Nikita Khrushchev","Leon Trotsky"]},
+{c:"hist",d:1,q:"Which queen reigned for most of the 19th century?",a:"Queen Victoria",w:["Queen Anne","Queen Elizabeth I","Queen Mary"]},
+{c:"hist",d:2,q:"What did the Rosetta Stone help historians decipher?",a:"Egyptian hieroglyphs",w:["Viking runes","Mayan glyphs","Roman numerals"]},
+
+/* ---------- Science ---------- */
+{c:"sci",d:1,q:"Which planet is known as the Red Planet?",a:"Mars",w:["Jupiter","Venus","Mercury"]},
+{c:"sci",d:2,q:"What is the chemical symbol for gold?",a:"Au",w:["Ag","Gd","Go"]},
+{c:"sci",d:1,q:"Which gas do plants take in from the air?",a:"Carbon dioxide",w:["Oxygen","Nitrogen","Hydrogen"]},
+{c:"sci",d:1,q:"What is the largest planet in our solar system?",a:"Jupiter",w:["Saturn","Neptune","Earth"]},
+{c:"sci",d:1,q:"How many planets are in our solar system?",a:"Eight",w:["Nine","Seven","Ten"],f:"Pluto was reclassified as a dwarf planet in 2006."},
+{c:"sci",d:1,q:"What is the hardest natural substance?",a:"Diamond",w:["Gold","Granite","Quartz"]},
+{c:"sci",d:1,q:"At sea level, water boils at what temperature?",a:"100°C",w:["90°C","110°C","212°C"]},
+{c:"sci",d:2,q:"What is the closest star to Earth?",a:"The Sun",w:["Proxima Centauri","Sirius","Polaris"]},
+{c:"sci",d:1,q:"Which blood cells help fight infection?",a:"White blood cells",w:["Red blood cells","Platelets","Plasma"]},
+{c:"sci",d:2,q:"What is the largest organ of the human body?",a:"The skin",w:["The liver","The brain","The lungs"]},
+{c:"sci",d:2,q:"Roughly how long does sunlight take to reach Earth?",a:"About 8 minutes",w:["About 8 seconds","About an hour","About a day"]},
+{c:"sci",d:2,q:"Which gas makes up most of Earth’s atmosphere?",a:"Nitrogen",w:["Oxygen","Carbon dioxide","Argon"]},
+{c:"sci",d:1,q:"Who came up with the theory of relativity?",a:"Albert Einstein",w:["Isaac Newton","Stephen Hawking","Niels Bohr"]},
+{c:"sci",d:3,q:"What is the chemical symbol for sodium?",a:"Na",w:["So","Sd","S"]},
+{c:"sci",d:1,q:"Which vitamin does your body make when sunlight hits your skin?",a:"Vitamin D",w:["Vitamin C","Vitamin A","Vitamin B12"]},
+{c:"sci",d:1,q:"Which planet is famous for its rings?",a:"Saturn",w:["Mars","Venus","Mercury"]},
+{c:"sci",d:2,q:"Which planet is not named after a Greek or Roman god?",a:"Earth",w:["Mars","Neptune","Uranus"]},
+{c:"sci",d:2,q:"How many teeth does a typical adult have, including wisdom teeth?",a:"32",w:["28","30","36"]},
+{c:"sci",d:2,q:"What does DNA stand for?",a:"Deoxyribonucleic acid",w:["Dinitrogen acid","Deoxyribose nitrate","Dual nucleic acid"]},
+{c:"sci",d:2,q:"Water freezes at what temperature in Fahrenheit?",a:"32°F",w:["0°F","12°F","100°F"]},
+{c:"sci",d:1,q:"Which gas puts the fizz in fizzy drinks?",a:"Carbon dioxide",w:["Oxygen","Helium","Nitrogen"]},
+{c:"sci",d:2,q:"Which organ produces insulin?",a:"The pancreas",w:["The liver","The kidneys","The stomach"]},
+{c:"sci",d:2,q:"Where in the body is the smallest bone?",a:"The ear",w:["The nose","The little toe","The little finger"],f:"The stapes, in the middle ear, is about 3 mm long."},
+{c:"sci",d:1,q:"What do we call a group of stars that makes a pattern in the sky?",a:"A constellation",w:["A galaxy","A nebula","A comet"]},
+{c:"sci",d:3,q:"Which colour of visible light has the longest wavelength?",a:"Red",w:["Violet","Green","Blue"]},
+{c:"sci",d:1,q:"What is the name of our galaxy?",a:"The Milky Way",w:["Andromeda","Triangulum","Sombrero"]},
+{c:"sci",d:1,q:"How many chambers does the human heart have?",a:"Four",w:["Two","Three","Six"]},
+{c:"sci",d:2,q:"Which metal is liquid at room temperature?",a:"Mercury",w:["Lead","Tin","Aluminium"]},
+{c:"sci",d:1,q:"Which planet is closest to the Sun?",a:"Mercury",w:["Venus","Mars","Earth"]},
+{c:"sci",d:2,q:"What is the most common element in the universe?",a:"Hydrogen",w:["Helium","Oxygen","Carbon"]},
+{c:"sci",d:2,q:"What does a barometer measure?",a:"Air pressure",w:["Wind speed","Humidity","Rainfall"]},
+{c:"sci",d:1,q:"What is the process plants use to make food from sunlight?",a:"Photosynthesis",w:["Respiration","Germination","Pollination"]},
+
+/* ---------- Animals & Nature ---------- */
+{c:"nature",d:1,q:"What is a baby kangaroo called?",a:"A joey",w:["A kit","A cub","A calf"]},
+{c:"nature",d:2,q:"How many hearts does an octopus have?",a:"Three",w:["One","Two","Eight"]},
+{c:"nature",d:1,q:"What is the fastest land animal?",a:"The cheetah",w:["The lion","The pronghorn","The greyhound"]},
+{c:"nature",d:1,q:"What is the largest mammal in the world?",a:"The blue whale",w:["The African elephant","The sperm whale","The giraffe"]},
+{c:"nature",d:2,q:"What is a group of crows called?",a:"A murder",w:["A parliament","A pride","A gaggle"]},
+{c:"nature",d:1,q:"What is a group of lions called?",a:"A pride",w:["A pack","A herd","A troop"]},
+{c:"nature",d:1,q:"Which animal is known as the ‘ship of the desert’?",a:"The camel",w:["The horse","The donkey","The elephant"]},
+{c:"nature",d:1,q:"How many legs does a spider have?",a:"Eight",w:["Six","Ten","Twelve"]},
+{c:"nature",d:1,q:"What kind of animal is a Komodo dragon?",a:"A lizard",w:["A snake","A crocodile","A dinosaur"]},
+{c:"nature",d:2,q:"Which is the only mammal capable of true flight?",a:"The bat",w:["The flying squirrel","The sugar glider","The flying lemur"]},
+{c:"nature",d:2,q:"A cygnet is the young of which bird?",a:"Swan",w:["Goose","Duck","Heron"]},
+{c:"nature",d:2,q:"Which dog breed is known for its blue-black tongue?",a:"Chow Chow",w:["Dalmatian","Beagle","Poodle"]},
+{c:"nature",d:2,q:"What is the largest species of penguin?",a:"Emperor penguin",w:["King penguin","Adélie penguin","Gentoo penguin"]},
+{c:"nature",d:1,q:"What do giant pandas mostly eat?",a:"Bamboo",w:["Eucalyptus","Fish","Berries"]},
+{c:"nature",d:2,q:"Which bird can fly backwards?",a:"The hummingbird",w:["The kingfisher","The swift","The sparrow"]},
+{c:"nature",d:2,q:"What is a female fox called?",a:"A vixen",w:["A doe","A sow","A jenny"]},
+{c:"nature",d:1,q:"How many legs does an insect have?",a:"Six",w:["Eight","Four","Ten"]},
+{c:"nature",d:2,q:"Which of these animals is a marsupial?",a:"The wombat",w:["The otter","The lemur","The armadillo"]},
+{c:"nature",d:2,q:"Which bird is the fastest in a dive?",a:"The peregrine falcon",w:["The golden eagle","The swift","The ostrich"]},
+{c:"nature",d:3,q:"What colour is a polar bear’s skin?",a:"Black",w:["White","Pink","Grey"]},
+{c:"nature",d:2,q:"How many humps does a Bactrian camel have?",a:"Two",w:["One","Three","None"]},
+{c:"nature",d:1,q:"What is a baby goat called?",a:"A kid",w:["A lamb","A foal","A calf"]},
+{c:"nature",d:2,q:"Which sea creature has no brain, heart or bones?",a:"The jellyfish",w:["The octopus","The seahorse","The squid"]},
+{c:"nature",d:2,q:"On which continent will you find no ants?",a:"Antarctica",w:["Australia","Europe","South America"]},
+{c:"nature",d:3,q:"Which animal has fingerprints so like ours they could confuse a crime scene?",a:"The koala",w:["The raccoon","The sloth","The otter"]},
+{c:"nature",d:1,q:"Which British garden bird is known for its red breast?",a:"The robin",w:["The blue tit","The blackbird","The wren"]},
+{c:"nature",d:1,q:"Acorns grow on which tree?",a:"Oak",w:["Beech","Ash","Sycamore"]},
+{c:"nature",d:3,q:"What is a group of geese on the ground called?",a:"A gaggle",w:["A skein","A murder","A pod"],f:"A skein is a group of geese in flight."},
+{c:"nature",d:2,q:"What do bees collect from flowers to make honey?",a:"Nectar",w:["Pollen","Sap","Dew"]},
+{c:"nature",d:1,q:"Which of these is not a mammal?",a:"The shark",w:["The dolphin","The whale","The seal"]},
+
+/* ---------- Sport ---------- */
+{c:"sport",d:1,q:"How many players does each team have on the pitch in football?",a:"11",w:["10","12","9"]},
+{c:"sport",d:1,q:"How many players does each team have on the pitch in rugby union?",a:"15",w:["13","11","12"]},
+{c:"sport",d:1,q:"In which sport would you see a slam dunk?",a:"Basketball",w:["Volleyball","Netball","Tennis"]},
+{c:"sport",d:1,q:"Which city hosted the 2012 Summer Olympics?",a:"London",w:["Beijing","Rio de Janeiro","Athens"]},
+{c:"sport",d:1,q:"How many rings are on the Olympic flag?",a:"Five",w:["Four","Six","Seven"]},
+{c:"sport",d:1,q:"In tennis, what is a score of zero called?",a:"Love",w:["Nil","Duck","Zip"]},
+{c:"sport",d:2,q:"In cricket, what is it called when a batter is out without scoring?",a:"A duck",w:["A love","A nil","A zip"]},
+{c:"sport",d:1,q:"Which Welsh footballer won five Champions League titles with Real Madrid?",a:"Gareth Bale",w:["Ryan Giggs","Aaron Ramsey","Ian Rush"]},
+{c:"sport",d:2,q:"In golf, what is one under par on a hole called?",a:"A birdie",w:["An eagle","A bogey","An albatross"]},
+{c:"sport",d:2,q:"How long is a marathon?",a:"26.2 miles",w:["20 miles","24.8 miles","30 miles"]},
+{c:"sport",d:1,q:"Which sport uses a shuttlecock?",a:"Badminton",w:["Squash","Table tennis","Lacrosse"]},
+{c:"sport",d:2,q:"In snooker, how many points is the black ball worth?",a:"7",w:["5","6","10"]},
+{c:"sport",d:1,q:"What is the highest score possible with three darts?",a:"180",w:["150","170","160"]},
+{c:"sport",d:1,q:"What colour jersey does the leader of the Tour de France wear?",a:"Yellow",w:["Green","Polka dot","White"]},
+{c:"sport",d:2,q:"In which sport might a bowler deliver a ‘googly’?",a:"Cricket",w:["Baseball","Ten-pin bowling","Lacrosse"]},
+{c:"sport",d:2,q:"Which Welsh cyclist won the Tour de France in 2018?",a:"Geraint Thomas",w:["Chris Froome","Bradley Wiggins","Mark Cavendish"]},
+{c:"sport",d:2,q:"How many points is a try worth in rugby union?",a:"5",w:["3","4","6"]},
+{c:"sport",d:1,q:"Which famous horse race is run at Aintree?",a:"The Grand National",w:["The Derby","The Cheltenham Gold Cup","Royal Ascot"]},
+{c:"sport",d:1,q:"In ten-pin bowling, what do you call knocking down all ten pins with your first ball?",a:"A strike",w:["A spare","A split","A turkey"]},
+{c:"sport",d:1,q:"How many holes are there in a standard round of golf?",a:"18",w:["9","12","20"]},
+{c:"sport",d:1,q:"Players at Wimbledon must dress almost entirely in which colour?",a:"White",w:["Green","Purple","Cream"]},
+{c:"sport",d:1,q:"Which country is Usain Bolt from?",a:"Jamaica",w:["Trinidad and Tobago","USA","Bahamas"]},
+{c:"sport",d:2,q:"The Ryder Cup is contested in which sport?",a:"Golf",w:["Tennis","Cricket","Sailing"]},
+{c:"sport",d:2,q:"What is the maximum break in snooker (without free balls)?",a:"147",w:["155","180","100"]},
+{c:"sport",d:3,q:"Which nation won the first Rugby World Cup in 1987?",a:"New Zealand",w:["Australia","South Africa","England"],f:"Wales finished third after beating Australia in the play-off."},
+{c:"sport",d:2,q:"How many players does each netball team have on court?",a:"7",w:["5","6","9"]},
+{c:"sport",d:1,q:"How long is each half of a professional football match?",a:"45 minutes",w:["40 minutes","30 minutes","50 minutes"]},
+{c:"sport",d:3,q:"Who is the most capped player in Welsh rugby history?",a:"Alun Wyn Jones",w:["Gethin Jenkins","Shane Williams","Gareth Edwards"]},
+{c:"sport",d:1,q:"Which sport is played at Lord’s in London?",a:"Cricket",w:["Tennis","Rugby","Horse racing"]},
+{c:"sport",d:2,q:"Teams compete for the Stanley Cup in which sport?",a:"Ice hockey",w:["Baseball","American football","Basketball"]},
+{c:"sport",d:2,q:"Which swimming stroke is usually the fastest?",a:"Front crawl",w:["Butterfly","Backstroke","Breaststroke"]},
+
+/* ---------- Wales ---------- */
+{c:"wales",d:1,q:"What appears on the Welsh flag?",a:"A red dragon",w:["A white lion","A golden harp","A green leek"]},
+{c:"wales",d:1,q:"Which vegetable is a national emblem of Wales?",a:"The leek",w:["The carrot","The onion","The potato"]},
+{c:"wales",d:1,q:"Which flower is a national emblem of Wales?",a:"The daffodil",w:["The rose","The thistle","The shamrock"]},
+{c:"wales",d:1,q:"On what date is St David’s Day?",a:"1 March",w:["17 March","23 April","30 November"]},
+{c:"wales",d:1,q:"What is the capital of Wales?",a:"Cardiff",w:["Swansea","Newport","Aberystwyth"]},
+{c:"wales",d:1,q:"What is the highest mountain in Wales?",a:"Yr Wyddfa (Snowdon)",w:["Pen y Fan","Cadair Idris","Tryfan"]},
+{c:"wales",d:2,q:"What is the highest mountain in southern Britain?",a:"Pen y Fan",w:["Sugar Loaf","Fan y Big","Corn Du"]},
+{c:"wales",d:1,q:"What does ‘croeso’ mean?",a:"Welcome",w:["Goodbye","Thank you","Cheers"]},
+{c:"wales",d:1,q:"What does ‘diolch’ mean?",a:"Thank you",w:["Please","Hello","Sorry"]},
+{c:"wales",d:2,q:"When would you say ‘iechyd da’?",a:"When raising a glass",w:["When saying goodnight","On someone’s birthday","When answering the phone"],f:"It means ‘good health’ — the Welsh for ‘cheers’."},
+{c:"wales",d:1,q:"A ‘cwtch’ is best described as what?",a:"A cuddle",w:["A cup of tea","A nap","A chat"]},
+{c:"wales",d:2,q:"The village with the famously long name, Llanfairpwllgwyngyll…, is on which island?",a:"Anglesey",w:["Caldey Island","Bardsey Island","Skomer"]},
+{c:"wales",d:1,q:"Which Welsh poet wrote ‘Under Milk Wood’?",a:"Dylan Thomas",w:["R. S. Thomas","Owen Sheers","Gillian Clarke"]},
+{c:"wales",d:1,q:"Kidwelly is in which Welsh county?",a:"Carmarthenshire",w:["Pembrokeshire","Ceredigion","Powys"]},
+{c:"wales",d:2,q:"Which Carmarthenshire castle appears at the start of ‘Monty Python and the Holy Grail’?",a:"Kidwelly Castle",w:["Carreg Cennen Castle","Dinefwr Castle","Laugharne Castle"],f:"It’s the only Welsh location in the film — a brief exterior shot at the very beginning."},
+{c:"wales",d:1,q:"What is the Welsh name for Wales?",a:"Cymru",w:["Cymraeg","Caerdydd","Eryri"]},
+{c:"wales",d:2,q:"What is the Welsh name for Cardiff?",a:"Caerdydd",w:["Abertawe","Casnewydd","Caerfyrddin"]},
+{c:"wales",d:2,q:"What is the Welsh name for Swansea?",a:"Abertawe",w:["Aberystwyth","Casnewydd","Castell-nedd"]},
+{c:"wales",d:2,q:"Which town is called Caerfyrddin in Welsh?",a:"Carmarthen",w:["Cardigan","Caernarfon","Kidwelly"]},
+{c:"wales",d:2,q:"Which town has long been linked with the wizard Merlin?",a:"Carmarthen",w:["Kidwelly","Llanelli","Llandeilo"],f:"Its Welsh name, Caerfyrddin, is traditionally read as ‘Myrddin’s (Merlin’s) fort’."},
+{c:"wales",d:2,q:"Which national park covers much of Wales’s south-west coast?",a:"Pembrokeshire Coast",w:["Eryri","Bannau Brycheiniog","Gower"]},
+{c:"wales",d:3,q:"In 1956 the Gower Peninsula became the UK’s first what?",a:"Area of Outstanding Natural Beauty",w:["National Park","World Heritage Site","Nature Reserve"]},
+{c:"wales",d:1,q:"Which rugby team plays at Parc y Scarlets in Llanelli?",a:"Scarlets",w:["Ospreys","Cardiff","Dragons"]},
+{c:"wales",d:3,q:"Who scored ‘that try’ for the Barbarians against the All Blacks in 1973?",a:"Gareth Edwards",w:["Phil Bennett","JPR Williams","Barry John"]},
+{c:"wales",d:2,q:"Laverbread (bara lawr) is made from what?",a:"Seaweed",w:["Oats","Cockles","Leeks"]},
+{c:"wales",d:2,q:"Welsh cakes are traditionally cooked on what?",a:"A bakestone",w:["A clay oven","A spit over the fire","A pizza stone"]},
+{c:"wales",d:1,q:"Cawl is a traditional Welsh what?",a:"Stew",w:["Cake","Bread","Cheese"]},
+{c:"wales",d:1,q:"What is bara brith?",a:"A fruit loaf",w:["A cheese","A fish stew","A potato cake"],f:"The name means ‘speckled bread’."},
+{c:"wales",d:1,q:"Which crumbly white cheese is named after a Welsh town?",a:"Caerphilly",w:["Wensleydale","Cheshire","Lancashire"]},
+{c:"wales",d:2,q:"Which Welsh-born actor played Batman in ‘The Dark Knight’ trilogy?",a:"Christian Bale",w:["Michael Sheen","Ioan Gruffudd","Rhys Ifans"],f:"He was born in Haverfordwest, Pembrokeshire."},
+{c:"wales",d:2,q:"Oscar winner Catherine Zeta-Jones comes from which Welsh city?",a:"Swansea",w:["Cardiff","Newport","Bangor"]},
+{c:"wales",d:1,q:"What is the Welsh-language TV channel that launched in 1982?",a:"S4C",w:["BBC Cymru","ITV Wales","Channel 5 Wales"]},
+{c:"wales",d:2,q:"Since its 2005 revival, ‘Doctor Who’ has mostly been filmed in which city?",a:"Cardiff",w:["Bristol","Manchester","Glasgow"]},
+{c:"wales",d:1,q:"Which Welsh festival celebrates music, poetry and performance?",a:"The Eisteddfod",w:["The Ceilidh","The Fleadh","Hogmanay"]},
+{c:"wales",d:2,q:"Before it was renamed in 2016, what was the Principality Stadium called?",a:"The Millennium Stadium",w:["The Liberty Stadium","Ninian Park","The Racecourse Ground"]},
+{c:"wales",d:3,q:"Llywelyn ap Gruffudd is remembered as ‘Llywelyn the Last’ because he was the last what?",a:"Native Prince of Wales",w:["Welsh-born King of England","Welsh bard","Abbot of Tintern"]},
+{c:"wales",d:2,q:"What does the Welsh word ‘hiraeth’ mean?",a:"A deep longing for home",w:["A warm welcome","A happy song","A misty mountain"]},
+{c:"wales",d:2,q:"Which bridge, opened in 1966, first carried the M4 over the River Severn?",a:"The Severn Bridge",w:["The Menai Bridge","The Clifton Suspension Bridge","The Humber Bridge"]},
+
+/* ---------- Words & Phrases ---------- */
+{c:"words",d:2,q:"What is a word that reads the same backwards and forwards, like ‘level’?",a:"A palindrome",w:["An anagram","A homophone","An acronym"]},
+{c:"words",d:2,q:"What do you call a word that means the opposite of another?",a:"An antonym",w:["A synonym","A homonym","A pseudonym"]},
+{c:"words",d:2,q:"Which of these is spelled correctly?",a:"Necessary",w:["Neccessary","Necesary","Neccesary"]},
+{c:"words",d:1,q:"Which of these is spelled correctly?",a:"Definitely",w:["Definately","Definitly","Defenitely"]},
+{c:"words",d:2,q:"Which of these is spelled correctly?",a:"Accommodate",w:["Accomodate","Acommodate","Acomodate"]},
+{c:"words",d:1,q:"If you ‘let the cat out of the bag’, what have you done?",a:"Revealed a secret",w:["Started an argument","Left in a hurry","Wasted money"]},
+{c:"words",d:1,q:"If something is ‘the bee’s knees’, it is…",a:"Excellent",w:["Very small","Unlucky","Painful"]},
+{c:"words",d:1,q:"How many is a baker’s dozen?",a:"13",w:["12","11","14"]},
+{c:"words",d:1,q:"What does ‘RSVP’ on an invitation ask you to do?",a:"Reply",w:["Bring a gift","Dress smartly","Arrive early"]},
+{c:"words",d:1,q:"What does ‘carpe diem’ mean?",a:"Seize the day",w:["Enjoy your meal","Peace be with you","In good faith"]},
+{c:"words",d:1,q:"How long is a fortnight?",a:"Two weeks",w:["Four nights","Fourteen hours","A month"]},
+{c:"words",d:2,q:"Which of these is an anagram of LISTEN?",a:"SILENT",w:["STOLEN","LENTIL","TINNED"]},
+{c:"words",d:1,q:"What do you call a scientist who studies stars and planets?",a:"An astronomer",w:["An astrologer","A geologist","A meteorologist"]},
+{c:"words",d:2,q:"What does ‘déjà vu’ literally mean in French?",a:"Already seen",w:["Never again","Once more","Seen by chance"]},
+{c:"words",d:1,q:"What do Americans call a full stop?",a:"A period",w:["A dot","A point","A stop"]},
+{c:"words",d:1,q:"What does the prefix ‘mono-’ mean?",a:"One",w:["Many","Half","Two"]},
+{c:"words",d:2,q:"What is the name of the ‘&’ symbol?",a:"Ampersand",w:["Asterisk","Tilde","Octothorpe"]},
+{c:"words",d:1,q:"In Cockney rhyming slang, what are ‘apples and pears’?",a:"Stairs",w:["Hair","Feet","Money"]},
+{c:"words",d:2,q:"In Cockney rhyming slang, if you ‘use your loaf’, what are you using?",a:"Your head",w:["Your hands","Your money","Your feet"]},
+{c:"words",d:2,q:"What is the word for a word that sounds like what it describes, such as ‘buzz’?",a:"Onomatopoeia",w:["Alliteration","Hyperbole","Metaphor"]},
+{c:"words",d:2,q:"What does ‘e.g.’ mean?",a:"For example",w:["That is to say","And so on","Note well"]},
+{c:"words",d:1,q:"If you’re feeling ‘under the weather’, you are…",a:"Poorly",w:["Cold","Wet","Lucky"]},
+{c:"words",d:1,q:"Something that happens ‘once in a blue moon’ happens…",a:"Very rarely",w:["Every month","Only at night","Suddenly"]},
+{c:"words",d:1,q:"Arachnophobia is the fear of what?",a:"Spiders",w:["Heights","Small spaces","Crowds"]},
+{c:"words",d:2,q:"Which day of the week is named after the Norse god Thor?",a:"Thursday",w:["Tuesday","Wednesday","Friday"]},
+{c:"words",d:1,q:"Which month is named after Julius Caesar?",a:"July",w:["June","August","March"]},
+{c:"words",d:2,q:"How many is a ‘score’?",a:"20",w:["12","10","100"]},
+{c:"words",d:3,q:"Which is the only letter that doesn’t appear in the name of any US state?",a:"Q",w:["X","Z","J"]},
+{c:"words",d:2,q:"What does a philatelist collect?",a:"Stamps",w:["Coins","Postcards","Butterflies"]},
+{c:"words",d:2,q:"How many lines does a limerick have?",a:"Five",w:["Four","Six","Fourteen"]},
+{c:"words",d:1,q:"If you ‘bite the bullet’, you…",a:"Face something unpleasant bravely",w:["Say something rude","Eat too quickly","Give up"]},
+{c:"words",d:1,q:"‘Hangry’ is a blend of which two words?",a:"Hungry and angry",w:["Hung and dry","Hang and worry","Hand and grab"]},
+
+/* ---------- True or false ---------- */
+{c:"sci",d:1,t:"tf",q:"Lightning never strikes the same place twice.",a:false,f:"The Empire State Building is struck around 20 times a year."},
+{c:"nature",d:2,t:"tf",q:"A group of flamingos is called a ‘flamboyance’.",a:true},
+{c:"geo",d:3,t:"tf",q:"Australia is wider than the Moon.",a:true,f:"Australia is about 4,000 km across; the Moon is about 3,475 km wide."},
+{c:"hist",d:2,t:"tf",q:"You can see the Great Wall of China from the Moon with the naked eye.",a:false},
+{c:"nature",d:1,t:"tf",q:"Bats are blind.",a:false,f:"All bats can see — many also use echolocation."},
+{c:"nature",d:2,t:"tf",q:"Goldfish only remember things for three seconds.",a:false,f:"Studies show goldfish can remember things for months."},
+{c:"food",d:2,t:"tf",q:"Peanuts aren’t actually nuts.",a:true,f:"They’re legumes, like peas and beans."},
+{c:"sci",d:1,t:"tf",q:"Humans only use 10% of their brains.",a:false},
+{c:"food",d:2,t:"tf",q:"Botanically speaking, bananas are berries.",a:true},
+{c:"food",d:3,t:"tf",q:"Botanically speaking, strawberries are berries.",a:false,f:"Strawberries aren’t true berries — but bananas are!"},
+{c:"geo",d:3,t:"tf",q:"Measured from base to peak, Everest is the tallest mountain on Earth.",a:false,f:"Hawaii’s Mauna Kea is taller from its base on the sea floor."},
+{c:"hist",d:2,t:"tf",q:"Napoleon was unusually short for his time.",a:false,f:"He was about 5 ft 7 in — average for a Frenchman of his day."},
+{c:"wales",d:2,t:"tf",q:"There are more than 600 castles in Wales.",a:true},
+{c:"sci",d:2,t:"tf",q:"Sound travels faster through water than through air.",a:true,f:"About four times faster."},
+{c:"sci",d:3,t:"tf",q:"A day on Venus is longer than a year on Venus.",a:true,f:"Venus takes 243 Earth days to spin once, but only 225 to orbit the Sun."},
+{c:"geo",d:3,t:"tf",q:"The Sahara is the largest desert on Earth.",a:false,f:"Antarctica is — a desert is defined by how little rain or snow it gets, not by heat."},
+{c:"screen",d:2,t:"tf",q:"Darth Vader never actually says ‘Luke, I am your father’.",a:true,f:"The real line is ‘No, I am your father.’"},
+{c:"screen",d:3,t:"tf",q:"In Disney’s 1937 ‘Snow White’, the Queen begins her chant with ‘Mirror, mirror on the wall’.",a:false,f:"She says ‘Magic mirror on the wall’."},
+{c:"music",d:1,t:"tf",q:"The Beatles came from Liverpool.",a:true},
+{c:"sport",d:2,t:"tf",q:"Golf has been played on the Moon.",a:true,f:"Astronaut Alan Shepard hit two golf balls during Apollo 14 in 1971."},
+{c:"sport",d:2,t:"tf",q:"Olympic gold medals are made mostly of gold.",a:false,f:"They’re mostly silver, plated with at least 6 grams of gold."},
+{c:"nature",d:1,t:"tf",q:"Sharks are mammals.",a:false},
+{c:"nature",d:2,t:"tf",q:"Dolphins can sleep with one eye open.",a:true},
+{c:"sci",d:3,t:"tf",q:"Glass is a very slow-flowing liquid.",a:false,f:"It’s a solid — old window panes are uneven because of how they were made."},
+{c:"hist",d:2,t:"tf",q:"Vikings wore horned helmets into battle.",a:false},
+{c:"geo",d:2,t:"tf",q:"Istanbul is on two continents.",a:true,f:"It straddles the Bosphorus, between Europe and Asia."},
+{c:"wales",d:1,t:"tf",q:"The Welsh dragon appears on the Union Flag.",a:false,f:"Wales isn’t represented on the Union Flag at all."},
+{c:"sci",d:1,t:"tf",q:"Diamonds are made of carbon.",a:true},
+{c:"sci",d:3,t:"tf",q:"Earth is closer to the Sun in January than in July.",a:true},
+{c:"nature",d:2,t:"tf",q:"An ostrich’s eye is bigger than its brain.",a:true},
+{c:"food",d:2,t:"tf",q:"The first carrots people grew were purple or yellow, not orange.",a:true},
+{c:"hist",d:3,t:"tf",q:"Cleopatra lived closer in time to the Moon landing than to the building of the Great Pyramid.",a:true},
+{c:"nature",d:2,t:"tf",q:"Octopuses have blue blood.",a:true},
+{c:"nature",d:2,t:"tf",q:"A female donkey is called a jenny.",a:true},
+{c:"words",d:2,t:"tf",q:"‘Bookkeeper’ has three pairs of double letters in a row.",a:true},
+{c:"gk",d:3,t:"tf",q:"The Eiffel Tower grows taller in summer.",a:true,f:"Heat makes the iron expand — by up to about 15 cm."},
+{c:"hist",d:3,t:"tf",q:"The shortest war in history lasted under an hour.",a:true,f:"The Anglo-Zanzibar War of 1896 lasted around 40 minutes."},
+{c:"sport",d:2,t:"tf",q:"Wales reached the semi-finals of Euro 2016.",a:true},
+{c:"food",d:2,t:"tf",q:"Honey can stay edible for thousands of years.",a:true,f:"Pots of honey found in ancient Egyptian tombs were still edible."},
+{c:"geo",d:2,t:"tf",q:"Ireland has no native snakes.",a:true},
+{c:"music",d:1,t:"tf",q:"Tom Jones has been knighted.",a:true},
+{c:"screen",d:1,t:"tf",q:"‘Gavin & Stacey’ was written by James Corden and Ruth Jones.",a:true},
+{c:"nature",d:3,t:"tf",q:"Scotland’s national animal is the unicorn.",a:true},
+{c:"sci",d:2,t:"tf",q:"Bananas are very slightly radioactive.",a:true,f:"They contain a tiny, harmless amount of potassium-40."},
+{c:"words",d:2,t:"tf",q:"The word ‘alphabet’ comes from the first two letters of the Greek alphabet.",a:true,f:"Alpha and beta."},
+{c:"sport",d:3,t:"tf",q:"The Olympic ring colours were chosen because every national flag of the time contained at least one of them.",a:true},
+{c:"hist",d:2,t:"tf",q:"Elizabeth II reigned for longer than any other British monarch.",a:true},
+
+/* ---------- Nearest number ---------- */
+{c:"gk",d:2,t:"num",q:"How many minutes are there in a day?",a:1440,u:"minutes"},
+{c:"sci",d:2,t:"num",q:"How many bones are there in the adult human body?",a:206,u:"bones"},
+{c:"hist",d:1,t:"num",q:"In what year did the Titanic sink?",a:1912,u:"year"},
+{c:"hist",d:1,t:"num",q:"In what year did Neil Armstrong walk on the Moon?",a:1969,u:"year"},
+{c:"wales",d:3,t:"num",q:"How tall is Yr Wyddfa (Snowdon), in metres?",a:1085,u:"metres"},
+{c:"geo",d:3,t:"num",q:"How tall is Mount Everest, in metres?",a:8849,u:"metres"},
+{c:"hist",d:2,t:"num",q:"In what year did the Channel Tunnel open?",a:1994,u:"year"},
+{c:"hist",d:2,t:"num",q:"In what year did Elizabeth II become Queen?",a:1952,u:"year"},
+{c:"music",d:3,t:"num",q:"In what year did The Beatles release their first single, ‘Love Me Do’?",a:1962,u:"year"},
+{c:"screen",d:2,t:"num",q:"In what year was the first Harry Potter film released?",a:2001,u:"year"},
+{c:"gk",d:1,t:"num",q:"How many squares are there on a chessboard?",a:64,u:"squares"},
+{c:"sci",d:2,t:"num",q:"What is the boiling point of water in degrees Fahrenheit?",a:212,u:"°F"},
+{c:"geo",d:1,t:"num",q:"How many states are there in the USA?",a:50,u:"states"},
+{c:"sport",d:1,t:"num",q:"In what year did England win the football World Cup?",a:1966,u:"year"},
+{c:"hist",d:1,t:"num",q:"In what year did the First World War begin?",a:1914,u:"year"},
+{c:"nature",d:2,t:"num",q:"Counting its claws, how many legs does a lobster have?",a:10,u:"legs"},
+{c:"gk",d:2,t:"num",q:"How many years of marriage does a diamond anniversary celebrate?",a:60,u:"years"},
+{c:"wales",d:3,t:"num",q:"In what year was Cardiff proclaimed the capital of Wales?",a:1955,u:"year"},
+{c:"wales",d:2,t:"num",q:"In what year did the Senedd (then the National Assembly for Wales) first meet?",a:1999,u:"year"},
+{c:"music",d:2,t:"num",q:"In what year did Queen play Live Aid?",a:1985,u:"year"},
+{c:"screen",d:3,t:"num",q:"In what year was the first episode of ‘EastEnders’ shown?",a:1985,u:"year"},
+{c:"screen",d:3,t:"num",q:"How many episodes of ‘Friends’ were made?",a:236,u:"episodes"},
+{c:"sci",d:3,t:"num",q:"How many elements are there in the periodic table?",a:118,u:"elements"},
+{c:"geo",d:3,t:"num",q:"How many time zones does Russia span?",a:11,u:"time zones"},
+{c:"hist",d:2,t:"num",q:"In what year did the Berlin Wall fall?",a:1989,u:"year"},
+{c:"hist",d:2,t:"num",q:"In what year did the UK switch to decimal currency?",a:1971,u:"year"},
+{c:"screen",d:3,t:"num",q:"In what year was ‘Coronation Street’ first broadcast?",a:1960,u:"year"},
+{c:"music",d:2,t:"num",q:"In what year did ABBA win Eurovision with ‘Waterloo’?",a:1974,u:"year"},
+{c:"gk",d:3,t:"num",q:"How many tiles are there in a standard English Scrabble set?",a:100,u:"tiles"},
+{c:"music",d:2,t:"num",q:"How many keys are there on a standard piano?",a:88,u:"keys"},
+{c:"sci",d:2,t:"num",q:"How many moons does Mars have?",a:2,u:"moons"},
+{c:"geo",d:3,t:"num",q:"How tall is Ben Nevis, in metres?",a:1345,u:"metres"},
+{c:"hist",d:3,t:"num",q:"In what year AD did the Romans, under Emperor Claudius, invade Britain?",a:43,u:"year"},
+{c:"screen",d:1,t:"num",q:"How many books are there in the main Harry Potter series?",a:7,u:"books"},
+{c:"hist",d:2,t:"num",q:"For how many years did Elizabeth II reign?",a:70,u:"years"},
+{c:"music",d:2,t:"num",q:"How many symphonies did Beethoven complete?",a:9,u:"symphonies"},
+{c:"sport",d:3,t:"num",q:"How long is a cricket pitch, in yards?",a:22,u:"yards"},
+{c:"nature",d:3,t:"num",q:"How many teeth does an adult dog have?",a:42,u:"teeth"},
+{c:"wales",d:3,t:"num",q:"In what year did the Severn Bridge open?",a:1966,u:"year"},
+{c:"wales",d:3,t:"num",q:"How many council areas is Wales divided into?",a:22,u:"council areas"},
+{c:"screen",d:2,t:"num",q:"In what year did ‘Gavin & Stacey’ first air?",a:2007,u:"year"},
+{c:"food",d:2,t:"num",q:"How many pints are there in a UK gallon?",a:8,u:"pints"},
+{c:"gk",d:2,t:"num",q:"How many hours are there in a week?",a:168,u:"hours"},
+{c:"sci",d:2,t:"num",q:"How many degrees do the angles of a triangle add up to?",a:180,u:"degrees"},
+{c:"sport",d:3,t:"num",q:"Including the cue ball, how many balls are on a snooker table at the start of a frame?",a:22,u:"balls"},
+{c:"nature",d:3,t:"num",q:"How long is an African elephant’s pregnancy, in months?",a:22,u:"months"},
+{c:"gk",d:2,t:"num",q:"What number is at the top of a standard dartboard?",a:20,u:""},
+{c:"geo",d:2,t:"num",q:"How many countries are there in the European Union?",a:27,u:"countries"},
+{c:"sport",d:2,t:"num",q:"How many players are on the pitch in a rugby union match, counting both teams?",a:30,u:"players"},
+{c:"screen",d:2,t:"num",q:"In what year was the first ‘Toy Story’ film released?",a:1995,u:"year"},
+{c:"music",d:2,t:"num",q:"In what year did Elvis Presley die?",a:1977,u:"year"},
+{c:"gk",d:2,t:"num",q:"How many seconds are there in an hour?",a:3600,u:"seconds"},
+{c:"geo",d:3,t:"num",q:"Roughly how long is the River Severn, in miles?",a:220,u:"miles"},
+{c:"screen",d:3,t:"num",q:"In what year was ‘Doctor Who’ first shown on the BBC?",a:1963,u:"year"}
+];
+
+if (typeof module !== "undefined") module.exports = { CATEGORIES, QUESTION_BANK };
+
+/* ---- relay.js ---- */
+/* ===================================================================
+   Relay layer: a tiny MQTT 3.1.1 client over WebSocket (QoS 0 only),
+   fanned out across several free public brokers at once so the game
+   keeps working if one of them is down. Messages are end-to-end
+   encrypted with a key derived from the room code.
+   =================================================================== */
+const DEFAULT_RELAYS = [
+  "wss://broker.emqx.io:8084/mqtt",
+  "wss://broker.hivemq.com:8884/mqtt",
+  "wss://mqtt.eclipseprojects.io:443/mqtt"
+];
+
+const TXT_ENC = new TextEncoder();
+const TXT_DEC = new TextDecoder();
+
+function concatBytes(...parts) {
+  let n = 0; for (const p of parts) n += p.length;
+  const out = new Uint8Array(n); let o = 0;
+  for (const p of parts) { out.set(p, o); o += p.length; }
+  return out;
+}
+function randomId(len = 12) {
+  const abc = "abcdefghijkmnpqrstuvwxyz23456789";
+  const r = crypto.getRandomValues(new Uint8Array(len));
+  let s = ""; for (const b of r) s += abc[b % abc.length];
+  return s;
+}
+
+const Mqtt = {
+  str(s) { const b = TXT_ENC.encode(s); return concatBytes(new Uint8Array([b.length >> 8, b.length & 255]), b); },
+  len(n) { const out = []; do { let d = n % 128; n = Math.floor(n / 128); if (n > 0) d |= 128; out.push(d); } while (n > 0); return new Uint8Array(out); },
+  packet(first, body) { return concatBytes(new Uint8Array([first]), Mqtt.len(body.length), body); },
+  connect(clientId, keepalive, username, password) {
+    let flags = 0x02; // clean session
+    const tail = [Mqtt.str(clientId)];
+    if (username) { flags |= 0x80; tail.push(Mqtt.str(username)); if (password) { flags |= 0x40; tail.push(Mqtt.str(password)); } }
+    const head = concatBytes(Mqtt.str("MQTT"), new Uint8Array([4, flags, keepalive >> 8, keepalive & 255]));
+    return Mqtt.packet(0x10, concatBytes(head, ...tail));
+  },
+  subscribe(id, filters) {
+    const parts = [new Uint8Array([id >> 8, id & 255])];
+    for (const f of filters) parts.push(Mqtt.str(f), new Uint8Array([0]));
+    return Mqtt.packet(0x82, concatBytes(...parts));
+  },
+  unsubscribe(id, filters) {
+    return Mqtt.packet(0xA2, concatBytes(new Uint8Array([id >> 8, id & 255]), ...filters.map(Mqtt.str)));
+  },
+  publish(topic, payload, retain) { return Mqtt.packet(0x30 | (retain ? 1 : 0), concatBytes(Mqtt.str(topic), payload)); },
+  PINGREQ: new Uint8Array([0xC0, 0]),
+  DISCONNECT: new Uint8Array([0xE0, 0])
+};
+
+/* One connection to one broker, reconnecting forever with backoff. */
+class MqttLink {
+  constructor(url, onMessage, onStatus) {
+    const u = new URL(url);
+    this.username = decodeURIComponent(u.username || "");
+    this.password = decodeURIComponent(u.password || "");
+    u.username = ""; u.password = "";
+    this.url = u.toString();
+    this.host = u.hostname;
+    this.onMessage = onMessage; this.onStatus = onStatus;
+    this.subs = new Set();
+    this.state = "idle";
+    this.ws = null; this.buf = new Uint8Array(0);
+    this.nextPid = 1; this.retry = 0; this.retryTimer = null; this.pinger = null;
+    this.lastRx = 0; this.lastPing = 0; this.stopped = true;
+    this.clientId = "cc" + randomId(16);
+  }
+  setState(s) { if (this.state !== s) { this.state = s; this.onStatus && this.onStatus(this); } }
+  start() { if (!this.stopped) return; this.stopped = false; this.open(); }
+  stop() {
+    this.stopped = true; clearTimeout(this.retryTimer); clearInterval(this.pinger); this.pinger = null;
+    const ws = this.ws; this.ws = null;
+    if (ws) { ws.onclose = ws.onmessage = ws.onerror = null; try { if (this.state === "up") ws.send(Mqtt.DISCONNECT); ws.close(); } catch (e) {} }
+    this.setState("idle");
+  }
+  open() {
+    if (this.stopped || this.ws) return;
+    clearTimeout(this.retryTimer);
+    this.setState("connecting");
+    let ws;
+    try { ws = new WebSocket(this.url, ["mqtt"]); } catch (e) { this.scheduleRetry(); return; }
+    ws.binaryType = "arraybuffer";
+    this.ws = ws; this.buf = new Uint8Array(0);
+    const giveUp = setTimeout(() => { if (this.ws === ws && this.state !== "up") this.drop(); }, 10000);
+    ws.onopen = () => { if (this.ws === ws) this.raw(Mqtt.connect(this.clientId, 30, this.username, this.password)); };
+    ws.onmessage = ev => { if (this.ws !== ws) return; this.lastRx = Date.now(); this.feed(new Uint8Array(ev.data)); };
+    ws.onerror = () => {};
+    ws.onclose = () => { clearTimeout(giveUp); if (this.ws === ws) { this.ws = null; this.scheduleRetry(); } };
+  }
+  drop() {
+    const ws = this.ws; this.ws = null;
+    if (ws) { ws.onclose = ws.onmessage = ws.onerror = null; try { ws.close(); } catch (e) {} }
+    this.scheduleRetry();
+  }
+  scheduleRetry() {
+    clearInterval(this.pinger); this.pinger = null;
+    if (this.stopped) { this.setState("idle"); return; }
+    this.setState("down");
+    const wait = Math.min(15000, 1000 * Math.pow(2, this.retry++)) * (0.7 + Math.random() * 0.6);
+    clearTimeout(this.retryTimer);
+    this.retryTimer = setTimeout(() => this.open(), wait);
+  }
+  /* Called when the page comes back to the foreground or the network returns. */
+  nudge() {
+    if (this.stopped) return;
+    if (this.state === "down") { this.retry = 0; clearTimeout(this.retryTimer); this.open(); }
+    else if (this.state === "up") this.ping();
+  }
+  raw(bytes) {
+    if (!this.ws || this.ws.readyState !== 1) return false;
+    try { this.ws.send(bytes); return true; } catch (e) { return false; }
+  }
+  ping() { this.lastPing = Date.now(); this.raw(Mqtt.PINGREQ); }
+  startPinger() {
+    clearInterval(this.pinger);
+    this.pinger = setInterval(() => {
+      if (this.state !== "up") return;
+      const now = Date.now();
+      if (this.lastRx < this.lastPing && now - this.lastPing > 6000) { this.drop(); return; } // no answer: dead socket
+      if (now - Math.max(this.lastPing, this.lastRx) > 15000) this.ping();
+    }, 2000);
+  }
+  pid() { const id = this.nextPid; this.nextPid = this.nextPid >= 65535 ? 1 : this.nextPid + 1; return id; }
+  subscribe(filter) { if (this.subs.has(filter)) return; this.subs.add(filter); if (this.state === "up") this.raw(Mqtt.subscribe(this.pid(), [filter])); }
+  unsubscribe(filter) { if (!this.subs.delete(filter)) return; if (this.state === "up") this.raw(Mqtt.unsubscribe(this.pid(), [filter])); }
+  publish(topic, payload, retain) { return this.state === "up" && this.raw(Mqtt.publish(topic, payload, retain)); }
+  feed(chunk) {
+    const b = this.buf.length ? concatBytes(this.buf, chunk) : chunk;
+    let off = 0;
+    for (;;) {
+      if (b.length - off < 2) break;
+      let i = off + 1, len = 0, mult = 1, byte, complete = false;
+      for (let k = 0; k < 4 && i < b.length; k++) {
+        byte = b[i++]; len += (byte & 127) * mult; mult *= 128;
+        if (!(byte & 128)) { complete = true; break; }
+      }
+      if (!complete) { if (i - off > 4) { this.drop(); return; } break; }
+      if (b.length - i < len) break;
+      const type = b[off] >> 4, flags = b[off] & 15, body = b.subarray(i, i + len);
+      off = i + len;
+      this.handle(type, flags, body);
+      if (!this.ws) return;
+    }
+    this.buf = off < b.length ? b.slice(off) : new Uint8Array(0);
+  }
+  handle(type, flags, body) {
+    if (type === 2) { // CONNACK
+      if (body.length >= 2 && body[1] === 0) {
+        this.retry = 0; this.lastPing = Date.now(); this.setState("up"); this.startPinger();
+        if (this.subs.size) this.raw(Mqtt.subscribe(this.pid(), [...this.subs]));
+      } else this.drop();
+    } else if (type === 3) { // PUBLISH
+      if (body.length < 2) return;
+      const tlen = (body[0] << 8) | body[1];
+      const topic = TXT_DEC.decode(body.subarray(2, 2 + tlen));
+      let p = 2 + tlen; const qos = (flags >> 1) & 3;
+      if (qos > 0) {
+        const hi = body[p], lo = body[p + 1]; p += 2;
+        this.raw(new Uint8Array([qos === 1 ? 0x40 : 0x50, 2, hi, lo])); // PUBACK / PUBREC
+      }
+      try { this.onMessage(topic, body.slice(p), !!(flags & 1), this); } catch (e) { console.error(e); }
+    } else if (type === 6) { // PUBREL -> PUBCOMP
+      if (body.length >= 2) this.raw(new Uint8Array([0x70, 2, body[0], body[1]]));
+    }
+    // SUBACK (9), UNSUBACK (11), PINGRESP (13): nothing to do — lastRx already updated.
+  }
+}
+
+/* All brokers together. Publishes go to every connected broker; the
+   channel above de-duplicates what comes back. */
+class Relay {
+  constructor(urls, onMessage) {
+    this.listeners = new Set();
+    this.links = urls.map(u => new MqttLink(u, onMessage, () => this.listeners.forEach(fn => fn(this.status()))));
+    this.nudge = () => this.links.forEach(l => l.nudge());
+    this.onVisible = () => { if (document.visibilityState === "visible") this.nudge(); };
+  }
+  start() {
+    this.links.forEach(l => l.start());
+    window.addEventListener("online", this.nudge);
+    window.addEventListener("focus", this.nudge);
+    document.addEventListener("visibilitychange", this.onVisible);
+  }
+  stop() {
+    this.links.forEach(l => l.stop());
+    window.removeEventListener("online", this.nudge);
+    window.removeEventListener("focus", this.nudge);
+    document.removeEventListener("visibilitychange", this.onVisible);
+  }
+  subscribe(f) { this.links.forEach(l => l.subscribe(f)); }
+  unsubscribe(f) { this.links.forEach(l => l.unsubscribe(f)); }
+  publish(topic, payload, retain = false) { let n = 0; for (const l of this.links) if (l.publish(topic, payload, retain)) n++; return n; }
+  status() { return { up: this.links.filter(l => l.state === "up").length, total: this.links.length, links: this.links.map(l => ({ host: l.host, state: l.state })) }; }
+  onStatus(fn) { this.listeners.add(fn); return () => this.listeners.delete(fn); }
+}
+
+/* Room crypto: the 4-letter code is turned into a topic name and an
+   AES-GCM key, so the public relays only ever see scrambled bytes. */
+const RoomCrypto = {
+  async sha256(text) { return new Uint8Array(await crypto.subtle.digest("SHA-256", TXT_ENC.encode(text))); },
+  hex(bytes) { let s = ""; for (const b of bytes) s += b.toString(16).padStart(2, "0"); return s; },
+  async derive(code) {
+    const c = code.toUpperCase();
+    const topic = RoomCrypto.hex(await RoomCrypto.sha256("clever-clogs/v1/topic/" + c)).slice(0, 24);
+    const raw = await RoomCrypto.sha256("clever-clogs/v1/key/" + c);
+    const key = await crypto.subtle.importKey("raw", raw, { name: "AES-GCM" }, false, ["encrypt", "decrypt"]);
+    return { topic, key };
+  },
+  async seal(key, obj) {
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, TXT_ENC.encode(JSON.stringify(obj))));
+    return concatBytes(new Uint8Array([1]), iv, ct);
+  },
+  async open(key, data) {
+    if (!data || data.length < 30 || data[0] !== 1) return null;
+    try {
+      const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: data.subarray(1, 13) }, key, data.subarray(13));
+      return JSON.parse(TXT_DEC.decode(pt));
+    } catch (e) { return null; }
+  }
+};
+
+/* A room: topic base + key + de-duplication + typed handlers.
+   Sub-topics: s = game state (retained, from the host),
+               a = actions (players -> host), r = reactions (everyone). */
+class Channel {
+  constructor(relay, code) {
+    this.relay = relay; this.code = code.toUpperCase();
+    this.base = null; this.key = null; this.handlers = {}; this.seen = new Map(); this.subs = [];
+  }
+  async open(subTopics) {
+    const { topic, key } = await RoomCrypto.derive(this.code);
+    this.base = "clevclogs/v1/" + topic; this.key = key;
+    for (const s of subTopics) { const f = this.base + "/" + s; this.subs.push(f); this.relay.subscribe(f); }
+    return this;
+  }
+  close() { for (const f of this.subs) this.relay.unsubscribe(f); this.subs = []; this.handlers = {}; }
+  on(sub, fn) { this.handlers[sub] = fn; }
+  owns(topic) { return this.base && topic.startsWith(this.base + "/"); }
+  async deliver(topic, bytes, retained) {
+    if (!this.owns(topic) || !bytes.length) return;
+    const msg = await RoomCrypto.open(this.key, bytes);
+    if (!msg || typeof msg !== "object" || typeof msg.i !== "string") return;
+    const sub = topic.slice(this.base.length + 1);
+    const now = Date.now();
+    if (this.seen.has(msg.i)) return;
+    this.seen.set(msg.i, now);
+    if (this.seen.size > 600) for (const [k, t] of this.seen) { if (now - t > 120000 || this.seen.size > 400) this.seen.delete(k); else break; }
+    const fn = this.handlers[sub]; if (fn) fn(msg, retained);
+  }
+  async send(sub, obj, retain = false) {
+    if (!this.key) return 0;
+    const msg = Object.assign({ i: randomId(12) }, obj);
+    const bytes = await RoomCrypto.seal(this.key, msg);
+    return this.relay.publish(this.base + "/" + sub, bytes, retain);
+  }
+  clearRetained(sub) { if (this.base) this.relay.publish(this.base + "/" + sub, new Uint8Array(0), true); }
+}
+
+/* ---- engine.js ---- */
+/* ===================================================================
+   Game engine. The host's device runs this; everyone else just
+   renders the public state it broadcasts. Pure logic, no DOM.
+   =================================================================== */
+const RULES = {
+  counts: [10, 15, 20],
+  timers: [30, 20, 12],           // seconds for a normal question
+  numberBonusSecs: 10,            // extra time to type a number
+  graceMs: 1500,                  // late answers still accepted (network lag)
+  earlyCloseMs: 700,              // pause after the last answer comes in
+  onlineMs: 13000,                // no hello for this long = offline
+  maxPlayers: 16,
+  numPoints: [1000, 600, 300],
+  numRest: 150,
+  exactBonus: 200
+};
+const DEFAULT_SETTINGS = { count: 15, secs: 20, cats: Object.keys(CATEGORIES), easy: false, numbers: true };
+
+function hashText(s) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h.toString(36);
+}
+QUESTION_BANK.forEach(q => { q.id = q.c + "-" + hashText(q.q + "|" + q.a); if (!q.t) q.t = "mc"; });
+
+function shuffle(arr, rng = Math.random) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+const answerKey = q => q.t === "tf" ? null : String(q.a).toLowerCase().replace(/^(the|a|an) /, "").trim();
+
+/* Choose a balanced set: roughly 70% multiple choice, 15% true/false,
+   15% nearest-number; spread across categories; avoid recently used
+   questions and two questions sharing an answer; gentle difficulty ramp. */
+function pickQuestions(settings, recent = [], rng = Math.random, bank = QUESTION_BANK) {
+  const cats = new Set(settings.cats && settings.cats.length ? settings.cats : Object.keys(CATEGORIES));
+  const pool = bank.filter(q => cats.has(q.c) && (!settings.easy || q.d <= 2) && (settings.numbers || q.t !== "num"));
+  const N = Math.min(settings.count, pool.length);
+  const recentAge = new Map(recent.map((id, i) => [id, i]));
+  const usedAnswers = new Set(), picked = [], pickedIds = new Set();
+
+  const take = (type, k) => {
+    const groups = {};
+    const cands = pool.filter(q => q.t === type && !pickedIds.has(q.id));
+    const fresh = shuffle(cands.filter(q => !recentAge.has(q.id)), rng);
+    const stale = cands.filter(q => recentAge.has(q.id)).sort((a, b) => recentAge.get(a.id) - recentAge.get(b.id));
+    for (const q of [...fresh, ...stale]) (groups[q.c] = groups[q.c] || []).push(q);
+    let got = 0;
+    const order = shuffle(Object.keys(groups), rng);
+    while (got < k && order.some(c => groups[c].length)) {
+      for (const c of order) {
+        if (got >= k) break;
+        while (groups[c].length) {
+          const q = groups[c].shift(), key = answerKey(q);
+          if (key && usedAnswers.has(key)) continue;
+          if (key) usedAnswers.add(key);
+          picked.push(q); pickedIds.add(q.id); got++;
+          break;
+        }
+      }
+    }
+    return got;
+  };
+  const wantNum = settings.numbers ? Math.max(1, Math.round(N * 0.15)) : 0;
+  const wantTf = Math.max(1, Math.round(N * 0.15));
+  take("num", wantNum);
+  take("tf", wantTf);
+  take("mc", N - picked.length);
+  if (picked.length < N) take("tf", N - picked.length);
+  if (picked.length < N) take("num", N - picked.length);
+
+  // difficulty ramp with a little randomness, then break up category runs
+  let list = picked.map(q => ({ q, k: q.d + rng() * 1.7 })).sort((a, b) => a.k - b.k).map(x => x.q);
+  for (let i = 1; i < list.length; i++) {
+    if (list[i].c === list[i - 1].c) {
+      const j = list.findIndex((q, idx) => idx > i && q.c !== list[i - 1].c);
+      if (j > 0) [list[i], list[j]] = [list[j], list[i]];
+    }
+  }
+  // the final (double points) question shouldn't be a 50/50
+  if (list.length > 2 && list[list.length - 1].t === "tf") {
+    const j = list.map(q => q.t).lastIndexOf("mc");
+    if (j >= 0) [list[j], list[list.length - 1]] = [list[list.length - 1], list[j]];
+  }
+  return list.map(q => makeInstance(q, rng));
+}
+
+function makeInstance(q, rng = Math.random) {
+  const base = { id: q.id, c: q.c, t: q.t, d: q.d, text: q.q, f: q.f || "" };
+  if (q.t === "mc") { const opts = shuffle([q.a, ...q.w], rng); return Object.assign(base, { opts, correct: opts.indexOf(q.a) }); }
+  if (q.t === "tf") return Object.assign(base, { opts: ["True", "False"], correct: q.a ? 0 : 1 });
+  return Object.assign(base, { u: q.u, correct: q.a });
+}
+
+const choicePoints = (ms, limit) => Math.round((1000 - 500 * Math.min(1, Math.max(0, ms / limit))) / 10) * 10;
+
+/* Nearest-number scoring: rank by distance (ties share), 1000/600/300 then 150,
+   +200 for bang on. Returns {pid: {pts, rank, exact, off}}. */
+function numberResults(answers, target) {
+  const rows = Object.entries(answers).map(([pid, a]) => ({ pid, off: Math.abs(a.v - target), v: a.v }));
+  const offs = [...new Set(rows.map(r => r.off))].sort((a, b) => a - b);
+  const out = {};
+  for (const r of rows) {
+    const rank = offs.indexOf(r.off) + 1;
+    const exact = r.off === 0;
+    const pts = (rank <= RULES.numPoints.length ? RULES.numPoints[rank - 1] : RULES.numRest) + (exact ? RULES.exactBonus : 0);
+    out[r.pid] = { pts, rank, exact, off: r.off };
+  }
+  return out;
+}
+
+function introMsFor(text) { return Math.max(2600, Math.min(5000, 1800 + text.length * 28)); }
+
+class HostGame {
+  static create({ code, pid, name, av, now = Date.now() }) {
+    const g = new HostGame();
+    Object.assign(g, {
+      v: 1, code, gid: randomId(8), rev: now, host: pid, phase: "lobby", round: 1,
+      settings: JSON.parse(JSON.stringify(DEFAULT_SETTINGS)),
+      players: {}, order: [], kicked: [], qs: [], qi: -1, cur: null, results: [], fin: null, onlineSig: ""
+    });
+    g.hello(pid, name, av, now);
+    return g;
+  }
+  static restore(json) { const g = new HostGame(); Object.assign(g, json); return g; }
+  toJSON() { const o = {}; for (const k of Object.keys(this)) o[k] = this[k]; return o; }
+  bump(now = Date.now()) { this.rev = Math.max(this.rev + 1, now); return true; }
+
+  isOnline(p, now) { return p.pid === this.host || now - p.lastSeen < RULES.onlineMs; }
+  hello(pid, name, av, now = Date.now()) {
+    if (this.kicked.includes(pid) || this.phase === "closed") return false;
+    name = String(name || "").replace(/[\u0000-\u001f\u007f<>]/g, "").replace(/\s+/g, " ").trim().slice(0, 14) || "Player";
+    av = typeof av === "number" && av >= 0 && av < 64 ? av | 0 : 0;
+    const p = this.players[pid];
+    if (!p) {
+      if (this.order.length >= RULES.maxPlayers) return false;
+      this.players[pid] = { pid, name, av, score: 0, joinedAt: now, lastSeen: now, streak: 0, best: 0, correct: 0, speedSum: 0, speedN: 0, near: 0 };
+      this.order.push(pid);
+      return this.bump(now);
+    }
+    const wasOnline = this.isOnline(p, now);
+    p.lastSeen = now;
+    if (p.name !== name || p.av !== av || !wasOnline) { p.name = name; p.av = av; return this.bump(now); }
+    return false;
+  }
+  leave(pid, now = Date.now()) {
+    const p = this.players[pid]; if (!p || pid === this.host) return false;
+    p.lastSeen = 0; return this.bump(now);
+  }
+  kick(pid, now = Date.now()) {
+    if (pid === this.host || !this.players[pid]) return false;
+    delete this.players[pid];
+    this.order = this.order.filter(x => x !== pid);
+    this.kicked = [...this.kicked.slice(-19), pid];
+    if (this.cur) delete this.cur.answers[pid];
+    return this.bump(now);
+  }
+  updateSettings(patch, now = Date.now()) {
+    if (this.phase !== "lobby") return false;
+    const s = this.settings;
+    if (RULES.counts.includes(patch.count)) s.count = patch.count;
+    if (RULES.timers.includes(patch.secs)) s.secs = patch.secs;
+    if (Array.isArray(patch.cats)) { const c = patch.cats.filter(k => CATEGORIES[k]); if (c.length) s.cats = c; }
+    if (typeof patch.easy === "boolean") s.easy = patch.easy;
+    if (typeof patch.numbers === "boolean") s.numbers = patch.numbers;
+    return this.bump(now);
+  }
+  start(questions, now = Date.now()) {
+    if (this.phase !== "lobby" || !questions.length) return false;
+    this.qs = questions; this.qi = -1; this.results = []; this.fin = null;
+    for (const pid of this.order) Object.assign(this.players[pid], { score: 0, streak: 0, best: 0, correct: 0, speedSum: 0, speedN: 0, near: 0 });
+    return this.openQuestion(0, now);
+  }
+  openQuestion(i, now) {
+    const q = this.qs[i]; this.qi = i; this.phase = "question";
+    const limit = (this.settings.secs + (q.t === "num" ? RULES.numberBonusSecs : 0)) * 1000;
+    const openAt = now + introMsFor(q.text);
+    this.cur = { id: this.round + "." + i, openAt, deadline: openAt + limit, limit, answers: {} };
+    return this.bump(now);
+  }
+  answer(pid, qid, v, ms, now = Date.now()) {
+    const cur = this.cur, p = this.players[pid];
+    if (this.phase !== "question" || !cur || cur.id !== qid || !p) return false;
+    if (cur.answers[pid] || now < cur.openAt - 800 || now > cur.deadline + RULES.graceMs) return false;
+    const q = this.qs[this.qi];
+    if (q.t === "num") { v = Number(v); if (!Number.isFinite(v) || v < 0 || v > 1e9) return false; v = Math.round(v * 100) / 100; }
+    else { v = Number(v); if (!Number.isInteger(v) || v < 0 || v >= q.opts.length) return false; }
+    ms = Math.min(cur.limit, Math.max(0, Number(ms) || 0));
+    cur.answers[pid] = { v, ms, at: now };
+    p.lastSeen = now;
+    return this.bump(now);
+  }
+  tick(now = Date.now()) {
+    let changed = false;
+    const sig = this.order.map(pid => this.isOnline(this.players[pid], now) ? 1 : 0).join("");
+    if (sig !== this.onlineSig) { this.onlineSig = sig; changed = this.bump(now); }
+    if (this.phase === "question" && this.cur) {
+      const cur = this.cur;
+      const waiting = this.order.filter(pid => this.isOnline(this.players[pid], now) && !cur.answers[pid]);
+      if (!waiting.length && Object.keys(cur.answers).length && !cur.allInAt) cur.allInAt = now;
+      if (now > cur.deadline + RULES.graceMs || (cur.allInAt && now - cur.allInAt >= RULES.earlyCloseMs)) { this.reveal(now); changed = true; }
+    }
+    return changed;
+  }
+  reveal(now = Date.now()) {
+    const q = this.qs[this.qi], cur = this.cur, dbl = this.qi === this.qs.length - 1 ? 2 : 1;
+    const picks = {};
+    if (q.t === "num") {
+      const res = numberResults(cur.answers, q.correct);
+      for (const [pid, r] of Object.entries(res)) picks[pid] = { v: cur.answers[pid].v, ms: cur.answers[pid].ms, pts: r.pts * dbl, ok: r.rank === 1, rank: r.rank, exact: r.exact };
+    } else {
+      for (const [pid, a] of Object.entries(cur.answers)) { const ok = a.v === q.correct; picks[pid] = { v: a.v, ms: a.ms, ok, pts: ok ? choicePoints(a.ms, cur.limit) * dbl : 0 }; }
+    }
+    for (const pid of this.order) {
+      const p = this.players[pid], r = picks[pid];
+      if (r) {
+        p.score += r.pts;
+        if (r.ok) { p.streak++; p.best = Math.max(p.best, p.streak); p.correct++; if (q.t !== "num") { p.speedSum += r.ms; p.speedN++; } else p.near++; }
+        else p.streak = 0;
+      } else p.streak = 0;
+    }
+    this.results.push({ qi: this.qi, picks });
+    this.phase = "reveal";
+    return this.bump(now);
+  }
+  next(now = Date.now()) {
+    if (this.phase !== "reveal") return false;
+    if (this.qi + 1 < this.qs.length) return this.openQuestion(this.qi + 1, now);
+    this.phase = "final"; this.cur = null; this.fin = this.finalResults();
+    return this.bump(now);
+  }
+  skip(now = Date.now()) { if (this.phase === "question") { this.reveal(now); return true; } return false; }
+  endEarly(now = Date.now()) {
+    if (this.phase === "question") this.reveal(now);
+    if (this.phase !== "reveal" && this.phase !== "question") return false;
+    this.phase = "final"; this.cur = null; this.fin = this.finalResults();
+    return this.bump(now);
+  }
+  playAgain(now = Date.now()) {
+    if (this.phase !== "final") return false;
+    this.phase = "lobby"; this.round++; this.qs = []; this.qi = -1; this.cur = null; this.results = []; this.fin = null;
+    for (const pid of this.order) this.players[pid].score = 0;
+    return this.bump(now);
+  }
+  close(now = Date.now()) { this.phase = "closed"; this.cur = null; return this.bump(now); }
+  standings() {
+    const rows = this.order.map(pid => this.players[pid]).sort((a, b) => b.score - a.score);
+    let place = 0, last = null;
+    return rows.map((p, i) => { if (p.score !== last) { place = i + 1; last = p.score; } return { id: p.pid, score: p.score, place }; });
+  }
+  finalResults() {
+    const ps = this.order.map(pid => this.players[pid]);
+    const awards = [];
+    const best = (arr, f) => arr.reduce((m, p) => (m === null || f(p) > f(m) ? p : m), null);
+    const fast = ps.filter(p => p.speedN >= 2);
+    if (fast.length) { const p = best(fast, p => -p.speedSum / p.speedN); awards.push({ key: "fast", id: p.pid, detail: (p.speedSum / p.speedN / 1000).toFixed(1) + "s average" }); }
+    const sharp = best(ps, p => p.correct); if (sharp && sharp.correct) awards.push({ key: "sharp", id: sharp.pid, detail: sharp.correct + " right" });
+    const near = best(ps, p => p.near); if (near && near.near) awards.push({ key: "near", id: near.pid, detail: near.near + (near.near === 1 ? " nearest guess" : " nearest guesses") });
+    const hot = best(ps, p => p.best); if (hot && hot.best >= 3) awards.push({ key: "streak", id: hot.pid, detail: hot.best + " in a row" });
+    return { rank: this.standings(), awards };
+  }
+  publicState(now = Date.now()) {
+    const s = {
+      k: "state", v: 1, gid: this.gid, rev: this.rev, ts: now, code: this.code, host: this.host, phase: this.phase, round: this.round,
+      settings: this.settings, kicked: this.kicked,
+      players: this.order.map(pid => { const p = this.players[pid]; return { id: pid, name: p.name, av: p.av, score: p.score, on: this.isOnline(p, now), streak: p.streak, ans: !!(this.cur && this.cur.answers[pid]) }; })
+    };
+    if ((this.phase === "question" || this.phase === "reveal") && this.qi >= 0) {
+      const q = this.qs[this.qi], cur = this.cur;
+      s.q = { id: cur ? cur.id : this.round + "." + this.qi, n: this.qi + 1, of: this.qs.length, c: q.c, t: q.t, d: q.d, text: q.text, opts: q.opts || null, u: q.u || "", dbl: this.qi === this.qs.length - 1 };
+      if (this.phase === "question" && cur) Object.assign(s.q, { limit: cur.limit, intro: Math.max(0, cur.openAt - now), left: Math.max(0, cur.deadline - now) });
+      if (this.phase === "reveal") { const r = this.results[this.results.length - 1]; Object.assign(s.q, { correct: q.correct, f: q.f }); s.res = { picks: r ? r.picks : {} }; }
+    }
+    if (this.phase === "final") s.fin = this.fin;
+    return s;
+  }
+}
+
+if (typeof module !== "undefined") module.exports = { RULES, DEFAULT_SETTINGS, pickQuestions, makeInstance, choicePoints, numberResults, HostGame, shuffle, hashText };
+
+/* ---- app.js ---- */
+/* ===================================================================
+   App: screens, controllers and sounds. Everyone renders the same
+   public state; on the host's device the engine produces it.
+   =================================================================== */
+const AVATARS = ["🦊", "🐸", "🐼", "🦉", "🐙", "🦄", "🐝", "🐯", "🐧", "🐢", "🐷", "🐉"];
+const AV_BG = ["#FF9A62", "#8EDB8A", "#E8E4F4", "#D6B08A", "#FF86B0", "#C9A4FF", "#FFD66E", "#FFA24C", "#9CCBFF", "#7ED9BC", "#FFB9CB", "#FF7A6E"];
+const REACTIONS = ["👏", "😂", "😮", "🔥", "🙈", "🎉"];
+const CODE_LETTERS = "BCDFGHJKLMNPQRSTVWXZ";
+const AWARD_TITLES = { fast: "Quickest on the buzzer", sharp: "Sharpest brain", near: "Nearest the mark", streak: "Hot streak" };
+const CHEERS = ["Correct!", "Da iawn!", "Spot on!", "Clever clogs!", "Nailed it!"];
+const TIMER_LABELS = { 30: "Relaxed", 20: "Normal", 12: "Quick" };
+
+const Store = {
+  get(k, d = null) { try { const v = localStorage.getItem("cc." + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("cc." + k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { try { localStorage.removeItem("cc." + k); } catch (e) {} }
+};
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));
+const fmt = n => Number(n).toLocaleString("en-GB");
+const fmtAnswer = (v, u) => u === "year" ? String(v) : fmt(v) + (u ? " " + u : "");
+const $ = sel => document.querySelector(sel);
+const reducedMotion = () => window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------------- sound: tiny synthesised cues ---------------- */
+const Sound = {
+  ctx: null, on: Store.get("sound", true),
+  unlock() {
+    try {
+      if (!this.ctx) { const AC = window.AudioContext || window.webkitAudioContext; if (AC) this.ctx = new AC(); }
+      if (this.ctx && this.ctx.state === "suspended") this.ctx.resume();
+    } catch (e) {}
+  },
+  tone(freq, at, dur, type, vol) {
+    const c = this.ctx, t0 = c.currentTime + at;
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = type; o.frequency.setValueAtTime(freq, t0);
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol, t0 + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(c.destination); o.start(t0); o.stop(t0 + dur + 0.05);
+  },
+  play(name) {
+    if (!this.on || !this.ctx || this.ctx.state !== "running") return;
+    const T = (f, a, d, ty = "triangle", v = 0.12) => this.tone(f, a, d, ty, v);
+    try {
+      if (name === "tick") T(880, 0, 0.05, "square", 0.04);
+      else if (name === "go") { T(784, 0, 0.09, "square", 0.05); T(1175, 0.09, 0.14, "square", 0.05); }
+      else if (name === "lock") { T(660, 0, 0.07); T(990, 0.06, 0.1); }
+      else if (name === "right") [523, 659, 784, 1047].forEach((f, i) => T(f, i * 0.085, 0.2, "triangle", 0.13));
+      else if (name === "wrong") { T(330, 0, 0.2, "sawtooth", 0.06); T(247, 0.17, 0.32, "sawtooth", 0.06); }
+      else if (name === "pop") T(1250, 0, 0.07, "sine", 0.09);
+      else if (name === "fanfare") [392, 523, 659, 784, 659, 784, 1047].forEach((f, i) => T(f, i * 0.12, i === 6 ? 0.6 : 0.15, "triangle", 0.13));
+    } catch (e) {}
+  },
+  toggle() { this.on = !this.on; Store.set("sound", this.on); if (this.on) { this.unlock(); this.play("pop"); } }
+};
+
+/* ---------------- app state ---------------- */
+const S = {
+  pid: null, profile: null, session: null,
+  relay: null, relayUrls: DEFAULT_RELAYS, relayStatus: { up: 0, total: 0, links: [] },
+  channel: null, role: null, code: null, host: null, room: null,
+  local: { qid: null, openAt: 0, deadline: 0, answer: null, stage: "", lastSecs: -1, sentAt: 0 },
+  ui: { screen: "home", key: "", mode: "join", code: "", error: "", sheet: null },
+  lastStateAt: 0, lastHello: 0, lastPublish: 0, publishTimer: null, joinAt: 0,
+  wake: null, knownPlayers: null, soundedFor: "", seenQs: new Set(), lastLoop: 0
+};
+
+function relayUrlsFromQuery() {
+  const raw = new URLSearchParams(location.search).get("relay");
+  if (!raw) return DEFAULT_RELAYS;
+  const urls = raw.split(",").map(s => s.trim()).filter(u => /^wss?:\/\//i.test(u));
+  return urls.length ? urls : DEFAULT_RELAYS;
+}
+function secure() { return !!(window.isSecureContext && window.crypto && crypto.subtle); }
+function ensureRelay() {
+  if (S.relay) return;
+  S.relay = new Relay(S.relayUrls, (topic, bytes, retained) => { if (S.channel) S.channel.deliver(topic, bytes, retained); });
+  S.relay.onStatus(st => { S.relayStatus = st; patch(); });
+  S.relay.start();
+  S.relayStatus = S.relay.status();
+}
+function makeCode() { let c = ""; const r = crypto.getRandomValues(new Uint8Array(4)); for (const b of r) c += CODE_LETTERS[b % CODE_LETTERS.length]; return c; }
+function inviteUrl(code) { return location.origin + location.pathname + location.search + "#" + code; }
+function me() { return S.room && S.room.players.find(p => p.id === S.pid); }
+function player(id) { return S.room && S.room.players.find(p => p.id === id); }
+function hostName() { const h = S.room && player(S.room.host); return h ? h.name : "the host"; }
+
+/* ---------------- lifecycle ---------------- */
+function init() {
+  S.relayUrls = relayUrlsFromQuery();
+  S.pid = Store.get("pid");
+  if (!S.pid) { S.pid = randomId(10); Store.set("pid", S.pid); }
+  S.profile = Store.get("profile", { name: "", av: Math.floor(Math.random() * AVATARS.length) });
+  S.session = Store.get("session");
+  if (S.session && Date.now() - S.session.at > 12 * 3600e3) { S.session = null; Store.del("session"); }
+  document.addEventListener("click", onClick);
+  document.addEventListener("submit", onSubmit);
+  document.addEventListener("input", onInput);
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && S.ui.sheet) closeSheet(); });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible") return;
+    if (S.role === "player") sendHello();
+    if (S.role === "host") publishNow();
+    keepAwake(S.ui.screen === "game");
+  });
+  document.addEventListener("pointerdown", () => Sound.unlock(), { passive: true });
+  setInterval(loop, 100);
+  const hash = (location.hash || "").replace(/[^a-z]/gi, "").toUpperCase().slice(0, 4);
+  if (!secure()) return go("home");
+  if (hash.length === 4 && S.session && S.session.code === hash) return resume();
+  if (hash.length === 4) { S.ui.code = hash; ensureRelay(); return go("setup", { mode: "join" }); }
+  go("home");
+}
+function go(screen, opts = {}) { Object.assign(S.ui, { screen, error: "" }, opts); render(); window.scrollTo(0, 0); }
+
+async function resume() {
+  const s = S.session; if (!s) return go("home");
+  if (s.role === "host") {
+    const saved = Store.get("host." + s.code);
+    if (!saved || saved.phase === "closed") { forgetSession(); return go("home"); }
+    S.host = HostGame.restore(saved);
+  }
+  await enterRoom(s.code, s.role);
+}
+function forgetSession() { if (S.session && S.session.role === "host") Store.del("host." + S.session.code); S.session = null; Store.del("session"); }
+
+async function startHosting() {
+  if (!saveProfileFromForm()) return;
+  try { Object.keys(localStorage).filter(k => k.startsWith("cc.host.")).forEach(k => localStorage.removeItem(k)); } catch (e) {}
+  if (S.session) forgetSession();
+  ensureRelay();
+  go("connecting", { mode: "host" });
+  let code = makeCode();
+  // make sure nobody is already playing under this code
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const busy = await codeInUse(code);
+    if (!busy) break;
+    code = makeCode();
+  }
+  S.host = HostGame.create({ code, pid: S.pid, name: S.profile.name, av: S.profile.av });
+  await enterRoom(code, "host");
+}
+function codeInUse(code) {
+  return new Promise(async resolve => {
+    const ch = new Channel(S.relay, code); let done = false;
+    const finish = v => { if (done) return; done = true; ch.close(); if (S.channel === ch) S.channel = null; resolve(v); };
+    ch.on("s", m => finish(m.k === "state" && m.phase !== "closed" && Date.now() - (m.ts || 0) < 6 * 3600e3));
+    S.channel = ch;
+    await ch.open(["s"]);
+    const wait = S.relay.status().up ? 1300 : 3500;
+    setTimeout(() => finish(false), wait);
+  });
+}
+async function joinGame() {
+  const code = ($("#code") ? $("#code").value : S.ui.code).replace(/[^a-z]/gi, "").toUpperCase();
+  if (code.length !== 4) return showError("Room codes are 4 letters — check the code on the host’s screen.");
+  if (!saveProfileFromForm()) return;
+  S.ui.code = code;
+  await enterRoom(code, "player");
+}
+function saveProfileFromForm() {
+  const name = ($("#name") ? $("#name").value : S.profile.name).replace(/\s+/g, " ").trim().slice(0, 14);
+  if (!name) { showError("Pop your name in so everyone knows who’s who."); $("#name") && $("#name").focus(); return false; }
+  S.profile.name = name; Store.set("profile", S.profile);
+  return true;
+}
+function showError(msg) { S.ui.error = msg; const el = $("#form-error"); if (el) { el.textContent = msg; el.hidden = false; } }
+
+async function enterRoom(code, role) {
+  ensureRelay();
+  if (S.channel) S.channel.close();
+  S.role = role; S.code = code; S.room = null; S.knownPlayers = null;
+  S.local = { qid: null, openAt: 0, deadline: 0, answer: null, stage: "", lastSecs: -1, sentAt: 0 };
+  const ch = new Channel(S.relay, code); S.channel = ch;
+  ch.on("s", onState); ch.on("a", onAction); ch.on("r", onReaction);
+  await ch.open(role === "host" ? ["a", "r"] : ["s", "r"]);
+  S.session = { code, pid: S.pid, role, at: Date.now() }; Store.set("session", S.session);
+  try { history.replaceState(null, "", location.pathname + location.search + "#" + code); } catch (e) {}
+  if (role === "host") {
+    S.host.hello(S.pid, S.profile.name, S.profile.av, Date.now());
+    hostChanged();
+    go("game");
+  } else {
+    S.joinAt = Date.now(); S.lastStateAt = 0;
+    go("connecting", { mode: "join" });
+    sendHello();
+  }
+  keepAwake(true);
+}
+function leaveRoom(reason) {
+  if (S.channel && S.role === "player" && reason === "leave") S.channel.send("a", { k: "bye", p: S.pid });
+  const hn = hostName();
+  setTimeout(() => { if (S.channel) S.channel.close(); S.channel = null; }, 300);
+  forgetSession();
+  S.role = null; S.host = null; S.room = null;
+  keepAwake(false);
+  try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  if (reason === "kicked") go("ended", { mode: "kicked", hostName: hn });
+  else if (reason === "closed") go("ended", { mode: "closed", hostName: hn });
+  else go("home");
+}
+
+/* ---------------- host side ---------------- */
+function hostChanged() {
+  if (!S.host) return;
+  Store.set("host." + S.host.code, S.host.toJSON());
+  if (S.session) { S.session.at = Date.now(); Store.set("session", S.session); }
+  applyState(S.host.publicState(Date.now()));
+  clearTimeout(S.publishTimer);
+  S.publishTimer = setTimeout(publishNow, 30);
+}
+function publishNow() {
+  if (!S.host || !S.channel) return;
+  S.lastPublish = Date.now();
+  S.channel.send("s", S.host.publicState(Date.now()), true);
+}
+function onAction(msg) {
+  if (S.role !== "host" || !S.host || typeof msg.p !== "string" || msg.p === S.pid) return;
+  const now = Date.now(); let changed = false;
+  if (msg.k === "hello") changed = S.host.hello(msg.p, msg.n, msg.av, now);
+  else if (msg.k === "ans") {
+    changed = S.host.answer(msg.p, msg.q, msg.v, msg.ms, now);
+    // a repeat (or an unknown player): make sure they're listed, then re-send the state so they see "locked in"
+    if (!changed) { changed = S.host.hello(msg.p, msg.n, msg.av, now); if (!changed) { clearTimeout(S.publishTimer); S.publishTimer = setTimeout(publishNow, 60); } }
+  }
+  else if (msg.k === "bye") changed = S.host.leave(msg.p, now);
+  if (changed) hostChanged();
+}
+function hostStart() {
+  const recent = Store.get("recent", []);
+  const qs = pickQuestions(S.host.settings, recent);
+  if (!qs.length) return toast("Pick at least one category first.");
+  Store.set("recent", [...recent, ...qs.map(q => q.id)].slice(-320));
+  if (S.host.start(qs, Date.now())) hostChanged();
+}
+
+/* ---------------- player side ---------------- */
+function sendHello() {
+  if (!S.channel || S.role !== "player") return;
+  S.lastHello = Date.now();
+  S.channel.send("a", { k: "hello", p: S.pid, n: S.profile.name, av: S.profile.av });
+}
+function onState(msg) {
+  if (S.role !== "player" || msg.k !== "state" || !Array.isArray(msg.players)) return;
+  const now = Date.now();
+  if (S.room && msg.gid === S.room.gid && msg.rev < S.room.rev) return;
+  if (msg.ts && now - msg.ts > 6 * 3600e3) {
+    if (S.ui.screen === "connecting") { forgetSession(); S.role = null; go("setup", { mode: "join", error: "That game has finished. Ask for a fresh room code." }); }
+    return;
+  }
+  S.lastStateAt = now;
+  if ((msg.kicked || []).includes(S.pid)) return leaveRoom("kicked");
+  if (msg.phase === "closed") { S.room = msg; return leaveRoom("closed"); }
+  applyState(msg);
+}
+function onReaction(msg) {
+  if (msg.k !== "react" || typeof msg.p !== "string" || msg.p === S.pid) return;
+  const e = REACTIONS[msg.e]; if (!e) return;
+  floatEmoji(e, player(msg.p));
+}
+
+/* Both roles: take a public state, sync local timers, play cues, render. */
+function applyState(s) {
+  const prev = S.room;
+  S.room = s;
+  const t = performance.now();
+  if (s.phase === "question" && s.q) {
+    S.seenQs.add(s.q.id);
+    if (S.local.qid !== s.q.id) {
+      const saved = Store.get("answer");
+      S.local = { qid: s.q.id, openAt: t + s.q.intro, deadline: t + s.q.left, answer: saved && saved.qid === s.q.id ? saved : null, stage: "", lastSecs: -1, sentAt: 0 };
+    } else {
+      S.local.openAt = Math.min(S.local.openAt, t + s.q.intro);
+      S.local.deadline = Math.min(S.local.deadline, t + s.q.left);
+    }
+  }
+  if (S.ui.screen === "connecting" && S.role === "player") S.ui.screen = "game";
+  // cues
+  const cueKey = s.phase + ":" + (s.q ? s.q.id : "") + ":" + s.round;
+  if (S.soundedFor !== cueKey && prev) {
+    S.soundedFor = cueKey;
+    if (s.phase === "reveal" && s.res) { const p = s.res.picks[S.pid]; Sound.play(p ? (p.ok ? "right" : "wrong") : "wrong"); }
+    if (s.phase === "final") { Sound.play("fanfare"); setTimeout(confetti, 250); }
+  } else if (!prev) S.soundedFor = cueKey;
+  if (s.phase === "lobby") {
+    const ids = s.players.map(p => p.id).join(",");
+    if (S.knownPlayers !== null && ids.length > S.knownPlayers.length) Sound.play("pop");
+    S.knownPlayers = ids;
+  }
+  render();
+}
+function submitAnswer(v) {
+  const r = S.room; if (!r || r.phase !== "question" || !r.q || S.local.answer) return;
+  const now = performance.now();
+  if (now < S.local.openAt - 50 || now > S.local.deadline + 300) return;
+  const ms = Math.round(Math.min(r.q.limit, Math.max(0, now - S.local.openAt)));
+  S.local.answer = { qid: r.q.id, v, ms };
+  Store.set("answer", S.local.answer);
+  Sound.play("lock");
+  if (navigator.vibrate) try { navigator.vibrate(20); } catch (e) {}
+  if (S.role === "host") { if (S.host.answer(S.pid, r.q.id, v, ms, Date.now())) hostChanged(); }
+  else sendAnswer();
+  patch();
+}
+function sendAnswer() {
+  const a = S.local.answer, r = S.room;
+  if (!a || !r || r.phase !== "question" || !r.q || r.q.id !== a.qid) return;
+  const mine = me(); if (mine && mine.ans) return;
+  S.local.sentAt = Date.now();
+  S.channel.send("a", { k: "ans", p: S.pid, n: S.profile.name, av: S.profile.av, q: a.qid, v: a.v, ms: a.ms });
+}
+
+/* ---------------- the 10 Hz loop ---------------- */
+function loop() {
+  const now = Date.now();
+  const gap = S.lastLoop ? now - S.lastLoop : 0; S.lastLoop = now;
+  if (S.role === "host" && S.host && S.channel) {
+    if (gap > 2500 && S.host.phase === "question" && S.host.cur) { S.host.cur.deadline = Math.max(S.host.cur.deadline, now + 2500 - RULES.graceMs); S.host.cur.allInAt = null; publishNow(); }
+    if (S.host.tick(now)) hostChanged();
+    else if (now - S.lastPublish > 3000) publishNow();
+  } else if (S.role === "player" && S.channel) {
+    if (now - S.lastHello > 4000) sendHello();
+    if (S.local.answer && now - S.local.sentAt > 1500) sendAnswer();
+  }
+  if (S.ui.screen === "game" || S.ui.screen === "connecting") patchLive();
+}
+
+/* ---------------- rendering ---------------- */
+function screenKey() {
+  const u = S.ui, r = S.room;
+  if (u.screen !== "game" || !r) return u.screen + ":" + u.mode;
+  return ["game", r.phase, r.q ? r.q.id : "", S.role, r.round].join(":");
+}
+function render() {
+  const main = $("#app"); if (!main) return;
+  const key = screenKey();
+  if (key !== S.ui.key) {
+    S.ui.key = key;
+    main.innerHTML = view();
+    main.dataset.screen = S.ui.screen === "game" && S.room ? S.room.phase : S.ui.screen;
+    window.scrollTo(0, 0);
+    afterMount();
+  }
+  patch();
+}
+function view() {
+  const u = S.ui, r = S.room;
+  if (u.screen === "home") return viewHome();
+  if (u.screen === "setup") return viewSetup();
+  if (u.screen === "connecting") return viewConnecting();
+  if (u.screen === "ended") return viewEnded();
+  if (!r) return viewConnecting();
+  if (r.phase === "lobby") return viewLobby(r);
+  if (r.phase === "question") return viewQuestion(r);
+  if (r.phase === "reveal") return viewReveal(r);
+  if (r.phase === "final") return viewFinal(r);
+  return viewEnded();
+}
+function afterMount() {
+  const sign = $(".marquee"); if (sign) buildBulbs(sign);
+  const nameInput = $("#name"); if (nameInput && !nameInput.value && S.ui.screen === "setup") setTimeout(() => (S.ui.mode === "join" && $("#code") && !$("#code").value ? $("#code") : nameInput).focus({ preventScroll: true }), 60);
+  const num = $("#numv"); if (num) num.value = "";
+}
+
+function avatar(p, cls = "") {
+  const i = p && typeof p.av === "number" ? p.av % AVATARS.length : 0;
+  return `<span class="av ${cls}" style="--av:${AV_BG[i]}" aria-hidden="true">${AVATARS[i]}</span>`;
+}
+function logoBlock(small) {
+  return `<div class="marquee ${small ? "small" : ""}"><div class="bulbs" aria-hidden="true"></div>
+    <p class="marquee-eyebrow">Live from the sofa</p>
+    <h1 class="logo"><span>Clever</span><span>Clogs</span></h1>
+    <p class="marquee-tag">The family quiz</p></div>`;
+}
+function viewHome() {
+  const s = S.session;
+  const resume = s && secure() ? `<div class="resume card">
+      <div><p class="card-kicker">Game in progress</p><p class="card-title">Room <span class="led">${esc(s.code)}</span>${s.role === "host" ? " · you’re the host" : ""}</p></div>
+      <div class="resume-actions"><button class="btn btn-primary" data-act="resume">Rejoin</button><button class="btn btn-quiet" data-act="forget">Forget it</button></div></div>` : "";
+  const warn = secure() ? "" : `<p class="notice">Open this game from its <strong>https://</strong> web address to play — it needs a secure page to keep your room private.</p>`;
+  return `<section class="screen home">${logoBlock()}
+    <p class="lede">Everyone plays on their own phone. One person starts a game and shares the four-letter code — everyone else joins in.</p>
+    ${resume}${warn}
+    <div class="actions">
+      <button class="btn btn-primary btn-big" data-act="to-host" ${secure() ? "" : "disabled"}>Start a game</button>
+      <button class="btn btn-ghost btn-big" data-act="to-join" ${secure() ? "" : "disabled"}>Join a game</button>
+    </div>
+    <ul class="facts" aria-label="About the game">
+      <li><strong>${QUESTION_BANK.length}</strong> questions</li>
+      <li><strong>${Object.keys(CATEGORIES).length}</strong> categories, Wales included</li>
+      <li><strong>No</strong> sign-ups</li>
+    </ul></section>`;
+}
+function viewSetup() {
+  const join = S.ui.mode === "join";
+  const avs = AVATARS.map((e, i) => `<button type="button" class="av-pick" role="radio" aria-checked="${i === S.profile.av}" aria-label="Mascot ${i + 1}" data-act="av" data-i="${i}" style="--av:${AV_BG[i]}">${e}</button>`).join("");
+  return `<section class="screen setup">
+    <button class="back" data-act="home">‹ Back</button>
+    <h2 class="title">${join ? "Join a game" : "Start a game"}</h2>
+    <p class="sub">${join ? "Type the code from the host’s screen." : "You’ll get a code to share with the family."}</p>
+    <form id="setup-form" class="form" autocomplete="off" novalidate>
+      ${join ? `<label class="field-label" for="code">Room code</label>
+      <input id="code" class="code-input" maxlength="4" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="ABCD" value="${esc(S.ui.code)}" aria-describedby="code-hint">
+      <p class="field-hint" id="code-hint">Four letters</p>` : ""}
+      <label class="field-label" for="name">Your name</label>
+      <input id="name" class="text-input" maxlength="14" autocomplete="nickname" placeholder="e.g. Mum" value="${esc(S.profile.name)}">
+      <p class="field-label" id="av-label">Pick a mascot</p>
+      <div class="av-grid" role="radiogroup" aria-labelledby="av-label">${avs}</div>
+      <p class="form-error" id="form-error" role="alert" ${S.ui.error ? "" : "hidden"}>${esc(S.ui.error)}</p>
+      <button class="btn btn-primary btn-big" type="submit">${join ? "Join the game" : "Open the room"}</button>
+    </form></section>`;
+}
+function viewConnecting() {
+  const hosting = S.ui.mode === "host";
+  return `<section class="screen connecting">
+    <div class="bulb-spinner" aria-hidden="true">${"<i></i>".repeat(8)}</div>
+    <h2 class="title">${hosting ? "Opening the room…" : "Finding room " + esc(S.code || S.ui.code) + "…"}</h2>
+    <p class="sub" id="conn-sub">${hosting ? "Warming up the studio lights." : "Hang on while we find the game."}</p>
+    <p class="conn-help" id="conn-help" hidden>Still looking. Check the code matches the one on the host’s screen, and that their game is open.</p>
+    <button class="btn btn-quiet" data-act="cancel">Cancel</button></section>`;
+}
+function viewEnded() {
+  const kicked = S.ui.mode === "kicked";
+  return `<section class="screen ended">
+    ${logoBlock(true)}
+    <h2 class="title">${kicked ? "You’ve been taken off this game" : "That’s a wrap!"}</h2>
+    <p class="sub">${kicked ? esc(S.ui.hostName || "The host") + " removed you from the room. You can join again with the code if that was a mistake." : esc(S.ui.hostName || "The host") + " closed the room. Thanks for playing!"}</p>
+    <button class="btn btn-primary btn-big" data-act="home">Back to the start</button></section>`;
+}
+function gantry(r) {
+  return `<header class="gantry">
+    <button class="code-chip" data-act="share" aria-label="Room code ${esc(r.code)}, tap to share"><span class="code-chip-label">Room</span><span class="led">${esc(r.code)}</span></button>
+    <span class="g-mid" id="gmid"></span>
+    <span class="g-score" id="gscore-wrap"><span class="g-score-label">Score</span><span class="led" id="gscore">0</span></span>
+    <button class="lamp" id="lamp" data-act="menu" aria-label="Menu and connection"><i></i><span class="lamp-dots" aria-hidden="true">•••</span></button>
+  </header><div class="banner" id="banner" role="status" hidden></div>`;
+}
+function viewLobby(r) {
+  const hosting = S.role === "host";
+  const st = r.settings;
+  const seg = (key, vals, label) => vals.map(v => `<button type="button" role="radio" data-act="set" data-key="${key}" data-val="${v}" aria-checked="false">${label(v)}</button>`).join("");
+  const cats = Object.entries(CATEGORIES).map(([k, n]) => `<button type="button" class="chip" data-act="cat" data-cat="${k}" aria-pressed="false">${esc(n)}</button>`).join("");
+  const settings = hosting ? `<section class="panel settings" aria-labelledby="set-title">
+      <h3 class="section-label" id="set-title">Tonight’s quiz</h3>
+      <div class="setting"><span class="setting-name" id="lbl-count">Questions</span><div class="seg" role="radiogroup" aria-labelledby="lbl-count">${seg("count", RULES.counts, v => v)}</div></div>
+      <div class="setting"><span class="setting-name" id="lbl-secs">Time to answer</span><div class="seg" role="radiogroup" aria-labelledby="lbl-secs">${seg("secs", RULES.timers, v => `${TIMER_LABELS[v]} <small>${v}s</small>`)}</div></div>
+      <div class="setting cats"><span class="setting-name">Categories <button type="button" class="link-btn" data-act="cats-all">All</button></span><div class="chips">${cats}</div></div>
+      <label class="toggle"><input type="checkbox" id="opt-easy" data-act="opt" data-key="easy"><span class="toggle-ui" aria-hidden="true"></span><span>Easier questions only</span></label>
+      <label class="toggle"><input type="checkbox" id="opt-numbers" data-act="opt" data-key="numbers"><span class="toggle-ui" aria-hidden="true"></span><span>Nearest-number rounds</span></label>
+    </section>
+    <p class="hint">Keep this screen open while you play — your phone is running the game. People can still join once it’s started.</p>
+    <div class="sticky-action"><button class="btn btn-primary btn-big start-btn" data-act="start">Start the quiz</button></div>`
+    : `<section class="panel waiting-panel"><p class="waiting" id="lobby-wait"></p><p class="summary" id="lobby-summary"></p></section>`;
+  return gantry(r) + `<section class="screen lobby">
+    <div class="ticket">
+      <div class="ticket-main">
+        <span class="ticket-label">Room code</span>
+        <strong class="ticket-code">${esc(r.code)}</strong>
+        <span class="ticket-small">${location.protocol === "file:" ? "Put this page online to send invites" : "Admits the whole family"}</span>
+      </div>
+      <div class="ticket-side">
+        <button class="ticket-btn" data-act="share">Share invite</button>
+        <button class="ticket-btn" data-act="copy">Copy link</button>
+      </div>
+    </div>
+    <section class="panel who" aria-labelledby="who-title">
+      <h3 class="section-label" id="who-title">On the sofa <span class="count" id="pcount"></span></h3>
+      <ul class="players" id="players"></ul>
+    </section>
+    ${settings}</section>`;
+}
+function optionLabel(q, i) { return q.t === "tf" ? (i === 0 ? "✓" : "✗") : "ABCD"[i]; }
+function optionClass(q, i) { return q.t === "tf" ? (i === 0 ? "o-true" : "o-false") : "o-" + "abcd"[i]; }
+function viewQuestion(r) {
+  const q = r.q;
+  const unit = q.u === "year" ? "" : q.u;
+  const answers = q.t === "num"
+    ? `<form class="numform" id="numform" autocomplete="off" novalidate>
+        <label class="field-label" for="numv">${q.u === "year" ? "Your guess (the year)" : "Your guess"}</label>
+        <div class="num-row"><input id="numv" class="num-input" inputmode="numeric" pattern="[0-9]*" maxlength="9" placeholder="?" enterkeyhint="done" autocomplete="off">${unit ? `<span class="unit">${esc(unit)}</span>` : ""}</div>
+        <button class="btn btn-primary btn-big" type="submit" id="numgo">Lock it in</button>
+        <p class="field-hint">Nearest guess wins — no need to be exact.</p></form>`
+    : `<div class="opts ${q.t}" id="opts">${q.opts.map((o, i) => `<button class="opt ${optionClass(q, i)}" data-act="pick" data-i="${i}"><span class="letter" aria-hidden="true">${optionLabel(q, i)}</span><span class="otext">${esc(o)}</span></button>`).join("")}</div>`;
+  return gantry(r) + `<section class="screen question" id="qscreen" data-stage="intro" data-type="${q.t}">
+    <div class="q-head"><span class="q-count">Question ${q.n} <span>of ${q.of}</span></span><span class="q-cat">${esc(CATEGORIES[q.c] || "")}</span></div>
+    ${q.dbl ? `<p class="dbl">Final question · double points</p>` : ""}
+    <h2 class="q-text">${esc(q.text)}</h2>
+    ${q.t === "tf" ? `<p class="q-kind">True or false?</p>` : q.t === "num" ? `<p class="q-kind">Nearest wins</p>` : ""}
+    <div class="timer" id="timer"><div class="bulbrow" aria-hidden="true">${"<i></i>".repeat(12)}</div><span class="secs led" id="secs" aria-hidden="true"></span></div>
+    <div class="answer-zone"><div class="ready" id="ready"><span class="ready-label">Answers in</span><span class="led ready-num" id="ready-num">3</span></div>
+    ${answers}</div>
+    <p class="q-status" id="qstatus" role="status"></p>
+    <ul class="answered" id="answered" aria-label="Who has answered"></ul>
+  </section>`;
+}
+function verdictFor(r) {
+  const q = r.q, p = r.res.picks[S.pid];
+  const cheer = CHEERS[hashText(q.id).charCodeAt(0) % CHEERS.length];
+  const answerText = q.t === "num" ? fmtAnswer(q.correct, q.u) : q.opts[q.correct];
+  if (!p && !S.seenQs.has(q.id)) return { cls: "meh", title: "You’re in!", sub: "Jump in on the next question." };
+  if (!p) return { cls: "miss", title: "Too slow!", sub: `Answer: ${answerText}` };
+  if (q.t === "num") {
+    if (p.exact) return { cls: "ok", title: "Bang on!", sub: `Exactly right · +${fmt(p.pts)} points` };
+    if (p.rank === 1) return { cls: "ok", title: "Nearest!", sub: `+${fmt(p.pts)} points` };
+    return { cls: "meh", title: p.rank === 2 ? "Close-ish!" : "Not the nearest", sub: `+${fmt(p.pts)} points` };
+  }
+  if (p.ok) return { cls: "ok", title: cheer, sub: `+${fmt(p.pts)} points` };
+  return { cls: "no", title: "Not this time", sub: `Answer: ${answerText}` };
+}
+function standingsHTML(r, withDelta) {
+  const rows = r.players.slice().sort((a, b) => b.score - a.score);
+  let place = 0, last = null;
+  return rows.map((p, i) => {
+    if (p.score !== last) { place = i + 1; last = p.score; }
+    const d = withDelta && r.res && r.res.picks[p.id] ? r.res.picks[p.id].pts : 0;
+    return `<li class="${p.id === S.pid ? "is-me" : ""} ${p.on ? "" : "away"}"><span class="place">${place}</span>${avatar(p)}<span class="pname">${esc(p.name)}${p.streak >= 3 ? ` <span class="streak" title="${p.streak} in a row">🔥${p.streak}</span>` : ""}</span>${withDelta ? `<span class="delta ${d ? "" : "zero"}">${d ? "+" + fmt(d) : "—"}</span>` : ""}<span class="pscore led">${fmt(p.score)}</span></li>`;
+  }).join("");
+}
+function reactionsHTML() {
+  return `<div class="reactions" role="group" aria-label="Send a reaction">${REACTIONS.map((e, i) => `<button class="react" data-act="react" data-i="${i}" aria-label="React ${e}">${e}</button>`).join("")}</div>`;
+}
+function viewReveal(r) {
+  const q = r.q, v = verdictFor(r), last = q.n === q.of;
+  let body;
+  if (q.t === "num") {
+    const rows = Object.entries(r.res.picks).sort((a, b) => a[1].rank - b[1].rank || a[1].ms - b[1].ms);
+    body = `<div class="num-answer"><span class="num-answer-label">The answer</span><strong class="led num-answer-value">${esc(fmtAnswer(q.correct, q.u))}</strong></div>
+      ${rows.length ? `<ol class="guesses">${rows.map(([pid, p]) => { const pl = player(pid) || { name: "?", av: 0 }; return `<li class="${p.rank === 1 ? "win" : ""}">${avatar(pl)}<span class="pname">${esc(pl.name)}</span><span class="guess">${esc(fmtAnswer(p.v, q.u))}</span><span class="pts">+${fmt(p.pts)}</span></li>`; }).join("")}</ol>` : `<p class="sub">Nobody had a guess!</p>`}`;
+  } else {
+    const mine = r.res.picks[S.pid];
+    body = `<div class="opts ${q.t} revealed">${q.opts.map((o, i) => {
+      const who = Object.entries(r.res.picks).filter(([, p]) => p.v === i).map(([pid]) => avatar(player(pid) || { av: 0 }, "mini")).join("");
+      const cls = [optionClass(q, i), i === q.correct ? "correct" : "dim", mine && mine.v === i ? "mine" : ""].join(" ");
+      return `<div class="opt ${cls}">${i === q.correct ? `<span class="ribbon">Answer</span>` : ""}<span class="letter" aria-hidden="true">${optionLabel(q, i)}</span><span class="otext">${esc(o)}${i === q.correct ? `<span class="sr"> (correct answer)</span>` : ""}</span><span class="pickers">${who}</span></div>`;
+    }).join("")}</div>`;
+  }
+  const fact = q.f ? `<p class="fact"><span class="fact-label">Did you know?</span> ${esc(q.f)}</p>` : "";
+  const next = S.role === "host"
+    ? `<button class="btn btn-primary btn-big" data-act="next">${last ? "See the final scores" : "Next question"}</button>`
+    : `<p class="waiting">Waiting for <span id="hostname">${esc(hostName())}</span> to carry on…</p>`;
+  return gantry(r) + `<section class="screen reveal">
+    <div class="verdict ${v.cls}"><p class="verdict-title">${esc(v.title)}</p><p class="verdict-sub">${esc(v.sub)}</p></div>
+    <div class="q-head"><span class="q-count">Question ${q.n} <span>of ${q.of}</span></span><span class="q-cat">${esc(CATEGORIES[q.c] || "")}</span></div>
+    <h2 class="q-text small">${esc(q.text)}</h2>
+    ${body}${fact}
+    <section class="panel"><h3 class="section-label">Scores</h3><ol class="standings" id="standings">${standingsHTML(r, true)}</ol></section>
+    ${reactionsHTML()}
+    <div class="next-wrap ${S.role === "host" ? "sticky-action" : ""}">${next}</div></section>`;
+}
+function viewFinal(r) {
+  const fin = r.fin || { rank: [], awards: [] };
+  const byId = id => player(id) || { name: "?", av: 0, score: 0 };
+  const top = fin.rank.filter(x => x.place === 1);
+  const headline = top.length > 1 ? "It’s a tie!" : esc(byId(top[0] ? top[0].id : "").name) + "!";
+  const podium = [1, 0, 2].map(i => fin.rank[i]).map((x, col) => x ? `<div class="step step-${x.place <= 3 ? x.place : 3} ${col === 1 ? "centre" : ""}">${avatar(byId(x.id), "big")}<span class="step-name">${esc(byId(x.id).name)}</span><span class="step-score led">${fmt(x.score)}</span><span class="step-block"><span>${x.place}</span></span></div>` : `<div class="step empty"></div>`).join("");
+  const awards = fin.awards.map(a => `<li>${avatar(byId(a.id))}<span><span class="award-title">${esc(AWARD_TITLES[a.key] || a.key)}</span><span class="award-who">${esc(byId(a.id).name)} · ${esc(a.detail)}</span></span></li>`).join("");
+  const actions = S.role === "host"
+    ? `<div class="sticky-action"><button class="btn btn-primary btn-big" data-act="again">Play again</button></div><button class="btn btn-quiet" data-act="close-room">Close the room</button>`
+    : `<p class="waiting">Waiting to see if ${esc(hostName())} starts another round…</p><div class="actions"><button class="btn btn-ghost" data-act="leave">Leave the game</button></div>`;
+  return gantry(r) + `<section class="screen final">
+    <p class="eyebrow">And the winner is…</p>
+    <h2 class="winner">${headline}</h2>
+    <div class="podium">${podium}</div>
+    ${awards ? `<section class="panel"><h3 class="section-label">Tonight’s awards</h3><ul class="awards">${awards}</ul></section>` : ""}
+    ${fin.rank.length > 3 ? `<section class="panel"><h3 class="section-label">Full scores</h3><ol class="standings">${standingsHTML(r, false)}</ol></section>` : ""}
+    ${reactionsHTML()}
+    ${actions}</section>`;
+}
+
+/* patch: cheap updates that don't rebuild the screen */
+function patch() {
+  const r = S.room;
+  const lamp = $("#lamp");
+  if (lamp) { const st = S.relayStatus; lamp.dataset.state = st.up === 0 ? "bad" : st.up < st.total ? "part" : "good"; lamp.setAttribute("aria-label", `Menu. Connected to ${st.up} of ${st.total} game servers`); }
+  if (!r || S.ui.screen !== "game") return;
+  const m = me();
+  const gs = $("#gscore"); if (gs) gs.textContent = fmt(m ? m.score : 0);
+  const gm = $("#gmid"); if (gm) gm.textContent = r.phase === "lobby" ? (S.role === "host" ? "You’re the host" : "In the lobby") : r.phase === "final" ? "Final scores" : placeText(r);
+  if (r.phase === "lobby") patchLobby(r);
+  if (r.phase === "question") patchQuestion(r);
+  if (r.phase === "reveal") { const st = $("#standings"); if (st) setHTML(st, standingsHTML(r, true)); const hn = $("#hostname"); if (hn) hn.textContent = hostName(); }
+  patchBanner();
+}
+function ordinal(n) { const s = ["th", "st", "nd", "rd"], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
+function placeText(r) {
+  const mine = me(); if (!mine || r.players.length < 2) return r.q ? `Question ${r.q.n}` : "";
+  const ahead = r.players.filter(p => p.score > mine.score).length, tied = r.players.filter(p => p.score === mine.score).length > 1;
+  return (tied ? "Joint " : "") + ordinal(ahead + 1) + " place";
+}
+function setHTML(el, html) { if (el._html !== html) { el._html = html; el.innerHTML = html; } }
+function patchLobby(r) {
+  const list = $("#players");
+  if (list) setHTML(list, r.players.map(p => `<li class="player ${p.on ? "" : "away"}">${avatar(p)}<span class="pname">${esc(p.name)}</span>
+    ${p.id === r.host ? `<span class="tag">Host</span>` : ""}${p.id === S.pid ? `<span class="tag you">You</span>` : ""}${p.on ? "" : `<span class="away-note">away</span>`}
+    ${S.role === "host" && p.id !== S.pid ? `<button class="kick" data-act="kick" data-pid="${esc(p.id)}" aria-label="Remove ${esc(p.name)}">Remove</button>` : ""}</li>`).join(""));
+  const pc = $("#pcount"); if (pc) pc.textContent = r.players.length;
+  const st = r.settings;
+  document.querySelectorAll("[data-act=set]").forEach(b => b.setAttribute("aria-checked", String(st[b.dataset.key] === Number(b.dataset.val))));
+  document.querySelectorAll("[data-act=cat]").forEach(b => b.setAttribute("aria-pressed", String(st.cats.includes(b.dataset.cat))));
+  const easy = $("#opt-easy"); if (easy) easy.checked = !!st.easy;
+  const nums = $("#opt-numbers"); if (nums) nums.checked = !!st.numbers;
+  const wait = $("#lobby-wait"); if (wait) wait.textContent = me() ? `You’re in! Waiting for ${hostName()} to start the quiz.` : "Joining…";
+  const sum = $("#lobby-summary"); if (sum) sum.textContent = `${st.count} questions · ${st.secs} seconds each · ${st.cats.length === Object.keys(CATEGORIES).length ? "all categories" : st.cats.map(c => CATEGORIES[c]).join(", ")}`;
+}
+function patchQuestion(r) {
+  const list = $("#answered");
+  if (list) setHTML(list, r.players.filter(p => p.on || p.ans).map(p => `<li class="${p.ans ? "done" : ""}" title="${esc(p.name)}${p.ans ? " has answered" : ""}">${avatar(p, "mini")}<span class="tick" aria-hidden="true">✓</span><span class="sr">${esc(p.name)} ${p.ans ? "has answered" : "is thinking"}</span></li>`).join(""));
+  patchLive();
+}
+function patchLive() {
+  const r = S.room;
+  if (S.ui.screen === "connecting") { const help = $("#conn-help"); if (help && S.ui.mode === "join" && Date.now() - S.joinAt > 7000) help.hidden = false; return; }
+  if (!r || r.phase !== "question" || !r.q) return;
+  const qs = $("#qscreen"); if (!qs) return;
+  const now = performance.now(), L = S.local, q = r.q;
+  const mine = me();
+  const answered = !!L.answer || (mine && mine.ans);
+  let stage = now < L.openAt ? "intro" : answered ? "locked" : now > L.deadline ? "timeup" : "open";
+  if (qs.dataset.stage !== stage) {
+    const before = qs.dataset.stage; qs.dataset.stage = stage;
+    if (stage === "open" && before === "intro") { Sound.play("go"); const n = $("#numv"); if (n && !("ontouchstart" in window)) n.focus({ preventScroll: true }); }
+    const status = $("#qstatus");
+    if (status) status.textContent = stage === "locked" ? "Locked in! Waiting for everyone else…" : stage === "timeup" ? "Time’s up!" : "";
+    document.querySelectorAll("#opts .opt").forEach(b => { b.disabled = stage !== "open"; });
+    const ng = $("#numgo"), nv = $("#numv"); if (ng) ng.disabled = stage !== "open"; if (nv) nv.disabled = stage !== "open";
+  }
+  if (stage === "locked" && L.answer) {
+    document.querySelectorAll("#opts .opt").forEach(b => { const on = Number(b.dataset.i) === L.answer.v; b.classList.toggle("picked", on); b.setAttribute("aria-pressed", String(on)); });
+    const nv = $("#numv"); if (nv && q.t === "num" && document.activeElement !== nv) nv.value = String(L.answer.v);
+  }
+  const readyNum = $("#ready-num"); if (readyNum) readyNum.textContent = Math.max(1, Math.ceil((L.openAt - now) / 1000));
+  const left = Math.max(0, L.deadline - Math.max(now, L.openAt)), frac = Math.min(1, left / q.limit);
+  const secs = Math.ceil(left / 1000);
+  const secsEl = $("#secs"); if (secsEl) secsEl.textContent = stage === "intro" ? Math.round(q.limit / 1000) : secs;
+  const bulbs = qs.querySelectorAll(".bulbrow i"), lit = Math.ceil(frac * bulbs.length);
+  bulbs.forEach((b, i) => { b.className = i < lit ? (frac <= 0.25 ? "on warn" : "on") : ""; });
+  const timer = $("#timer"); if (timer) timer.classList.toggle("urgent", stage === "open" && secs <= 5);
+  if (stage === "open" && secs <= 5 && secs !== L.lastSecs && secs > 0) Sound.play("tick");
+  L.lastSecs = secs;
+}
+function patchBanner() {
+  const b = $("#banner"); if (!b) return;
+  let msg = "";
+  if (S.relay && S.relayStatus.up === 0) msg = "Reconnecting to the game…";
+  else if (S.role === "player" && S.lastStateAt && Date.now() - S.lastStateAt > 10000) msg = `Waiting for ${hostName()}’s phone to reconnect…`;
+  b.hidden = !msg; if (msg) b.textContent = msg;
+}
+setInterval(() => { if (S.ui.screen === "game") patchBanner(); }, 1000);
+
+/* ---------------- interactions ---------------- */
+function onClick(e) {
+  const el = e.target.closest("[data-act]"); if (!el) { if (e.target.id === "sheet") closeSheet(); return; }
+  const act = el.dataset.act;
+  Sound.unlock();
+  switch (act) {
+    case "to-host": ensureRelay(); return go("setup", { mode: "host" });
+    case "to-join": ensureRelay(); return go("setup", { mode: "join" });
+    case "home": closeSheet(); return go("home");
+    case "resume": return resume();
+    case "forget": forgetSession(); return go("home");
+    case "av": S.profile.av = Number(el.dataset.i); Store.set("profile", S.profile); document.querySelectorAll(".av-pick").forEach(b => b.setAttribute("aria-checked", String(b === el))); return;
+    case "cancel": if (S.channel) S.channel.close(); S.channel = null; S.role = null; forgetSession(); return go("setup", { mode: S.ui.mode === "host" ? "host" : "join" });
+    case "pick": return submitAnswer(Number(el.dataset.i));
+    case "share": return shareInvite();
+    case "copy": return copyInvite();
+    case "set": if (S.host && S.host.updateSettings({ [el.dataset.key]: Number(el.dataset.val) })) hostChanged(); return;
+    case "cat": {
+      if (!S.host) return;
+      const k = el.dataset.cat, cur = S.host.settings.cats;
+      const next = cur.includes(k) ? cur.filter(c => c !== k) : [...cur, k];
+      if (!next.length) return toast("Keep at least one category.");
+      if (S.host.updateSettings({ cats: next })) hostChanged(); return;
+    }
+    case "cats-all": if (S.host && S.host.updateSettings({ cats: Object.keys(CATEGORIES) })) hostChanged(); return;
+    case "opt": if (S.host && S.host.updateSettings({ [el.dataset.key]: el.checked })) hostChanged(); return;
+    case "start": return hostStart();
+    case "next": if (S.host && S.host.next(Date.now())) hostChanged(); return;
+    case "again": if (S.host && S.host.playAgain(Date.now())) hostChanged(); return;
+    case "kick": {
+      const p = player(el.dataset.pid); if (!p) return;
+      return confirmSheet(`Remove ${p.name}?`, "They’ll drop out of this room.", "Remove", () => { if (S.host.kick(p.id, Date.now())) { hostChanged(); toast(`${p.name} removed`); } });
+    }
+    case "react": return sendReaction(Number(el.dataset.i));
+    case "menu": return openMenu();
+    case "sheet-close": return closeSheet();
+    case "sound": Sound.toggle(); return openMenu();
+    case "skip": closeSheet(); if (S.host && S.host.skip(Date.now())) hostChanged(); return;
+    case "end-now": return confirmSheet("End the quiz now?", "Everyone goes straight to the final scores.", "End the quiz", () => { if (S.host.endEarly(Date.now())) hostChanged(); });
+    case "close-room": return confirmSheet("Close the room?", "This ends the game on everyone’s phone.", "Close the room", closeRoom);
+    case "leave": return confirmSheet("Leave the game?", "You can rejoin with the same code while it’s still going.", "Leave", () => leaveRoom("leave"));
+    case "confirm-yes": { const fn = S.ui.onConfirm; closeSheet(); if (fn) fn(); return; }
+  }
+}
+function onSubmit(e) {
+  e.preventDefault();
+  Sound.unlock();
+  if (e.target.id === "setup-form") return S.ui.mode === "join" ? joinGame() : startHosting();
+  if (e.target.id === "numform") {
+    const raw = ($("#numv").value || "").replace(/[\s,]/g, "");
+    if (!/^\d{1,9}(\.\d+)?$/.test(raw)) { toast("Type a number first."); return; }
+    submitAnswer(Number(raw));
+  }
+}
+function onInput(e) {
+  if (e.target.id === "code") { const v = e.target.value.replace(/[^a-z]/gi, "").toUpperCase().slice(0, 4); if (e.target.value !== v) e.target.value = v; S.ui.code = v; }
+  if (e.target.id === "numv") { const v = e.target.value.replace(/[^\d]/g, "").slice(0, 9); if (e.target.value !== v) e.target.value = v; }
+  if (e.target.id === "name" || e.target.id === "code") { const er = $("#form-error"); if (er && !er.hidden) er.hidden = true; }
+}
+async function shareInvite() {
+  if (!S.code) return;
+  if (location.protocol === "file:") return toast("Invites need the game online — see the README. Room code: " + S.code);
+  const url = inviteUrl(S.code);
+  const data = { title: "Clever Clogs", text: `Come and play our family quiz! Room code ${S.code}`, url };
+  if (navigator.share) { try { await navigator.share(data); return; } catch (e) { if (e && e.name === "AbortError") return; } }
+  copyInvite();
+}
+async function copyInvite() {
+  if (location.protocol === "file:") return toast("Invites need the game online — see the README. Room code: " + S.code);
+  const url = inviteUrl(S.code);
+  try { await navigator.clipboard.writeText(url); toast("Invite link copied"); }
+  catch (e) { toast("Room code: " + S.code); }
+}
+let lastReact = 0;
+function sendReaction(i) {
+  const now = Date.now(); if (now - lastReact < 600 || !REACTIONS[i]) return; lastReact = now;
+  floatEmoji(REACTIONS[i], me());
+  if (S.channel) S.channel.send("r", { k: "react", p: S.pid, e: i });
+}
+function closeRoom() {
+  if (!S.host) return;
+  S.host.close(Date.now());
+  publishNow();
+  const ch = S.channel;
+  setTimeout(() => { if (ch) ch.clearRetained("s"); }, 1500);
+  setTimeout(() => { if (ch) ch.close(); }, 2500);
+  S.channel = null;
+  forgetSession();
+  S.role = null; S.host = null; S.room = null; keepAwake(false);
+  try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  go("home");
+  toast("Room closed — thanks for playing!");
+}
+
+/* ---------------- sheets, toasts, effects ---------------- */
+function openMenu() {
+  const r = S.room, hosting = S.role === "host", st = S.relayStatus;
+  const items = [];
+  items.push(`<button class="sheet-item" data-act="sound">${Sound.on ? "Turn sound off" : "Turn sound on"}</button>`);
+  if (S.code) items.push(`<button class="sheet-item" data-act="share">Share the invite again</button>`);
+  if (hosting && r && r.phase === "question") items.push(`<button class="sheet-item" data-act="skip">Skip this question</button>`);
+  if (hosting && r && (r.phase === "question" || r.phase === "reveal")) items.push(`<button class="sheet-item" data-act="end-now">End the quiz now</button>`);
+  if (hosting) items.push(`<button class="sheet-item danger" data-act="close-room">Close the room for everyone</button>`);
+  else if (S.role === "player") items.push(`<button class="sheet-item danger" data-act="leave">Leave the game</button>`);
+  openSheet(`<h2 class="sheet-title" id="sheet-title">Menu</h2>
+    <div class="sheet-list">${items.join("")}</div>
+    <details class="how"><summary>How scoring works</summary>
+      <p>Right answers score up to 1,000 — the quicker you are, the more you get (never less than 500). For “nearest number” questions the closest guess gets 1,000, then 600 and 300, with a 200 bonus for being bang on. The final question counts double.</p></details>
+    <p class="net-line"><span class="lamp-dot" data-state="${st.up === 0 ? "bad" : st.up < st.total ? "part" : "good"}"></span>Connected to ${st.up} of ${st.total} game servers</p>
+    <button class="btn btn-ghost" data-act="sheet-close">Close</button>`);
+}
+function confirmSheet(title, body, yes, fn) {
+  S.ui.onConfirm = fn;
+  openSheet(`<h2 class="sheet-title" id="sheet-title">${esc(title)}</h2><p class="sheet-body">${esc(body)}</p>
+    <div class="actions"><button class="btn btn-danger" data-act="confirm-yes">${esc(yes)}</button><button class="btn btn-ghost" data-act="sheet-close">Cancel</button></div>`);
+}
+function openSheet(html) {
+  let sh = $("#sheet");
+  if (!sh) { sh = document.createElement("div"); sh.id = "sheet"; sh.className = "sheet"; document.body.appendChild(sh); }
+  sh.innerHTML = `<div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="sheet-title">${html}</div>`;
+  sh.hidden = false; S.ui.sheet = true;
+  const first = sh.querySelector("button"); if (first) first.focus({ preventScroll: true });
+}
+function closeSheet() { const sh = $("#sheet"); if (sh) sh.hidden = true; S.ui.sheet = null; S.ui.onConfirm = null; }
+let toastTimer = null;
+function toast(msg) {
+  let t = $("#toast"); if (!t) { t = document.createElement("div"); t.id = "toast"; t.className = "toast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
+}
+function floatEmoji(e, p) {
+  const el = document.createElement("div");
+  el.className = "float-emoji";
+  el.innerHTML = `<span class="fe-emoji">${e}</span>${p ? `<span class="fe-name">${esc(p.name)}</span>` : ""}`;
+  el.style.left = (12 + Math.random() * 70) + "%";
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), reducedMotion() ? 1500 : 2600);
+}
+function confetti() {
+  if (reducedMotion()) return;
+  const c = document.createElement("canvas"); c.className = "confetti"; document.body.appendChild(c);
+  const ctx = c.getContext("2d"), dpr = Math.min(2, window.devicePixelRatio || 1);
+  const W = c.width = innerWidth * dpr, H = c.height = innerHeight * dpr;
+  const cols = ["#FFD35C", "#FF5E57", "#3B9CFF", "#B479FF", "#3FE0A2", "#F6F3FF"];
+  const bits = Array.from({ length: 140 }, () => ({ x: Math.random() * W, y: -Math.random() * H * 0.6, w: (6 + Math.random() * 6) * dpr, h: (8 + Math.random() * 10) * dpr, vx: (Math.random() - 0.5) * 2.4 * dpr, vy: (2.2 + Math.random() * 3.2) * dpr, r: Math.random() * 6, vr: (Math.random() - 0.5) * 0.25, c: cols[(Math.random() * cols.length) | 0] }));
+  const t0 = performance.now();
+  (function frame(t) {
+    ctx.clearRect(0, 0, W, H);
+    for (const b of bits) { b.x += b.vx; b.y += b.vy; b.r += b.vr; ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.r); ctx.fillStyle = b.c; ctx.fillRect(-b.w / 2, -b.h / 2, b.w, b.h); ctx.restore(); }
+    if (t - t0 < 4200) requestAnimationFrame(frame); else c.remove();
+  })(t0);
+}
+function buildBulbs(sign) {
+  const box = sign.querySelector(".bulbs"); if (!box || box.childElementCount) return;
+  const perSide = sign.classList.contains("small") ? [9, 4] : [11, 6];
+  const pts = [];
+  for (let i = 0; i < perSide[0]; i++) pts.push([(i + 0.5) / perSide[0] * 100, 0]);
+  for (let i = 0; i < perSide[1]; i++) pts.push([100, (i + 0.5) / perSide[1] * 100]);
+  for (let i = perSide[0] - 1; i >= 0; i--) pts.push([(i + 0.5) / perSide[0] * 100, 100]);
+  for (let i = perSide[1] - 1; i >= 0; i--) pts.push([0, (i + 0.5) / perSide[1] * 100]);
+  box.innerHTML = pts.map(([x, y], i) => `<i style="left:${x}%;top:${y}%;animation-delay:${-(i % 3) * 0.4}s"></i>`).join("");
+}
+async function keepAwake(on) {
+  try {
+    if (on && "wakeLock" in navigator && document.visibilityState === "visible") { if (!S.wake) { S.wake = await navigator.wakeLock.request("screen"); S.wake.addEventListener("release", () => { S.wake = null; }); } }
+    else if (!on && S.wake) { await S.wake.release(); S.wake = null; }
+  } catch (e) { S.wake = null; }
+}
+
+if (typeof window !== "undefined" && typeof document !== "undefined") {
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+}
+
+</script>
+</body>
+</html>
