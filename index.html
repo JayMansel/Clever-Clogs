@@ -104,7 +104,9 @@ button { touch-action: manipulation; }
 .btn-danger { background: var(--tomato); color: #fff; box-shadow: 0 5px 0 #A8322D; }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; transform: none; }
 .actions { display: grid; gap: 12px; }
-.link-btn { background: none; border: 0; padding: 4px; color: var(--azure); font-size: 14px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.link-btn { background: none; border: 0; padding: 6px 4px; min-height: 36px; color: var(--azure); font-size: 14px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.group-links { display: inline-flex; gap: 10px; }
+.chips.decades .chip { min-width: 4.4em; }
 
 /* ---------- home ---------- */
 .lede { margin: 0; text-align: center; font-size: 18px; text-wrap: balance; max-width: 34ch; margin-inline: auto; }
@@ -426,8 +428,21 @@ const CATEGORIES = {
   nature: "Animals & Nature",
   sport: "Sport",
   wales: "Wales",
-  words: "Words & Phrases"
+  words: "Words & Phrases",
+  m60: "Sixties Music",
+  m70: "Seventies Music",
+  m80: "Eighties Music",
+  m90: "Nineties Music",
+  m00: "Noughties Music",
+  m10: "2010s Music",
+  m20: "2020s Music"
 };
+/* How the lobby groups them. The decades are off by default so a normal quiz stays a mixed bag. */
+const CATEGORY_GROUPS = [
+  { key: "mix", label: "Categories", cats: ["gk", "food", "screen", "music", "geo", "hist", "sci", "nature", "sport", "wales", "words"] },
+  { key: "decades", label: "Music through the decades", cats: ["m60", "m70", "m80", "m90", "m00", "m10", "m20"] }
+];
+const CATEGORY_SHORT = { m60: "’60s", m70: "’70s", m80: "’80s", m90: "’90s", m00: "Noughties", m10: "2010s", m20: "2020s" };
 
 const QUESTION_BANK = [
 /* ---------- General Knowledge ---------- */
@@ -537,39 +552,38 @@ const QUESTION_BANK = [
 
 /* ---------- Music ---------- */
 {c:"music",d:1,q:"How many strings does a violin have?",a:"Four",w:["Five","Six","Three"]},
-{c:"music",d:1,q:"Which band recorded ‘Bohemian Rhapsody’?",a:"Queen",w:["The Beatles","ABBA","Led Zeppelin"]},
-{c:"music",d:1,q:"Which Welsh singer is famous for ‘It’s Not Unusual’ and ‘Delilah’?",a:"Tom Jones",w:["Shakin’ Stevens","Bonnie Tyler","Shirley Bassey"]},
-{c:"music",d:2,q:"Which Welsh singer had a worldwide hit with ‘Total Eclipse of the Heart’?",a:"Bonnie Tyler",w:["Shirley Bassey","Duffy","Cerys Matthews"]},
+{c:"m70",d:1,q:"Which band recorded ‘Bohemian Rhapsody’?",a:"Queen",w:["The Beatles","ABBA","Led Zeppelin"]},
+{c:"m60",d:1,q:"Which Welsh singer is famous for ‘It’s Not Unusual’ and ‘Delilah’?",a:"Tom Jones",w:["Shakin’ Stevens","Bonnie Tyler","Shirley Bassey"]},
+{c:"m80",d:2,q:"Which Welsh singer had a worldwide hit with ‘Total Eclipse of the Heart’?",a:"Bonnie Tyler",w:["Shirley Bassey","Duffy","Cerys Matthews"]},
 {c:"music",d:2,q:"Which Welsh singer has sung the theme songs for three James Bond films?",a:"Shirley Bassey",w:["Tom Jones","Bonnie Tyler","Katherine Jenkins"],f:"‘Goldfinger’, ‘Diamonds Are Forever’ and ‘Moonraker’."},
-{c:"music",d:1,q:"Benny, Björn, Agnetha and Anni-Frid made up which band?",a:"ABBA",w:["Roxette","Ace of Base","The Cardigans"]},
-{c:"music",d:1,q:"Which country won Eurovision in 1974 with ABBA’s ‘Waterloo’?",a:"Sweden",w:["Norway","Denmark","United Kingdom"]},
+{c:"m70",d:1,q:"Benny, Björn, Agnetha and Anni-Frid made up which band?",a:"ABBA",w:["Roxette","Ace of Base","The Cardigans"]},
 {c:"music",d:1,q:"Who was known as the ‘King of Pop’?",a:"Michael Jackson",w:["Elvis Presley","Prince","Justin Timberlake"]},
-{c:"music",d:2,q:"Which Beatles album cover shows the band walking over a zebra crossing?",a:"Abbey Road",w:["Let It Be","Revolver","Help!"]},
-{c:"music",d:1,q:"How many Spice Girls were there?",a:"Five",w:["Four","Six","Three"]},
-{c:"music",d:1,q:"Which Spice Girl was known as Posh Spice?",a:"Victoria Beckham",w:["Emma Bunton","Geri Halliwell","Melanie Chisholm"]},
+{c:"m60",d:2,q:"Which Beatles album cover shows the band walking over a zebra crossing?",a:"Abbey Road",w:["Let It Be","Revolver","Help!"]},
+{c:"m90",d:1,q:"How many Spice Girls were there?",a:"Five",w:["Four","Six","Three"]},
+{c:"m90",d:1,q:"Which Spice Girl was known as Posh Spice?",a:"Victoria Beckham",w:["Emma Bunton","Geri Halliwell","Melanie Chisholm"]},
 {c:"music",d:1,q:"Which singer’s albums are called ‘19’, ‘21’, ‘25’ and ‘30’?",a:"Adele",w:["Amy Winehouse","Lady Gaga","Dua Lipa"]},
-{c:"music",d:2,q:"Which Taylor Swift album is named after the year she was born?",a:"1989",w:["1999","1984","2001"]},
+{c:"m10",d:2,q:"Which Taylor Swift album is named after the year she was born?",a:"1989",w:["1999","1984","2001"]},
 {c:"music",d:2,q:"In music, what does ‘forte’ mean?",a:"Loud",w:["Soft","Fast","Slow"]},
-{c:"music",d:2,q:"Which Welsh band released ‘A Design for Life’?",a:"Manic Street Preachers",w:["Stereophonics","Super Furry Animals","Catatonia"]},
-{c:"music",d:2,q:"Which Welsh band had a number one with ‘Dakota’?",a:"Stereophonics",w:["Manic Street Preachers","Feeder","Catatonia"]},
+{c:"m90",d:2,q:"Which Welsh band released ‘A Design for Life’?",a:"Manic Street Preachers",w:["Stereophonics","Super Furry Animals","Catatonia"]},
+{c:"m00",d:2,q:"Which Welsh band had a number one with ‘Dakota’?",a:"Stereophonics",w:["Manic Street Preachers","Feeder","Catatonia"]},
 {c:"music",d:2,q:"What was the name of Elvis Presley’s Memphis mansion?",a:"Graceland",w:["Neverland","Paisley Park","Sunnyside"]},
 {c:"music",d:1,q:"Who is often called the ‘Queen of Pop’?",a:"Madonna",w:["Cher","Kylie Minogue","Whitney Houston"]},
-{c:"music",d:1,q:"Which band had hits with ‘Wonderwall’ and ‘Don’t Look Back in Anger’?",a:"Oasis",w:["Blur","Pulp","The Verve"]},
+{c:"m90",d:1,q:"Which band had hits with ‘Wonderwall’ and ‘Don’t Look Back in Anger’?",a:"Oasis",w:["Blur","Pulp","The Verve"]},
 {c:"music",d:2,q:"The song ‘Memory’ comes from which musical?",a:"Cats",w:["Evita","The Phantom of the Opera","Les Misérables"]},
 {c:"music",d:2,q:"Which Andrew Lloyd Webber musical tells the story of Eva Perón?",a:"Evita",w:["Sunset Boulevard","Aspects of Love","Starlight Express"]},
 {c:"music",d:2,q:"Which drummer went on to become Genesis’s lead singer and a solo star?",a:"Phil Collins",w:["Ringo Starr","Roger Taylor","Dave Grohl"]},
-{c:"music",d:1,q:"Who was the drummer in The Beatles?",a:"Ringo Starr",w:["George Harrison","Paul McCartney","John Lennon"]},
+{c:"m60",d:1,q:"Who was the drummer in The Beatles?",a:"Ringo Starr",w:["George Harrison","Paul McCartney","John Lennon"]},
 {c:"music",d:2,q:"What nationality is the singer Björk?",a:"Icelandic",w:["Norwegian","Swedish","Finnish"]},
 {c:"music",d:2,q:"Where does the Last Night of the Proms take place?",a:"The Royal Albert Hall",w:["The Royal Festival Hall","Wembley Arena","The O2"]},
-{c:"music",d:1,q:"Which boy band had hits with ‘Back for Good’ and ‘Relight My Fire’?",a:"Take That",w:["Boyzone","Westlife","East 17"]},
-{c:"music",d:1,q:"Harry Styles first found fame in which band?",a:"One Direction",w:["The Wanted","JLS","Busted"]},
+{c:"m90",d:1,q:"Which boy band had hits with ‘Back for Good’ and ‘Relight My Fire’?",a:"Take That",w:["Boyzone","Westlife","East 17"]},
+{c:"m10",d:1,q:"Harry Styles first found fame in which band?",a:"One Direction",w:["The Wanted","JLS","Busted"]},
 {c:"music",d:1,q:"What does a metronome do?",a:"Keeps a steady beat",w:["Tunes strings","Measures volume","Records sound"]},
 {c:"music",d:2,q:"Which instrument is often called the national instrument of Wales?",a:"The harp",w:["The bagpipes","The fiddle","The accordion"]},
-{c:"music",d:2,q:"Which Welsh singer had a hit with ‘Mercy’ in 2008?",a:"Duffy",w:["Cerys Matthews","Charlotte Church","Katherine Jenkins"]},
-{c:"music",d:1,q:"Who released ‘Shape of You’ in 2017?",a:"Ed Sheeran",w:["Sam Smith","Lewis Capaldi","Shawn Mendes"]},
+{c:"m00",d:2,q:"Which Welsh singer had a hit with ‘Mercy’ in 2008?",a:"Duffy",w:["Cerys Matthews","Charlotte Church","Katherine Jenkins"]},
+{c:"m10",d:1,q:"Who released ‘Shape of You’ in 2017?",a:"Ed Sheeran",w:["Sam Smith","Lewis Capaldi","Shawn Mendes"]},
 {c:"music",d:1,q:"How many musicians play in a quartet?",a:"Four",w:["Three","Five","Eight"]},
 {c:"music",d:2,q:"Which composer wrote ‘The Four Seasons’?",a:"Vivaldi",w:["Mozart","Bach","Handel"]},
-{c:"music",d:2,q:"Which Welsh singer found fame aged 12 with the album ‘Voice of an Angel’?",a:"Charlotte Church",w:["Katherine Jenkins","Duffy","Aled Jones"]},
+{c:"m90",d:2,q:"Which Welsh singer found fame aged 12 with the album ‘Voice of an Angel’?",a:"Charlotte Church",w:["Katherine Jenkins","Duffy","Aled Jones"]},
 
 /* ---------- Geography ---------- */
 {c:"geo",d:1,q:"What is the capital of Australia?",a:"Canberra",w:["Sydney","Melbourne","Perth"]},
@@ -830,7 +844,7 @@ const QUESTION_BANK = [
 {c:"geo",d:3,t:"tf",q:"The Sahara is the largest desert on Earth.",a:false,f:"Antarctica is — a desert is defined by how little rain or snow it gets, not by heat."},
 {c:"screen",d:2,t:"tf",q:"Darth Vader never actually says ‘Luke, I am your father’.",a:true,f:"The real line is ‘No, I am your father.’"},
 {c:"screen",d:3,t:"tf",q:"In Disney’s 1937 ‘Snow White’, the Queen begins her chant with ‘Mirror, mirror on the wall’.",a:false,f:"She says ‘Magic mirror on the wall’."},
-{c:"music",d:1,t:"tf",q:"The Beatles came from Liverpool.",a:true},
+{c:"m60",d:1,t:"tf",q:"The Beatles came from Liverpool.",a:true},
 {c:"sport",d:2,t:"tf",q:"Golf has been played on the Moon.",a:true,f:"Astronaut Alan Shepard hit two golf balls during Apollo 14 in 1971."},
 {c:"sport",d:2,t:"tf",q:"Olympic gold medals are made mostly of gold.",a:false,f:"They’re mostly silver, plated with at least 6 grams of gold."},
 {c:"nature",d:1,t:"tf",q:"Sharks are mammals.",a:false},
@@ -869,7 +883,7 @@ const QUESTION_BANK = [
 {c:"geo",d:3,t:"num",q:"How tall is Mount Everest, in metres?",a:8849,u:"metres"},
 {c:"hist",d:2,t:"num",q:"In what year did the Channel Tunnel open?",a:1994,u:"year"},
 {c:"hist",d:2,t:"num",q:"In what year did Elizabeth II become Queen?",a:1952,u:"year"},
-{c:"music",d:3,t:"num",q:"In what year did The Beatles release their first single, ‘Love Me Do’?",a:1962,u:"year"},
+{c:"m60",d:3,t:"num",q:"In what year did The Beatles release their first single, ‘Love Me Do’?",a:1962,u:"year"},
 {c:"screen",d:2,t:"num",q:"In what year was the first Harry Potter film released?",a:2001,u:"year"},
 {c:"gk",d:1,t:"num",q:"How many squares are there on a chessboard?",a:64,u:"squares"},
 {c:"sci",d:2,t:"num",q:"What is the boiling point of water in degrees Fahrenheit?",a:212,u:"°F"},
@@ -880,7 +894,7 @@ const QUESTION_BANK = [
 {c:"gk",d:2,t:"num",q:"How many years of marriage does a diamond anniversary celebrate?",a:60,u:"years"},
 {c:"wales",d:3,t:"num",q:"In what year was Cardiff proclaimed the capital of Wales?",a:1955,u:"year"},
 {c:"wales",d:2,t:"num",q:"In what year did the Senedd (then the National Assembly for Wales) first meet?",a:1999,u:"year"},
-{c:"music",d:2,t:"num",q:"In what year did Queen play Live Aid?",a:1985,u:"year"},
+{c:"m80",d:2,t:"num",q:"In what year did Queen play Live Aid?",a:1985,u:"year"},
 {c:"screen",d:3,t:"num",q:"In what year was the first episode of ‘EastEnders’ shown?",a:1985,u:"year"},
 {c:"screen",d:3,t:"num",q:"How many episodes of ‘Friends’ were made?",a:236,u:"episodes"},
 {c:"sci",d:3,t:"num",q:"How many elements are there in the periodic table?",a:118,u:"elements"},
@@ -888,7 +902,7 @@ const QUESTION_BANK = [
 {c:"hist",d:2,t:"num",q:"In what year did the Berlin Wall fall?",a:1989,u:"year"},
 {c:"hist",d:2,t:"num",q:"In what year did the UK switch to decimal currency?",a:1971,u:"year"},
 {c:"screen",d:3,t:"num",q:"In what year was ‘Coronation Street’ first broadcast?",a:1960,u:"year"},
-{c:"music",d:2,t:"num",q:"In what year did ABBA win Eurovision with ‘Waterloo’?",a:1974,u:"year"},
+{c:"m70",d:2,t:"num",q:"In what year did ABBA win Eurovision with ‘Waterloo’?",a:1974,u:"year"},
 {c:"gk",d:3,t:"num",q:"How many tiles are there in a standard English Scrabble set?",a:100,u:"tiles"},
 {c:"music",d:2,t:"num",q:"How many keys are there on a standard piano?",a:88,u:"keys"},
 {c:"sci",d:2,t:"num",q:"How many moons does Mars have?",a:2,u:"moons"},
@@ -911,13 +925,256 @@ const QUESTION_BANK = [
 {c:"geo",d:2,t:"num",q:"How many countries are there in the European Union?",a:27,u:"countries"},
 {c:"sport",d:2,t:"num",q:"How many players are on the pitch in a rugby union match, counting both teams?",a:30,u:"players"},
 {c:"screen",d:2,t:"num",q:"In what year was the first ‘Toy Story’ film released?",a:1995,u:"year"},
-{c:"music",d:2,t:"num",q:"In what year did Elvis Presley die?",a:1977,u:"year"},
+{c:"m70",d:2,t:"num",q:"In what year did Elvis Presley die?",a:1977,u:"year"},
 {c:"gk",d:2,t:"num",q:"How many seconds are there in an hour?",a:3600,u:"seconds"},
 {c:"geo",d:3,t:"num",q:"Roughly how long is the River Severn, in miles?",a:220,u:"miles"},
-{c:"screen",d:3,t:"num",q:"In what year was ‘Doctor Who’ first shown on the BBC?",a:1963,u:"year"}
+{c:"screen",d:3,t:"num",q:"In what year was ‘Doctor Who’ first shown on the BBC?",a:1963,u:"year"},
+
+/* ---------- Music (timeless top-ups) ---------- */
+{c:"music",d:2,q:"Who composed the ‘1812 Overture’?",a:"Tchaikovsky",w:["Beethoven","Mozart","Wagner"]},
+{c:"music",d:1,q:"What is the gap between one note and the next note of the same name, eight notes higher?",a:"An octave",w:["A chord","A bar","An arpeggio"]},
+{c:"music",d:2,q:"Which instrument does a timpanist play?",a:"Kettle drums",w:["The harp","The trumpet","The xylophone"]},
+{c:"music",d:1,q:"Which musical features the songs ‘Do-Re-Mi’ and ‘Edelweiss’?",a:"The Sound of Music",w:["The King and I","Oklahoma!","My Fair Lady"]},
+{c:"music",d:1,q:"Which musical is about a masked figure who haunts a Paris opera house?",a:"The Phantom of the Opera",w:["Les Misérables","Chess","Sunset Boulevard"]},
+{c:"music",d:1,q:"Which brass instrument has a slide?",a:"The trombone",w:["The trumpet","The French horn","The tuba"]},
+{c:"music",d:2,q:"What does singing ‘a cappella’ mean?",a:"Singing without instruments",w:["Singing very quietly","Singing in a church","Singing in Italian"]},
+{c:"music",d:2,q:"‘Bread of Heaven’, the rugby favourite, is sung to which Welsh hymn tune?",a:"Cwm Rhondda",w:["Calon Lân","Myfanwy","Sosban Fach"]},
+{c:"music",d:1,q:"What is the Welsh national anthem called?",a:"Hen Wlad Fy Nhadau",w:["Calon Lân","Cwm Rhondda","Sosban Fach"],f:"It means ‘Land of My Fathers’."},
+{c:"music",d:2,q:"Who wrote the film music for ‘Star Wars’, ‘Jaws’ and ‘Harry Potter’?",a:"John Williams",w:["Hans Zimmer","Ennio Morricone","James Horner"]},
+{c:"music",d:3,q:"Which instrument did Jacqueline du Pré famously play?",a:"The cello",w:["The violin","The piano","The harp"]},
+{c:"music",d:3,q:"Orchestras usually tune up to which note, played by the oboe?",a:"A",w:["C","E","G"]},
+{c:"music",d:2,q:"The ‘Hallelujah’ chorus comes from which work by Handel?",a:"Messiah",w:["Water Music","Music for the Royal Fireworks","Zadok the Priest"]},
+
+/* ---------- Sixties music ---------- */
+{c:"m60",d:2,q:"Which Beatles album from 1967 has a famously colourful crowd on its cover?",a:"Sgt. Pepper’s Lonely Hearts Club Band",w:["Revolver","Rubber Soul","Help!"]},
+{c:"m60",d:1,q:"Who was the lead singer of The Rolling Stones?",a:"Mick Jagger",w:["Keith Richards","Roger Daltrey","Ray Davies"]},
+{c:"m60",d:2,q:"Which band had a 1966 hit with ‘Good Vibrations’?",a:"The Beach Boys",w:["The Monkees","The Byrds","The Mamas & the Papas"]},
+{c:"m60",d:1,q:"Which famous music festival took place on a dairy farm in New York State in August 1969?",a:"Woodstock",w:["Glastonbury","Monterey Pop","The Isle of Wight Festival"]},
+{c:"m60",d:2,q:"Roger Daltrey and Pete Townshend were members of which band?",a:"The Who",w:["The Kinks","The Animals","The Yardbirds"]},
+{c:"m60",d:3,q:"Which Liverpool band took ‘You’ll Never Walk Alone’ to number one in 1963?",a:"Gerry and the Pacemakers",w:["The Searchers","The Merseybeats","The Hollies"]},
+{c:"m60",d:2,q:"Who topped the charts in 1966 with ‘These Boots Are Made for Walkin’’?",a:"Nancy Sinatra",w:["Dusty Springfield","Petula Clark","Sandie Shaw"]},
+{c:"m60",d:2,q:"Which Liverpool singer had 1964 number ones with ‘Anyone Who Had a Heart’ and ‘You’re My World’?",a:"Cilla Black",w:["Dusty Springfield","Sandie Shaw","Lulu"]},
+{c:"m60",d:2,q:"Sandie Shaw won Eurovision for the UK in 1967 with which song?",a:"Puppet on a String",w:["Congratulations","Boom Bang-a-Bang","Waterloo"]},
+{c:"m60",d:2,q:"Which band had a transatlantic number one in 1964 with ‘The House of the Rising Sun’?",a:"The Animals",w:["The Kinks","The Zombies","The Yardbirds"]},
+{c:"m60",d:2,q:"Which band recorded ‘Waterloo Sunset’ in 1967?",a:"The Kinks",w:["The Who","Small Faces","The Hollies"]},
+{c:"m60",d:2,q:"What was the name of Jimi Hendrix’s 1960s band?",a:"The Jimi Hendrix Experience",w:["Cream","The Doors","Traffic"]},
+{c:"m60",d:2,q:"Who came second at Eurovision 1968 with ‘Congratulations’?",a:"Cliff Richard",w:["Tom Jones","Engelbert Humperdinck","Matt Monro"],f:"He lost to Spain by a single point."},
+{c:"m60",d:1,q:"Which Beatle sings lead vocals on ‘Yesterday’?",a:"Paul McCartney",w:["John Lennon","George Harrison","Ringo Starr"]},
+{c:"m60",d:2,q:"Which Motown girl group sang ‘Baby Love’ and ‘Where Did Our Love Go’?",a:"The Supremes",w:["The Ronettes","The Shirelles","Martha and the Vandellas"]},
+{c:"m60",d:2,q:"Who had a 1968 hit with ‘I Heard It Through the Grapevine’?",a:"Marvin Gaye",w:["Stevie Wonder","Smokey Robinson","Otis Redding"]},
+{c:"m60",d:3,q:"Which Sixties singer was born Mary O’Brien?",a:"Dusty Springfield",w:["Cilla Black","Lulu","Sandie Shaw"]},
+{c:"m60",d:2,q:"Which Scottish singer had her first hit with ‘Shout’ in 1964?",a:"Lulu",w:["Dusty Springfield","Cilla Black","Sandie Shaw"]},
+{c:"m60",d:3,q:"Which band’s 1967 debut single was ‘A Whiter Shade of Pale’?",a:"Procol Harum",w:["The Moody Blues","Pink Floyd","The Zombies"]},
+{c:"m60",d:2,q:"Ravi Shankar, who taught George Harrison, was a master of which instrument?",a:"The sitar",w:["The tabla","The harmonium","The veena"]},
+{c:"m60",d:2,q:"Which famous Sixties ‘pirate’ radio station broadcast from a ship off the British coast?",a:"Radio Caroline",w:["Radio Luxembourg","BBC Radio 1","Capital Radio"]},
+{c:"m60",d:2,q:"Which BBC station launched in 1967 with Tony Blackburn as its first DJ?",a:"Radio 1",w:["Radio 2","Radio 4","Radio 5"]},
+{c:"m60",d:3,q:"Mary Hopkin from Pontardawe had a 1968 number one with which song?",a:"Those Were the Days",w:["Puppet on a String","Downtown","Congratulations"]},
+{c:"m60",d:3,q:"Which 1968 Beatles single spent nine weeks at number one in America?",a:"Hey Jude",w:["Let It Be","Help!","Yesterday"]},
+{c:"m60",d:2,t:"tf",q:"The Beatles’ final public performance was on the roof of their Apple offices in London.",a:true,f:"The rooftop concert took place on 30 January 1969."},
+{c:"m60",d:1,t:"tf",q:"Jimi Hendrix was British.",a:false,f:"He was from Seattle, but found fame in London."},
+{c:"m60",d:2,t:"tf",q:"Bob Dylan has won the Nobel Prize in Literature.",a:true,f:"He was awarded it in 2016."},
+{c:"m60",d:3,t:"num",q:"How many UK number one singles did The Beatles have?",a:17,u:"number ones"},
+{c:"m60",d:3,t:"num",q:"In what year did The Rolling Stones release ‘(I Can’t Get No) Satisfaction’?",a:1965,u:"year"},
+
+/* ---------- Seventies music ---------- */
+{c:"m70",d:1,q:"Which band released the album ‘The Dark Side of the Moon’ in 1973?",a:"Pink Floyd",w:["Led Zeppelin","Genesis","Yes"]},
+{c:"m70",d:1,q:"Which film soundtrack featured the Bee Gees’ ‘Stayin’ Alive’?",a:"Saturday Night Fever",w:["Grease","Fame","Flashdance"]},
+{c:"m70",d:1,q:"Who sang ‘You’re the One That I Want’ with John Travolta?",a:"Olivia Newton-John",w:["Stockard Channing","Farrah Fawcett","Debbie Harry"]},
+{c:"m70",d:1,q:"Which singer created the glam rock character Ziggy Stardust?",a:"David Bowie",w:["Marc Bolan","Freddie Mercury","Elton John"]},
+{c:"m70",d:2,q:"Marc Bolan was the frontman of which band?",a:"T. Rex",w:["Slade","Sweet","Mud"]},
+{c:"m70",d:2,q:"Which band had the 1973 Christmas number one ‘Merry Xmas Everybody’?",a:"Slade",w:["Wizzard","Mud","Sweet"]},
+{c:"m70",d:1,q:"Johnny Rotten and Sid Vicious were members of which punk band?",a:"The Sex Pistols",w:["The Clash","The Damned","Buzzcocks"]},
+{c:"m70",d:1,q:"Which band released the 1977 album ‘Rumours’?",a:"Fleetwood Mac",w:["Eagles","Supertramp","The Carpenters"]},
+{c:"m70",d:1,q:"Which band recorded ‘Hotel California’?",a:"Eagles",w:["Fleetwood Mac","The Doobie Brothers","Steely Dan"]},
+{c:"m70",d:2,q:"Which singer was born Reginald Dwight?",a:"Elton John",w:["Rod Stewart","Cliff Richard","David Essex"]},
+{c:"m70",d:2,q:"Which band’s members wore face paint as ‘The Demon’ and ‘The Starchild’?",a:"Kiss",w:["Alice Cooper","Twisted Sister","Slade"]},
+{c:"m70",d:1,q:"Who recorded ‘No Woman, No Cry’ with The Wailers?",a:"Bob Marley",w:["Jimmy Cliff","Peter Tosh","Desmond Dekker"]},
+{c:"m70",d:1,q:"Which disco group sang ‘Y.M.C.A.’?",a:"Village People",w:["Boney M.","Chic","KC and the Sunshine Band"]},
+{c:"m70",d:2,q:"Which band had the 1977 Christmas number one ‘Mull of Kintyre’?",a:"Wings",w:["The Beatles","Queen","Slade"]},
+{c:"m70",d:3,q:"Harry Nilsson’s 1972 number one ‘Without You’ was written by members of which Swansea band?",a:"Badfinger",w:["Budgie","Man","Amen Corner"]},
+{c:"m70",d:1,q:"Which band recorded ‘Stairway to Heaven’?",a:"Led Zeppelin",w:["Deep Purple","Black Sabbath","Pink Floyd"]},
+{c:"m70",d:2,q:"Which Birmingham band, fronted by Ozzy Osbourne, is often called the first heavy metal band?",a:"Black Sabbath",w:["Judas Priest","Deep Purple","Led Zeppelin"]},
+{c:"m70",d:3,q:"Which singer-songwriter released the 1971 album ‘Tapestry’?",a:"Carole King",w:["Joni Mitchell","Carly Simon","Joan Baez"]},
+{c:"m70",d:1,q:"Debbie Harry was the singer in which band?",a:"Blondie",w:["The Pretenders","Talking Heads","The Runaways"]},
+{c:"m70",d:2,q:"Which Irish band had a 1979 number one with ‘I Don’t Like Mondays’?",a:"The Boomtown Rats",w:["Thin Lizzy","U2","The Undertones"]},
+{c:"m70",d:1,q:"Who sang the 1978 disco anthem ‘I Will Survive’?",a:"Gloria Gaynor",w:["Donna Summer","Diana Ross","Chaka Khan"]},
+{c:"m70",d:2,q:"Which group had Seventies hits with ‘Rivers of Babylon’ and ‘Daddy Cool’?",a:"Boney M.",w:["Village People","ABBA","Chic"]},
+{c:"m70",d:2,q:"Which tartan-clad Scottish band had a 1975 number one with ‘Bye Bye Baby’?",a:"Bay City Rollers",w:["The Rubettes","Mud","The Osmonds"]},
+{c:"m70",d:3,q:"Which punk band released the 1979 album ‘London Calling’?",a:"The Clash",w:["The Jam","The Sex Pistols","The Damned"]},
+{c:"m70",d:2,q:"Which singer had a 1978 number one with ‘Wuthering Heights’ when she was just 19?",a:"Kate Bush",w:["Debbie Harry","Siouxsie Sioux","Toyah"]},
+{c:"m70",d:2,t:"tf",q:"Freddie Mercury was born in Zanzibar.",a:true},
+{c:"m70",d:3,t:"tf",q:"‘Bohemian Rhapsody’ has been the UK’s Christmas number one twice.",a:true,f:"In 1975 and again in 1991."},
+{c:"m70",d:3,t:"tf",q:"The Sex Pistols’ ‘God Save the Queen’ officially reached number one in 1977.",a:false,f:"It officially peaked at number two during the Queen’s Silver Jubilee week."},
+{c:"m70",d:3,t:"num",q:"How many weeks did ‘Bohemian Rhapsody’ spend at number one in 1975–76?",a:9,u:"weeks"},
+
+/* ---------- Eighties music ---------- */
+{c:"m80",d:1,q:"Which Michael Jackson album is often called the best-selling album of all time?",a:"Thriller",w:["Bad","Off the Wall","Dangerous"]},
+{c:"m80",d:1,q:"Which charity group released ‘Do They Know It’s Christmas?’ in 1984?",a:"Band Aid",w:["Live Aid","USA for Africa","Comic Relief"]},
+{c:"m80",d:3,q:"Live Aid was held at Wembley Stadium and which American stadium?",a:"JFK Stadium, Philadelphia",w:["Madison Square Garden, New York","Yankee Stadium, New York","The Rose Bowl, Pasadena"]},
+{c:"m80",d:1,q:"Which Welsh singer had the 1985 Christmas number one ‘Merry Christmas Everyone’?",a:"Shakin’ Stevens",w:["Tom Jones","Bonnie Tyler","Aled Jones"]},
+{c:"m80",d:1,q:"Aled Jones had a 1985 hit with ‘Walking in the Air’ from which animated film?",a:"The Snowman",w:["Watership Down","When the Wind Blows","The Wind in the Willows"]},
+{c:"m80",d:1,q:"Simon Le Bon was the lead singer of which band?",a:"Duran Duran",w:["Spandau Ballet","Wham!","A-ha"]},
+{c:"m80",d:1,q:"Which duo was made up of George Michael and Andrew Ridgeley?",a:"Wham!",w:["Tears for Fears","Pet Shop Boys","Soft Cell"]},
+{c:"m80",d:1,q:"Which Norwegian band had a hit with ‘Take On Me’?",a:"A-ha",w:["Roxette","Europe","Aqua"]},
+{c:"m80",d:2,q:"Which Scottish band sang ‘Don’t You (Forget About Me)’ for the film ‘The Breakfast Club’?",a:"Simple Minds",w:["Big Country","Deacon Blue","Wet Wet Wet"]},
+{c:"m80",d:2,q:"Which band had a 1984 number one with ‘Relax’?",a:"Frankie Goes to Hollywood",w:["Culture Club","Soft Cell","Bronski Beat"]},
+{c:"m80",d:1,q:"Boy George was the singer in which band?",a:"Culture Club",w:["Spandau Ballet","Duran Duran","Visage"]},
+{c:"m80",d:2,q:"Which Kate Bush song from 1985 went to number one in 2022 thanks to ‘Stranger Things’?",a:"Running Up That Hill",w:["Wuthering Heights","Babooshka","Hounds of Love"]},
+{c:"m80",d:2,q:"Which duo was made up of Annie Lennox and Dave Stewart?",a:"Eurythmics",w:["Yazoo","Everything but the Girl","The Communards"]},
+{c:"m80",d:1,q:"Which Irish band released the album ‘The Joshua Tree’ in 1987?",a:"U2",w:["Simple Minds","The Pogues","Thin Lizzy"]},
+{c:"m80",d:1,q:"Which ‘Neighbours’ star had a 1988 number one with ‘I Should Be So Lucky’?",a:"Kylie Minogue",w:["Jason Donovan","Dannii Minogue","Natalie Imbruglia"]},
+{c:"m80",d:2,q:"Stock Aitken Waterman were famous in the Eighties as what?",a:"Songwriters and producers",w:["A comedy trio","A boy band","TV presenters"]},
+{c:"m80",d:3,q:"Which Bon Jovi album included ‘Livin’ on a Prayer’?",a:"Slippery When Wet",w:["New Jersey","Keep the Faith","Crush"]},
+{c:"m80",d:1,q:"Whose 1984 album and film were both called ‘Purple Rain’?",a:"Prince",w:["Michael Jackson","Lionel Richie","Stevie Wonder"]},
+{c:"m80",d:1,q:"Which band recorded ‘Sweet Child o’ Mine’?",a:"Guns N’ Roses",w:["Bon Jovi","Def Leppard","Mötley Crüe"]},
+{c:"m80",d:2,q:"Which Sheffield band carried on with a one-armed drummer and released ‘Hysteria’ in 1987?",a:"Def Leppard",w:["Iron Maiden","Saxon","Whitesnake"]},
+{c:"m80",d:1,q:"Rick Astley’s ‘Never Gonna Give You Up’ later became an internet prank known as what?",a:"Rickrolling",w:["Astleying","Vinyl-bombing","Pop-trolling"]},
+{c:"m80",d:2,q:"Which band had a 1982 number one with ‘Come On Eileen’?",a:"Dexys Midnight Runners",w:["Madness","The Specials","UB40"]},
+{c:"m80",d:2,q:"Which Birmingham band had a 1983 number one with ‘Red Red Wine’?",a:"UB40",w:["Madness","The Beat","Aswad"]},
+{c:"m80",d:2,q:"Which band’s hits included ‘Our House’ and ‘Baggy Trousers’?",a:"Madness",w:["The Specials","Bad Manners","The Selecter"]},
+{c:"m80",d:3,q:"Which band from Rhyl had a 1983 hit with ‘68 Guns’?",a:"The Alarm",w:["Stereophonics","Manic Street Preachers","Catatonia"]},
+{c:"m80",d:2,q:"What was the first music video ever shown on MTV?",a:"Video Killed the Radio Star",w:["Thriller","Money for Nothing","Take On Me"]},
+{c:"m80",d:2,q:"Which Scottish duo sang ‘I’m Gonna Be (500 Miles)’ in 1988?",a:"The Proclaimers",w:["The Waterboys","Deacon Blue","Wet Wet Wet"]},
+{c:"m80",d:2,t:"tf",q:"‘Do They Know It’s Christmas?’ was written by Bob Geldof and Midge Ure.",a:true},
+{c:"m80",d:3,t:"tf",q:"Phil Collins played at both Live Aid concerts on the same day.",a:true,f:"He flew from London to Philadelphia on Concorde."},
+{c:"m80",d:3,t:"tf",q:"Madonna’s first UK number one was ‘Into the Groove’.",a:true,f:"It topped the chart in the summer of 1985."},
+{c:"m80",d:3,t:"num",q:"In what year did compact discs (CDs) go on sale in the UK?",a:1983,u:"year"},
+{c:"m80",d:2,t:"num",q:"In what year did MTV launch?",a:1981,u:"year"},
+
+/* ---------- Nineties music ---------- */
+{c:"m90",d:1,q:"Which Britpop band released the album ‘Parklife’?",a:"Blur",w:["Oasis","Pulp","Supergrass"]},
+{c:"m90",d:2,q:"Which Welsh band had 1998 hits with ‘Road Rage’ and ‘Mulder and Scully’?",a:"Catatonia",w:["Stereophonics","Super Furry Animals","Feeder"]},
+{c:"m90",d:1,q:"Which band had a 1997 hit with ‘Bitter Sweet Symphony’?",a:"The Verve",w:["Oasis","Suede","Pulp"]},
+{c:"m90",d:1,q:"Which Irish band had a 1994 hit with ‘Zombie’?",a:"The Cranberries",w:["The Corrs","U2","Boyzone"]},
+{c:"m90",d:1,q:"Who sang ‘My Heart Will Go On’, the theme from ‘Titanic’?",a:"Celine Dion",w:["Shania Twain","Alanis Morissette","Mariah Carey"]},
+{c:"m90",d:1,q:"Who released ‘…Baby One More Time’ in 1998?",a:"Britney Spears",w:["Christina Aguilera","Jessica Simpson","Mandy Moore"]},
+{c:"m90",d:1,q:"Which band recorded ‘Smells Like Teen Spirit’?",a:"Nirvana",w:["Pearl Jam","Soundgarden","Foo Fighters"]},
+{c:"m90",d:1,q:"Ronan Keating was the lead singer of which Irish boy band?",a:"Boyzone",w:["Westlife","Take That","East 17"]},
+{c:"m90",d:1,q:"Whose 1997 version of ‘Candle in the Wind’ became the UK’s best-selling single ever?",a:"Elton John",w:["George Michael","Rod Stewart","Phil Collins"]},
+{c:"m90",d:1,q:"Which pop group sang ‘Barbie Girl’?",a:"Aqua",w:["A-ha","Ace of Base","Roxette"]},
+{c:"m90",d:1,q:"Which 1996 song by Los del Río started a worldwide dance craze?",a:"Macarena",w:["La Bamba","Lambada","Mambo No. 5"]},
+{c:"m90",d:2,q:"Which Welsh band sang ‘Local Boy in the Photograph’ and ‘The Bartender and the Thief’?",a:"Stereophonics",w:["Catatonia","Manic Street Preachers","Feeder"]},
+{c:"m90",d:2,q:"Which girl group had a number one with ‘Never Ever’?",a:"All Saints",w:["Eternal","B*Witched","Atomic Kitten"]},
+{c:"m90",d:2,q:"Which band had a 1997 hit with ‘Tubthumping’?",a:"Chumbawamba",w:["Cornershop","Babybird","Space"]},
+{c:"m90",d:2,q:"Jarvis Cocker was the frontman of which Britpop band?",a:"Pulp",w:["Suede","Elastica","Sleeper"]},
+{c:"m90",d:2,q:"Which dance act released ‘Firestarter’ in 1996?",a:"The Prodigy",w:["The Chemical Brothers","Fatboy Slim","Underworld"]},
+{c:"m90",d:2,q:"Which boy band had the 1994 Christmas number one with ‘Stay Another Day’?",a:"East 17",w:["Take That","Boyzone","Westlife"]},
+{c:"m90",d:1,q:"Whitney Houston’s ‘I Will Always Love You’ came from which film?",a:"The Bodyguard",w:["Titanic","Ghost","Pretty Woman"],f:"The song was written by Dolly Parton."},
+{c:"m90",d:1,q:"Which rapper had a 1995 hit with ‘Gangsta’s Paradise’?",a:"Coolio",w:["Snoop Dogg","Dr. Dre","2Pac"]},
+{c:"m90",d:1,q:"Who released the songs ‘Ironic’ and ‘You Oughta Know’?",a:"Alanis Morissette",w:["Sheryl Crow","Natalie Imbruglia","Shania Twain"]},
+{c:"m90",d:1,q:"Which 1997 Robbie Williams ballad became his signature song?",a:"Angels",w:["Rock DJ","Feel","Millennium"]},
+{c:"m90",d:3,q:"Which Welsh band sang ‘Hermann Loves Pauline’ and ‘Northern Lites’?",a:"Super Furry Animals",w:["Catatonia","Stereophonics","Gorky’s Zygotic Mynci"]},
+{c:"m90",d:2,q:"Which Irish family band had hits with ‘Runaway’ and ‘What Can I Do’?",a:"The Corrs",w:["The Cranberries","B*Witched","Boyzone"]},
+{c:"m90",d:3,q:"Justine Frischmann was the singer in which Britpop band?",a:"Elastica",w:["Sleeper","Echobelly","Lush"]},
+{c:"m90",d:1,t:"tf",q:"‘Candle in the Wind 1997’ was a tribute to Diana, Princess of Wales.",a:true},
+{c:"m90",d:2,t:"tf",q:"When Blur and Oasis released singles on the same day in 1995, Oasis won the chart battle.",a:false,f:"Blur’s ‘Country House’ beat Oasis’s ‘Roll With It’ to number one."},
+{c:"m90",d:3,t:"tf",q:"‘Wonderwall’ reached number one in the UK.",a:false,f:"It peaked at number two."},
+{c:"m90",d:3,t:"num",q:"How many weeks did Wet Wet Wet’s ‘Love Is All Around’ spend at number one in 1994?",a:15,u:"weeks"},
+{c:"m90",d:3,t:"num",q:"How many UK number one singles did the Spice Girls have?",a:9,u:"number ones"},
+{c:"m90",d:2,t:"num",q:"How many members were in Westlife’s original line-up?",a:5,u:"members"},
+
+/* ---------- Noughties music ---------- */
+{c:"m00",d:2,q:"Girls Aloud were formed on which TV talent show in 2002?",a:"Popstars: The Rivals",w:["The X Factor","Pop Idol","Fame Academy"]},
+{c:"m00",d:2,q:"Who won the first series of ‘Pop Idol’ in 2002?",a:"Will Young",w:["Gareth Gates","Darius","Michelle McManus"]},
+{c:"m00",d:1,q:"Which ‘X Factor’ winner went on to have a worldwide hit with ‘Bleeding Love’?",a:"Leona Lewis",w:["Alexandra Burke","Shayne Ward","Beyoncé"]},
+{c:"m00",d:1,q:"Who released ‘Crazy in Love’ in 2003?",a:"Beyoncé",w:["Rihanna","Alicia Keys","Kelly Rowland"]},
+{c:"m00",d:1,q:"Which Barbadian singer had a 2007 hit with ‘Umbrella’?",a:"Rihanna",w:["Beyoncé","Leona Lewis","Nelly Furtado"]},
+{c:"m00",d:3,q:"Classical singer Katherine Jenkins comes from which Welsh town?",a:"Neath",w:["Llanelli","Bridgend","Merthyr Tydfil"]},
+{c:"m00",d:1,q:"Which band released ‘Mr. Brightside’?",a:"The Killers",w:["The Strokes","Kings of Leon","Kaiser Chiefs"]},
+{c:"m00",d:2,q:"Which Sheffield band’s 2006 debut was the UK’s fastest-selling debut album at the time?",a:"Arctic Monkeys",w:["Kaiser Chiefs","The Libertines","Bloc Party"]},
+{c:"m00",d:1,q:"Who released the album ‘Back to Black’ in 2006?",a:"Amy Winehouse",w:["Adele","Lily Allen","Duffy"]},
+{c:"m00",d:1,q:"Which band had a 2000 hit with ‘Yellow’?",a:"Coldplay",w:["Keane","Travis","Snow Patrol"]},
+{c:"m00",d:1,q:"Which rapper starred in the 2002 film ‘8 Mile’?",a:"Eminem",w:["50 Cent","Jay-Z","Kanye West"]},
+{c:"m00",d:3,q:"Metal band Bullet for My Valentine formed in which Welsh town?",a:"Bridgend",w:["Wrexham","Newport","Aberystwyth"]},
+{c:"m00",d:2,q:"Which comedian topped the charts in 2005 with ‘(Is This the Way to) Amarillo’?",a:"Peter Kay",w:["Vic Reeves","Paddy McGuinness","Lee Evans"]},
+{c:"m00",d:1,q:"Who had a 2006 hit with ‘Hips Don’t Lie’?",a:"Shakira",w:["Jennifer Lopez","Nelly Furtado","Beyoncé"]},
+{c:"m00",d:1,q:"Which band had a 2006 hit with ‘Chasing Cars’?",a:"Snow Patrol",w:["Keane","Coldplay","Travis"]},
+{c:"m00",d:2,q:"Whose debut single was ‘Smile’ in 2006?",a:"Lily Allen",w:["Kate Nash","Amy Winehouse","Duffy"]},
+{c:"m00",d:2,q:"Which ‘X Factor’ winner had the 2008 Christmas number one with ‘Hallelujah’?",a:"Alexandra Burke",w:["Leona Lewis","Leon Jackson","Joe McElderry"]},
+{c:"m00",d:2,q:"In 2009, whose ‘Killing in the Name’ beat the ‘X Factor’ winner to Christmas number one?",a:"Rage Against the Machine",w:["Nirvana","The Prodigy","Green Day"]},
+{c:"m00",d:1,q:"Which American band released the album ‘American Idiot’ in 2004?",a:"Green Day",w:["Blink-182","Sum 41","Fall Out Boy"]},
+{c:"m00",d:1,q:"Who had a 2004 hit with ‘Toxic’?",a:"Britney Spears",w:["Christina Aguilera","Kylie Minogue","Pink"]},
+{c:"m00",d:1,q:"Who had a 2008 hit with ‘Poker Face’?",a:"Lady Gaga",w:["Katy Perry","Kesha","Pink"]},
+{c:"m00",d:2,q:"Which Scottish band had a 2004 hit with ‘Take Me Out’?",a:"Franz Ferdinand",w:["The Fratellis","Travis","Biffy Clyro"]},
+{c:"m00",d:1,q:"Which girl group had hits with ‘Survivor’ and ‘Bootylicious’?",a:"Destiny’s Child",w:["Sugababes","TLC","All Saints"]},
+{c:"m00",d:2,q:"Which Australian singer had a 2001 hit with ‘Can’t Get You Out of My Head’?",a:"Kylie Minogue",w:["Dannii Minogue","Natalie Imbruglia","Delta Goodrem"]},
+{c:"m00",d:2,q:"Which band had a 2004 hit with ‘Somewhere Only We Know’?",a:"Keane",w:["Coldplay","Travis","Snow Patrol"]},
+{c:"m00",d:2,t:"tf",q:"‘Mr. Brightside’ has never been a UK number one.",a:true,f:"It peaked at number ten in 2004 — and has barely left the chart since."},
+{c:"m00",d:3,t:"tf",q:"Steve Brookstein won the first series of ‘The X Factor’.",a:true},
+{c:"m00",d:3,t:"tf",q:"Take That got back together in 2005 without Robbie Williams.",a:true,f:"Robbie rejoined them in 2010."},
+{c:"m00",d:2,t:"num",q:"In what year did ‘The X Factor’ first air in the UK?",a:2004,u:"year"},
+{c:"m00",d:1,t:"num",q:"How many members were there in Girls Aloud?",a:5,u:"members"},
+{c:"m00",d:2,t:"num",q:"In what year did Apple launch the iPod?",a:2001,u:"year"},
+
+/* ---------- 2010s music ---------- */
+{c:"m10",d:1,q:"Who sang the theme to the 2012 Bond film ‘Skyfall’?",a:"Adele",w:["Sam Smith","Florence Welch","Emeli Sandé"]},
+{c:"m10",d:1,q:"Which South Korean star had a worldwide hit with ‘Gangnam Style’ in 2012?",a:"Psy",w:["Rain","G-Dragon","Jungkook"]},
+{c:"m10",d:1,q:"Which Pharrell Williams song from ‘Despicable Me 2’ became a worldwide hit?",a:"Happy",w:["Get Lucky","Blurred Lines","Uptown Funk"]},
+{c:"m10",d:1,q:"Who teamed up on the 2014 hit ‘Uptown Funk’?",a:"Mark Ronson and Bruno Mars",w:["Daft Punk and Pharrell","Calvin Harris and Rihanna","Clean Bandit and Jess Glynne"]},
+{c:"m10",d:2,q:"Which Scottish DJ had hits with ‘Summer’ and ‘Feel So Close’?",a:"Calvin Harris",w:["Avicii","David Guetta","Kygo"]},
+{c:"m10",d:2,q:"In 2018, which band became the first K-pop act to top the US album chart?",a:"BTS",w:["EXO","Big Bang","Stray Kids"]},
+{c:"m10",d:2,q:"Which 2011 hit by Gotye, featuring Kimbra, topped charts around the world?",a:"Somebody That I Used to Know",w:["Rolling in the Deep","Call Me Maybe","We Are Young"]},
+{c:"m10",d:1,q:"Which Canadian singer had a 2012 hit with ‘Call Me Maybe’?",a:"Carly Rae Jepsen",w:["Avril Lavigne","Alessia Cara","Nelly Furtado"]},
+{c:"m10",d:1,q:"Which Scottish singer had a huge 2019 hit with ‘Someone You Loved’?",a:"Lewis Capaldi",w:["Tom Walker","James Arthur","George Ezra"]},
+{c:"m10",d:2,q:"Which group became the first band to win ‘The X Factor’, in 2011?",a:"Little Mix",w:["One Direction","JLS","Fifth Harmony"]},
+{c:"m10",d:2,q:"Which Swedish DJ had a 2013 hit with ‘Wake Me Up’?",a:"Avicii",w:["Alesso","Kygo","Swedish House Mafia"]},
+{c:"m10",d:1,q:"Which 2017 song by Luis Fonsi and Daddy Yankee became a global smash?",a:"Despacito",w:["Gasolina","Macarena","Bailando"]},
+{c:"m10",d:2,q:"Who had a 2014 hit with ‘Chandelier’?",a:"Sia",w:["Lorde","Halsey","Rita Ora"]},
+{c:"m10",d:3,q:"Which rapper won the 2018 Pulitzer Prize for Music for his album ‘DAMN.’?",a:"Kendrick Lamar",w:["Drake","Jay-Z","Kanye West"]},
+{c:"m10",d:2,q:"Who released the album ‘Lemonade’ in 2016?",a:"Beyoncé",w:["Rihanna","Solange","Janelle Monáe"]},
+{c:"m10",d:1,q:"Which Welsh singer was one of the original coaches on ‘The Voice UK’ in 2012?",a:"Tom Jones",w:["Charlotte Church","Katherine Jenkins","Bonnie Tyler"]},
+{c:"m10",d:3,q:"Which Ed Sheeran album came out in 2014?",a:"x (Multiply)",w:["+ (Plus)","÷ (Divide)","= (Equals)"]},
+{c:"m10",d:2,q:"Who released ‘Royals’ when she was just 16?",a:"Lorde",w:["Billie Eilish","Halsey","Sia"]},
+{c:"m10",d:2,q:"Whose 2019 debut album was called ‘When We All Fall Asleep, Where Do We Go?’?",a:"Billie Eilish",w:["Olivia Rodrigo","Lorde","Dua Lipa"]},
+{c:"m10",d:2,q:"In 2019, which grime star became the first black British solo artist to headline Glastonbury?",a:"Stormzy",w:["Dave","Skepta","Kano"]},
+{c:"m10",d:1,q:"Which Canadian singer had 2015 hits with ‘Sorry’ and ‘Love Yourself’?",a:"Justin Bieber",w:["Shawn Mendes","The Weeknd","Drake"]},
+{c:"m10",d:1,q:"Which 2018 film had Lady Gaga and Bradley Cooper singing ‘Shallow’?",a:"A Star Is Born",w:["The Greatest Showman","Bohemian Rhapsody","La La Land"]},
+{c:"m10",d:2,q:"Which 2017 musical film, starring Hugh Jackman, featured ‘This Is Me’?",a:"The Greatest Showman",w:["La La Land","Mamma Mia! Here We Go Again","Les Misérables"]},
+{c:"m10",d:2,q:"Which British group had hits with ‘Rather Be’ and ‘Symphony’?",a:"Clean Bandit",w:["Rudimental","Disclosure","Years & Years"]},
+{c:"m10",d:2,t:"tf",q:"‘Gangnam Style’ was the first YouTube video to reach a billion views.",a:true},
+{c:"m10",d:2,t:"tf",q:"Mumford & Sons are from London.",a:true},
+{c:"m10",d:2,t:"tf",q:"‘Blurred Lines’ was a UK number one in 2013.",a:true},
+{c:"m10",d:2,t:"num",q:"How many members are there in BTS?",a:7,u:"members"},
+{c:"m10",d:3,t:"num",q:"How many Grammy Awards did Adele win in one night in 2012?",a:6,u:"Grammys"},
+{c:"m10",d:3,t:"num",q:"In what year did Coldplay headline the Super Bowl half-time show?",a:2016,u:"year"},
+
+/* ---------- 2020s music ---------- */
+{c:"m20",d:1,q:"Who had a massive debut hit with ‘Drivers License’?",a:"Olivia Rodrigo",w:["Billie Eilish","Sabrina Carpenter","Gracie Abrams"]},
+{c:"m20",d:3,q:"Which Harry Styles album won the Grammy for Album of the Year in 2023?",a:"Harry’s House",w:["Fine Line","Harry Styles","Renaissance"]},
+{c:"m20",d:1,q:"Which tour made Taylor Swift the first artist to earn over a billion dollars from one tour?",a:"The Eras Tour",w:["The Reputation Stadium Tour","The 1989 World Tour","The Red Tour"]},
+{c:"m20",d:1,q:"Which Miley Cyrus song topped charts around the world in early 2023?",a:"Flowers",w:["Wrecking Ball","Party in the U.S.A.","Malibu"]},
+{c:"m20",d:2,q:"Which Billie Eilish song from the ‘Barbie’ film won the 2024 Oscar for Best Original Song?",a:"What Was I Made For?",w:["Dance the Night","I’m Just Ken","No Time to Die"]},
+{c:"m20",d:1,q:"Who had a 2024 summer hit with ‘Espresso’?",a:"Sabrina Carpenter",w:["Chappell Roan","Olivia Rodrigo","Tate McRae"]},
+{c:"m20",d:1,q:"Which band’s 2025 reunion tour opened at the Principality Stadium in Cardiff?",a:"Oasis",w:["Blur","Take That","The Verve"],f:"The first night was on 4 July 2025."},
+{c:"m20",d:2,q:"Which country won Eurovision in 2023 with Loreen’s ‘Tattoo’?",a:"Sweden",w:["Finland","Norway","Ukraine"]},
+{c:"m20",d:1,q:"Which UK city hosted Eurovision 2023 on behalf of Ukraine?",a:"Liverpool",w:["Glasgow","Manchester","London"]},
+{c:"m20",d:2,q:"Which British singer came second at Eurovision 2022 with ‘Space Man’?",a:"Sam Ryder",w:["James Newman","Mae Muller","Olly Alexander"]},
+{c:"m20",d:2,q:"Which Italian rock band won Eurovision in 2021?",a:"Måneskin",w:["Il Volo","The Rasmus","Lordi"]},
+{c:"m20",d:2,q:"In 2024, which singer broke the record for the most BRIT Awards won in one night?",a:"Raye",w:["Dua Lipa","Adele","Little Simz"],f:"She took home six."},
+{c:"m20",d:2,q:"Which 2020 Dua Lipa album featured ‘Levitating’ and ‘Don’t Start Now’?",a:"Future Nostalgia",w:["Radical Optimism","Dua Lipa","Chromatica"]},
+{c:"m20",d:2,q:"Which Kendrick Lamar song swept the 2025 Grammys and starred in his Super Bowl half-time show?",a:"Not Like Us",w:["HUMBLE.","Alright","Money Trees"]},
+{c:"m20",d:2,q:"Which 2024 Charli XCX album sparked a lime-green ‘summer’ craze?",a:"Brat",w:["Crash","Sucker","Charli"]},
+{c:"m20",d:1,q:"Which song by The Weeknd, with its Eighties synth sound, was a global smash in 2020?",a:"Blinding Lights",w:["Starboy","Can’t Feel My Face","The Hills"]},
+{c:"m20",d:2,q:"Rosé and Bruno Mars named their 2024 hit after a Korean drinking game. What is it called?",a:"APT.",w:["Die with a Smile","Seven","Dynamite"]},
+{c:"m20",d:2,q:"In 2021, which Welsh legend became the oldest man to top the UK album chart with new songs, aged 80?",a:"Tom Jones",w:["Rod Stewart","Cliff Richard","Van Morrison"]},
+{c:"m20",d:3,q:"Which Taylor Swift album won Album of the Year in 2024, making her the first to win it four times?",a:"Midnights",w:["Folklore","1989","Evermore"]},
+{c:"m20",d:1,q:"Who topped the charts in 2021 with ‘Bad Habits’?",a:"Ed Sheeran",w:["Lewis Capaldi","George Ezra","Calvin Harris"]},
+{c:"m20",d:2,q:"Which YouTuber had a record five Christmas number ones in a row with songs about sausage rolls?",a:"LadBaby",w:["KSI","Joe Sugg","MrBeast"]},
+{c:"m20",d:2,q:"Which Olivia Rodrigo album came out in 2023?",a:"Guts",w:["Sour","Short n’ Sweet","Brat"]},
+{c:"m20",d:3,q:"Who won Eurovision 2024 for Switzerland with ‘The Code’?",a:"Nemo",w:["Baby Lasagna","Bambie Thug","Joost Klein"]},
+{c:"m20",d:3,q:"Which country won Eurovision 2025 with JJ’s ‘Wasted Love’?",a:"Austria",w:["Sweden","Israel","Switzerland"]},
+{c:"m20",d:2,q:"Who had a 2024 breakthrough hit with ‘Good Luck, Babe!’?",a:"Chappell Roan",w:["Sabrina Carpenter","Tate McRae","Gracie Abrams"]},
+{c:"m20",d:2,q:"Which band launched the ‘Music of the Spheres’ world tour in 2022?",a:"Coldplay",w:["Muse","U2","Imagine Dragons"]},
+{c:"m20",d:2,q:"Who played his last UK show of his farewell tour at Glastonbury in 2023?",a:"Elton John",w:["Rod Stewart","Paul McCartney","Bruce Springsteen"]},
+{c:"m20",d:1,t:"tf",q:"The 2020 Eurovision Song Contest was cancelled.",a:true},
+{c:"m20",d:1,t:"tf",q:"Taylor Swift re-recorded several of her old albums and called them ‘Taylor’s Version’.",a:true},
+{c:"m20",d:2,t:"tf",q:"Beyoncé’s ‘Cowboy Carter’ won the Grammy for Album of the Year.",a:true},
+{c:"m20",d:1,t:"num",q:"In what year did the hit single ‘Drivers License’ come out?",a:2021,u:"year"},
+{c:"m20",d:3,t:"num",q:"How old was Billie Eilish when she won her first Oscar?",a:20,u:"years old",f:"She won in 2022 for the Bond theme ‘No Time to Die’."},
+{c:"m20",d:3,t:"num",q:"How many Grammy Awards had Beyoncé won by the end of the 2025 ceremony?",a:35,u:"Grammys",f:"More than anyone else in Grammy history."}
 ];
 
-if (typeof module !== "undefined") module.exports = { CATEGORIES, QUESTION_BANK };
+if (typeof module !== "undefined") module.exports = { CATEGORIES, CATEGORY_GROUPS, CATEGORY_SHORT, QUESTION_BANK };
 
 /* ---- relay.js ---- */
 /* ===================================================================
@@ -1198,7 +1455,8 @@ const RULES = {
   numRest: 150,
   exactBonus: 200
 };
-const DEFAULT_SETTINGS = { count: 15, secs: 20, cats: Object.keys(CATEGORIES), easy: false, numbers: true };
+// the decades are opt-in, so the default quiz stays a mixed bag
+const DEFAULT_SETTINGS = { count: 15, secs: 20, cats: CATEGORY_GROUPS[0].cats.slice(), easy: false, numbers: true };
 
 function hashText(s) {
   let h = 0x811c9dc5;
@@ -1603,6 +1861,7 @@ async function startHosting() {
     code = makeCode();
   }
   S.host = HostGame.create({ code, pid: S.pid, name: S.profile.name, av: S.profile.av });
+  const lastSettings = Store.get("settings"); if (lastSettings) S.host.updateSettings(lastSettings);
   await enterRoom(code, "host");
 }
 function codeInUse(code) {
@@ -1668,6 +1927,7 @@ function leaveRoom(reason) {
 /* ---------------- host side ---------------- */
 function hostChanged() {
   if (!S.host) return;
+  if (S.host.phase === "lobby") Store.set("settings", S.host.settings);
   Store.set("host." + S.host.code, S.host.toJSON());
   if (S.session) { S.session.at = Date.now(); Store.set("session", S.session); }
   applyState(S.host.publicState(Date.now()));
@@ -1852,7 +2112,8 @@ function viewHome() {
     </div>
     <ul class="facts" aria-label="About the game">
       <li><strong>${QUESTION_BANK.length}</strong> questions</li>
-      <li><strong>${Object.keys(CATEGORIES).length}</strong> categories, Wales included</li>
+      <li><strong>${CATEGORY_GROUPS[0].cats.length}</strong> categories, Wales included</li>
+      <li><strong>${CATEGORY_GROUPS[1].cats.length}</strong> decades of music</li>
       <li><strong>No</strong> sign-ups</li>
     </ul></section>`;
 }
@@ -1904,12 +2165,15 @@ function viewLobby(r) {
   const hosting = S.role === "host";
   const st = r.settings;
   const seg = (key, vals, label) => vals.map(v => `<button type="button" role="radio" data-act="set" data-key="${key}" data-val="${v}" aria-checked="false">${label(v)}</button>`).join("");
-  const cats = Object.entries(CATEGORIES).map(([k, n]) => `<button type="button" class="chip" data-act="cat" data-cat="${k}" aria-pressed="false">${esc(n)}</button>`).join("");
+  const chip = k => `<button type="button" class="chip" data-act="cat" data-cat="${k}" aria-pressed="false">${esc(CATEGORY_SHORT[k] || CATEGORIES[k])}</button>`;
+  const groups = CATEGORY_GROUPS.map(g => `<div class="setting cats">
+        <span class="setting-name"><span id="lbl-${g.key}">${esc(g.label)}</span><span class="group-links"><button type="button" class="link-btn" data-act="cats-group" data-group="${g.key}" data-mode="all" aria-label="Choose all: ${esc(g.label)}">All</button><button type="button" class="link-btn" data-act="cats-group" data-group="${g.key}" data-mode="none" aria-label="Clear: ${esc(g.label)}">None</button></span></span>
+        <div class="chips ${g.key}" role="group" aria-labelledby="lbl-${g.key}">${g.cats.map(chip).join("")}</div></div>`).join("");
   const settings = hosting ? `<section class="panel settings" aria-labelledby="set-title">
       <h3 class="section-label" id="set-title">Tonight’s quiz</h3>
       <div class="setting"><span class="setting-name" id="lbl-count">Questions</span><div class="seg" role="radiogroup" aria-labelledby="lbl-count">${seg("count", RULES.counts, v => v)}</div></div>
       <div class="setting"><span class="setting-name" id="lbl-secs">Time to answer</span><div class="seg" role="radiogroup" aria-labelledby="lbl-secs">${seg("secs", RULES.timers, v => `${TIMER_LABELS[v]} <small>${v}s</small>`)}</div></div>
-      <div class="setting cats"><span class="setting-name">Categories <button type="button" class="link-btn" data-act="cats-all">All</button></span><div class="chips">${cats}</div></div>
+      ${groups}
       <label class="toggle"><input type="checkbox" id="opt-easy" data-act="opt" data-key="easy"><span class="toggle-ui" aria-hidden="true"></span><span>Easier questions only</span></label>
       <label class="toggle"><input type="checkbox" id="opt-numbers" data-act="opt" data-key="numbers"><span class="toggle-ui" aria-hidden="true"></span><span>Nearest-number rounds</span></label>
     </section>
@@ -2052,6 +2316,17 @@ function placeText(r) {
   const ahead = r.players.filter(p => p.score > mine.score).length, tied = r.players.filter(p => p.score === mine.score).length > 1;
   return (tied ? "Joint " : "") + ordinal(ahead + 1) + " place";
 }
+function listJoin(a) { return a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " and " + a[a.length - 1]; }
+function catSummary(cats) {
+  const [mix, dec] = CATEGORY_GROUPS;
+  const m = cats.filter(c => mix.cats.includes(c)), d = cats.filter(c => dec.cats.includes(c));
+  const parts = [];
+  if (m.length === mix.cats.length) parts.push("all the usual categories");
+  else if (m.length) parts.push(m.length <= 3 ? listJoin(m.map(c => CATEGORIES[c])) : m.length + " categories");
+  if (d.length === dec.cats.length) parts.push("music from every decade");
+  else if (d.length) parts.push(listJoin(d.map(c => CATEGORY_SHORT[c])) + " music");
+  return parts.join(" + ");
+}
 function setHTML(el, html) { if (el._html !== html) { el._html = html; el.innerHTML = html; } }
 function patchLobby(r) {
   const list = $("#players");
@@ -2065,7 +2340,7 @@ function patchLobby(r) {
   const easy = $("#opt-easy"); if (easy) easy.checked = !!st.easy;
   const nums = $("#opt-numbers"); if (nums) nums.checked = !!st.numbers;
   const wait = $("#lobby-wait"); if (wait) wait.textContent = me() ? `You’re in! Waiting for ${hostName()} to start the quiz.` : "Joining…";
-  const sum = $("#lobby-summary"); if (sum) sum.textContent = `${st.count} questions · ${st.secs} seconds each · ${st.cats.length === Object.keys(CATEGORIES).length ? "all categories" : st.cats.map(c => CATEGORIES[c]).join(", ")}`;
+  const sum = $("#lobby-summary"); if (sum) sum.textContent = `${st.count} questions · ${st.secs} seconds each · ${catSummary(st.cats)}`;
 }
 function patchQuestion(r) {
   const list = $("#answered");
@@ -2136,7 +2411,13 @@ function onClick(e) {
       if (!next.length) return toast("Keep at least one category.");
       if (S.host.updateSettings({ cats: next })) hostChanged(); return;
     }
-    case "cats-all": if (S.host && S.host.updateSettings({ cats: Object.keys(CATEGORIES) })) hostChanged(); return;
+    case "cats-group": {
+      const g = CATEGORY_GROUPS.find(x => x.key === el.dataset.group); if (!S.host || !g) return;
+      const cur = S.host.settings.cats;
+      const next = el.dataset.mode === "all" ? [...new Set([...cur, ...g.cats])] : cur.filter(c => !g.cats.includes(c));
+      if (!next.length) return toast(g.key === "mix" ? "Pick a decade first, then clear these." : "Keep at least one category.");
+      if (S.host.updateSettings({ cats: next })) hostChanged(); return;
+    }
     case "opt": if (S.host && S.host.updateSettings({ [el.dataset.key]: el.checked })) hostChanged(); return;
     case "start": return hostStart();
     case "next": if (S.host && S.host.next(Date.now())) hostChanged(); return;
