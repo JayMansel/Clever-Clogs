@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Clever Clogs v2.0 -->
+<!-- Clever Clogs v3.0 -->
 <html lang="en-GB">
 <head>
 <meta charset="utf-8">
@@ -463,6 +463,82 @@ button { touch-action: manipulation; }
 .wrow.small .tile { width: 22px; border-radius: 4px; border-width: 1px; font-size: 12px; animation: none; }
 
 .ver { margin: 14px 0 0; text-align: center; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--haze); opacity: 0.6; }
+
+/* ---------------- the donkey derby ---------------- */
+.purse { margin: 2px 0 0; text-align: center; font-weight: 700; color: var(--haze); }
+.purse .led { color: var(--bulb); font-size: 20px; }
+.purse .topup { display: inline-block; color: var(--mint); font-size: 13px; }
+.racecard { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 7px; }
+.runner-row {
+  width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 12px; cursor: pointer;
+  border: 0; border-radius: 14px; background: var(--panel); box-shadow: inset 0 0 0 1.5px var(--rim);
+  color: var(--chalk); text-align: left; font: inherit;
+}
+.runner-row[aria-pressed="true"] { background: var(--panel-2); box-shadow: inset 0 0 0 2.5px var(--bulb); }
+.runner-row:active { transform: translateY(1px); }
+.silks {
+  width: 34px; height: 34px; flex: 0 0 34px; border-radius: 10px; display: grid; place-items: center;
+  background: var(--silks); box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+}
+.silks-donkey { font-size: 19px; line-height: 1; filter: saturate(0.9); }
+.runner-main { flex: 1 1 auto; min-width: 0; display: grid; gap: 2px; }
+.runner-name { font-weight: 700; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.runner-form { display: flex; gap: 3px; align-items: center; }
+.runner-form .pos { width: 15px; height: 15px; border-radius: 4px; display: grid; place-items: center; font-size: 10px; font-style: normal; font-weight: 700; background: #23306B; color: #9EA9D8; }
+.runner-form .pos.p1 { background: var(--bulb); color: var(--ink); }
+.runner-form .pos.p2 { background: #8C97C6; color: var(--ink); }
+.runner-form .form-none { font-size: 11px; color: var(--haze); opacity: 0.7; }
+.price { font-size: 17px; color: var(--bulb); letter-spacing: 0.02em; }
+.stake-bar { margin-top: 12px; display: grid; gap: 6px; justify-items: center; }
+.stake-label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--haze); }
+.chip.stake { min-width: 52px; font-size: 16px; }
+.chip.stake[aria-pressed="true"] { background: var(--bulb); color: var(--ink); border-color: var(--bulb); }
+.chip.stake:disabled { opacity: 0.35; pointer-events: none; }
+.betters { list-style: none; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; padding: 0; }
+.betters li { position: relative; opacity: 0.45; }
+.betters li.done { opacity: 1; }
+.betters .tick { position: absolute; right: -3px; bottom: -3px; width: 16px; height: 16px; border-radius: 50%; background: var(--mint); color: var(--ink); font-size: 11px; font-weight: 700; display: none; place-items: center; }
+.betters li.done .tick { display: grid; }
+
+/* the track */
+.track { position: relative; margin: 14px 0 0; padding: 8px 0; border-radius: 16px; background: linear-gradient(#16204F, #101838); box-shadow: inset 0 0 0 1.5px var(--rim); overflow: hidden; }
+.track::before { content: ""; position: absolute; inset: 0; background-image: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 44px); }
+.lane { position: relative; height: 56px; display: flex; align-items: center; gap: 6px; padding: 0 8px; }
+.lane + .lane { border-top: 1px dashed rgba(255, 255, 255, 0.07); }
+.lane-name { flex: 0 0 64px; font-size: 12px; font-weight: 700; color: var(--silks); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px #0B1128; }
+.strip { position: relative; flex: 1 1 auto; height: 100%; }
+.post { position: absolute; top: 4px; bottom: 4px; right: 0; width: 5px; background: repeating-linear-gradient(180deg, #F6F3FF 0 7px, #101838 7px 14px); border-radius: 2px; }
+.runner { position: absolute; top: 50%; left: calc(var(--x, 0%) * 0.9); transform: translateY(-50%); }
+.runner-donkey { font-size: 30px; line-height: 1; display: inline-block; transform: scaleX(-1); filter: drop-shadow(0 2px 0 var(--silks)); }
+.runner.running .runner-donkey { animation: trot 0.4s ease-in-out infinite; }
+@keyframes trot { 0% { transform: scaleX(-1) translateY(0) rotate(0deg); } 50% { transform: scaleX(-1) translateY(-3px) rotate(-4deg); } 100% { transform: scaleX(-1) translateY(0) rotate(0deg); } }
+.commentary { margin: 12px 0 0; text-align: center; font-weight: 700; font-size: 17px; min-height: 1.4em; text-wrap: balance; }
+.commentary.pop { animation: pop 0.3s ease; }
+@keyframes pop { from { transform: scale(0.92); opacity: 0.4; } to { transform: scale(1); opacity: 1; } }
+.bets-strip { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 5px; }
+.bets-strip li, .bet-results li { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); font-size: 14px; }
+.bets-strip li.is-me, .bet-results li.is-me { box-shadow: inset 0 0 0 1.5px var(--rim); }
+.bet-results li.won { background: rgba(53, 201, 143, 0.14); }
+.bets-strip .pname, .bet-results .pname { flex: 0 0 auto; white-space: nowrap; }
+.on-who { margin-left: auto; min-width: 0; display: flex; align-items: center; gap: 5px; color: var(--haze); }
+.on-who .who-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.on-who .dot { flex: 0 0 11px; }
+.on-who .dot { width: 11px; height: 11px; border-radius: 4px; background: var(--silks); }
+.on-who.sat-out { font-style: italic; opacity: 0.6; }
+.stake-n { min-width: 26px; text-align: right; font-weight: 700; color: var(--bulb); }
+.bet-results .pts { min-width: 54px; text-align: right; font-weight: 700; color: var(--mint); }
+.bet-results .pts.zero { color: var(--haze); opacity: 0.7; }
+.places { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 7px; }
+.place-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 14px; background: rgba(255, 255, 255, 0.04); }
+.place-row.place-1 { background: rgba(255, 211, 92, 0.16); box-shadow: inset 0 0 0 1.5px rgba(255, 211, 92, 0.5); }
+.place-n { width: 22px; font-family: var(--display); font-size: 19px; color: var(--bulb); }
+.place-row .runner-name { flex: 1 1 auto; }
+.place-row .price { margin-left: auto; }
+.photo-finish { margin: 10px 0 0; text-align: center; font-weight: 700; color: var(--bulb); letter-spacing: 0.08em; text-transform: uppercase; font-size: 13px; }
+@media (prefers-reduced-motion: reduce) {
+  .runner.running .runner-donkey { animation: none; }
+  .commentary.pop { animation: none; }
+}
 
 </style>
 </head>
@@ -1570,6 +1646,174 @@ function wordScores(solved, order) {
 
 if (typeof module !== "undefined") module.exports = { WORD_RULES, DEFAULT_WORD_SETTINGS, WORDS, isWord, tilePattern, solvedPattern, pickWords, wordScores };
 
+/* ---- derby.js ---- */
+/* ===================================================================
+   The Donkey Derby: a race night. Everyone bets carrots on a field of
+   donkeys, the race runs on every phone at once, the winners get paid.
+
+   The odds are honest: each donkey has a hidden rating for the meeting,
+   the host simulates the race a few hundred times to find each one's
+   real chance, and the price on the card comes from that.
+   =================================================================== */
+const DERBY_RULES = {
+  races: [5, 8, 12],
+  timers: [30, 20, 12],        // seconds to get your bet on
+  field: 5,                    // donkeys per race
+  purse: 100,                  // carrots everyone starts with
+  minStake: 5,
+  stakes: [5, 10, 25, 50],
+  topUp: 15,                   // sympathy carrots when you can't afford a bet
+  ticks: 64,                   // steps in a race
+  tickMs: 320,                 // ≈ 20 seconds a race
+  furlong: 1000,               // length of the track
+  trials: 600,                 // simulations used to price the field
+  goldCupMultiplier: 2,        // the last race pays double
+  revealPauseMs: 1200
+};
+const DEFAULT_DERBY_SETTINGS = { races: 8, secs: 20 };
+
+/* The stable. Silks are the colour you see on the track. */
+const STABLE = [
+  { n: "Custard Cream", s: "#FFD35C" }, { n: "Thistle Do Nicely", s: "#8FD3A6" },
+  { n: "Bara Brith", s: "#C97B4A" }, { n: "Last Orders", s: "#FF5E57" },
+  { n: "Half a Carrot", s: "#FF9A62" }, { n: "Mabel", s: "#E8A9C8" },
+  { n: "Tidy Trotter", s: "#4AA3FF" }, { n: "Hoof Hearted", s: "#B58CFF" },
+  { n: "Sunday Best", s: "#F6F3FF" }, { n: "Bramble", s: "#6FBF73" },
+  { n: "Nefyn Flyer", s: "#35C98F" }, { n: "Slow Roast", s: "#D08C5A" },
+  { n: "Gladys", s: "#FFB9CB" }, { n: "Two Sugars", s: "#E8D6A9" },
+  { n: "Barry the Bold", s: "#FF7A6E" }, { n: "Cwtch", s: "#FF86B0" },
+  { n: "Hay Fever", s: "#9CCBFF" }, { n: "Dai Hard", s: "#7ED9BC" },
+  { n: "Penny Whistle", s: "#FFC94A" }, { n: "Rhubarb", s: "#E2557B" },
+  { n: "Gordon Bennett", s: "#7FA6FF" }, { n: "Noddy Holder", s: "#C2E36B" },
+  { n: "Sausage Roll", s: "#E0A46A" }, { n: "Gwyneth", s: "#A2E8DC" }
+];
+
+/* Traditional prices, shortest first. */
+const ODDS_LADDER = [
+  [1, 4], [1, 3], [1, 2], [4, 6], [1, 1], [5, 4], [6, 4], [2, 1], [5, 2],
+  [3, 1], [7, 2], [4, 1], [9, 2], [5, 1], [6, 1], [7, 1], [8, 1], [10, 1],
+  [12, 1], [14, 1], [16, 1], [20, 1], [25, 1], [33, 1], [50, 1]
+];
+const oddsText = o => o[0] === 1 && o[1] === 1 ? "evens" : o[1] === 1 ? o[0] + "/1" : o[0] + "/" + o[1];
+const oddsValue = o => o[0] / o[1];
+/* A price for a chance, rounded to the nearest traditional fraction and
+   never longer than the true odds by much — the punters are family. */
+function priceFor(p) {
+  const fair = p > 0 ? (1 / p) - 1 : 99;
+  let best = ODDS_LADDER[ODDS_LADDER.length - 1], bestGap = Infinity;
+  for (const o of ODDS_LADDER) {
+    const gap = Math.abs(oddsValue(o) - fair);
+    if (gap < bestGap) { bestGap = gap; best = o; }
+  }
+  return best;
+}
+const payout = (stake, odds, multiplier = 1) => Math.round(stake + stake * oddsValue(odds) * multiplier);
+
+/* Pick the field for a race: some of the meeting's donkeys, never the
+   same five twice in a row if we can help it. */
+function pickField(stable, recent = [], rng = Math.random, size = DERBY_RULES.field) {
+  const recentSet = new Set(recent);
+  let pool = stable.filter(d => !recentSet.has(d.id));
+  if (pool.length < size) pool = stable.slice();
+  /* Line them up by ability and draw from a window of it, the way a
+     handicapper would: a field of near-equals makes a race worth watching,
+     where a random five too often has one runaway favourite. */
+  const graded = pool.slice().sort((a, b) => a.pace - b.pace);
+  const window = Math.min(graded.length, size + 4);
+  const start = Math.floor(rng() * (graded.length - window + 1));
+  return shuffle(graded.slice(start, start + window), rng).slice(0, size).map(d => d.id);
+}
+
+/* Give every donkey in the stable a rating for tonight. Ratings stay put
+   for the whole meeting, so form on the card means something. */
+function makeStable(rng = Math.random) {
+  return shuffle(STABLE.slice(), rng).map((d, i) => ({
+    id: "d" + i, name: d.n, silks: d.s,
+    pace: 0.9 + rng() * 0.2,        // how quick, roughly
+    heart: 0.5 + rng() * 0.5,       // how well they finish
+    daft: 0.15 + rng() * 0.5        // how likely to stop for a snack
+  }));
+}
+
+/* Run one race. Returns a track: for each donkey, its distance at every
+   tick, plus the finishing order and any incidents worth shouting about. */
+function runRace(field, rng = Math.random) {
+  const R = DERBY_RULES;
+  /* Every donkey draws its form for this race and keeps it to the line.
+     Without this the tick-by-tick noise averages out over the race and the
+     quickest donkey wins nearly every time — no race at all. */
+  const lanes = field.map(d => ({
+    id: d.id, at: 0, speed: 0, stop: 0, spurt: 0, done: 0, path: [], events: [],
+    going: 0.84 + rng() * 0.32
+  }));
+  const base = R.furlong / R.ticks;
+  for (let t = 1; t <= R.ticks; t++) {
+    const late = t / R.ticks;
+    for (let i = 0; i < lanes.length; i++) {
+      const l = lanes[i], d = field[i];
+      if (l.done) { l.path.push(l.at); continue; }
+      if (l.stop > 0) {
+        l.stop--; l.path.push(l.at);
+        continue;
+      }
+      /* the odd donkey moment: a snack, a sulk, or a sudden turn of foot */
+      if (t > 3 && t < R.ticks - 4) {
+        const roll = rng();
+        if (roll < 0.012 * d.daft) { l.stop = 2 + Math.floor(rng() * 3); l.events.push({ t, k: "stop" }); l.path.push(l.at); continue; }
+        else if (roll > 1 - 0.02 * d.heart) { l.spurt = 4 + Math.floor(rng() * 4); l.events.push({ t, k: "spurt" }); }
+      }
+      const stamina = 0.93 + d.heart * 0.14 * late;           // good finishers come home strong
+      const noise = 0.72 + rng() * 0.56;
+      const target = base * d.pace * l.going * stamina * noise * (l.spurt > 0 ? 1.35 : 1);
+      if (l.spurt > 0) l.spurt--;
+      l.speed = l.speed * 0.55 + target * 0.45;               // a bit of momentum
+      l.at = Math.min(R.furlong, l.at + l.speed);
+      if (l.at >= R.furlong) l.done = t;
+      l.path.push(l.at);
+    }
+  }
+  const order = lanes.slice().sort((a, b) => (b.at - a.at) || ((a.done || 999) - (b.done || 999))).map(l => l.id);
+  const photo = lanes.length > 1 && (() => {
+    const [a, b] = order.map(id => lanes.find(l => l.id === id));
+    return Math.abs(a.at - b.at) < base * 0.6;
+  })();
+  return {
+    order, photo: !!photo,
+    lanes: lanes.map(l => ({ id: l.id, path: l.path.map(v => Math.round(v)), events: l.events }))
+  };
+}
+
+/* Price the field by running the race a few hundred times. */
+function priceField(field, rng = Math.random, trials = DERBY_RULES.trials) {
+  const wins = {};
+  for (const d of field) wins[d.id] = 0;
+  for (let i = 0; i < trials; i++) wins[runRace(field, rng).order[0]]++;
+  return field.map(d => {
+    const p = Math.max(wins[d.id] / trials, 0.008);
+    return { id: d.id, chance: p, odds: priceFor(p) };
+  });
+}
+
+/* What each bet was worth. Returns {pid: {stake, on, won, back, odds}}. */
+function settleBets(bets, winner, prices, multiplier = 1) {
+  const out = {};
+  for (const [pid, b] of Object.entries(bets)) {
+    const price = prices.find(p => p.id === b.on);
+    const won = b.on === winner;
+    out[pid] = {
+      on: b.on, stake: b.stake, won,
+      odds: price ? price.odds : [1, 1],
+      back: won && price ? payout(b.stake, price.odds, multiplier) : 0
+    };
+  }
+  return out;
+}
+
+if (typeof module !== "undefined") module.exports = {
+  DERBY_RULES, DEFAULT_DERBY_SETTINGS, STABLE, ODDS_LADDER,
+  oddsText, oddsValue, priceFor, payout, pickField, makeStable, runRace, priceField, settleBets
+};
+
 /* ---- engine.js ---- */
 /* ===================================================================
    Game engine. The host's device runs this; everyone else just
@@ -1693,8 +1937,10 @@ class HostGame {
       v: 1, code, gid: randomId(8), rev: now, host: pid, phase: "lobby", round: 1, game: "quiz",
       settings: JSON.parse(JSON.stringify(DEFAULT_SETTINGS)),
       wsettings: JSON.parse(JSON.stringify(DEFAULT_WORD_SETTINGS)),
+      dsettings: JSON.parse(JSON.stringify(DEFAULT_DERBY_SETTINGS)),
       players: {}, order: [], kicked: [], qs: [], qi: -1, cur: null, results: [], fin: null, onlineSig: "",
-      ws: [], wi: -1, wr: null, wresults: []
+      ws: [], wi: -1, wr: null, wresults: [],
+      dstable: [], di: -1, dr: null, dresults: []
     });
     g.hello(pid, name, av, now);
     return g;
@@ -1711,7 +1957,8 @@ class HostGame {
     const p = this.players[pid];
     if (!p) {
       if (this.order.length >= RULES.maxPlayers) return false;
-      this.players[pid] = { pid, name, av, score: 0, joinedAt: now, lastSeen: now, streak: 0, best: 0, correct: 0, speedSum: 0, speedN: 0, near: 0 };
+      const purse = this.game === "derby" && this.phase !== "lobby" ? DERBY_RULES.purse : 0;
+      this.players[pid] = { pid, name, av, score: purse, carrots: purse, joinedAt: now, lastSeen: now, streak: 0, best: 0, correct: 0, speedSum: 0, speedN: 0, near: 0 };
       this.order.push(pid);
       return this.bump(now);
     }
@@ -1743,7 +1990,7 @@ class HostGame {
     return this.bump(now);
   }
   setGame(game, now = Date.now()) {
-    if (this.phase !== "lobby" || (game !== "quiz" && game !== "word") || this.game === game) return false;
+    if (this.phase !== "lobby" || !["quiz", "word", "derby"].includes(game) || this.game === game) return false;
     this.game = game;
     return this.bump(now);
   }
@@ -1755,8 +2002,92 @@ class HostGame {
     if (typeof patch.tricky === "boolean") w.tricky = patch.tricky;
     return this.bump(now);
   }
+  updateDerbySettings(patch, now = Date.now()) {
+    if (this.phase !== "lobby") return false;
+    const d = this.dsettings;
+    if (DERBY_RULES.races.includes(patch.races)) d.races = patch.races;
+    if (DERBY_RULES.timers.includes(patch.secs)) d.secs = patch.secs;
+    return this.bump(now);
+  }
   resetScores() {
-    for (const pid of this.order) Object.assign(this.players[pid], { score: 0, streak: 0, best: 0, correct: 0, speedSum: 0, speedN: 0, near: 0, tries: 0, firsts: 0 });
+    for (const pid of this.order) Object.assign(this.players[pid], { score: 0, streak: 0, best: 0, correct: 0, speedSum: 0, speedN: 0, near: 0, tries: 0, firsts: 0,
+      carrots: 0, won: 0, bestWin: 0, bestOdds: 0, staked: 0, backs: {}, topUps: 0 });
+  }
+
+  /* ---------------- the donkey derby ---------------- */
+  startDerby(now = Date.now()) {
+    if (this.phase !== "lobby") return false;
+    this.dstable = makeStable(); this.di = -1; this.dresults = []; this.fin = null;
+    this.resetScores();
+    for (const pid of this.order) { this.players[pid].carrots = DERBY_RULES.purse; this.players[pid].score = DERBY_RULES.purse; }
+    return this.openRace(0, now);
+  }
+  donkey(id) { return this.dstable.find(d => d.id === id); }
+  openRace(i, now) {
+    const recent = this.dresults.slice(-1).flatMap(r => r.field);
+    const ids = pickField(this.dstable, recent);
+    const field = ids.map(id => this.donkey(id));
+    this.di = i; this.phase = "question";
+    for (const pid of this.order) {                      // nobody sits out for want of carrots
+      const p = this.players[pid];
+      if (p.carrots < DERBY_RULES.minStake) { p.carrots += DERBY_RULES.topUp; p.score = p.carrots; p.topUps = (p.topUps || 0) + 1; p.toppedUp = true; }
+      else p.toppedUp = false;
+    }
+    this.dr = {
+      id: "r" + this.round + "." + i, n: i + 1, field: ids, prices: priceField(field),
+      stage: "betting", deadline: now + this.dsettings.secs * 1000, bets: {},
+      race: null, startedAt: null, gold: i === this.dsettings.races - 1
+    };
+    return this.bump(now);
+  }
+  bet(pid, raceId, on, stake, now = Date.now()) {
+    const dr = this.dr, p = this.players[pid];
+    if (this.game !== "derby" || this.phase !== "question" || !dr || dr.id !== raceId || !p) return false;
+    if (dr.stage !== "betting" || now > dr.deadline + RULES.graceMs) return false;
+    if (!dr.field.includes(on)) return false;
+    stake = Number(stake);
+    if (!Number.isInteger(stake) || stake < DERBY_RULES.minStake || stake > p.carrots) return false;
+    dr.bets[pid] = { on, stake, at: now };
+    p.lastSeen = now;
+    return this.bump(now);
+  }
+  allBetsIn(now) {
+    const waiting = this.order.filter(pid => this.isOnline(this.players[pid], now) && !this.dr.bets[pid]);
+    return !waiting.length && Object.keys(this.dr.bets).length > 0;
+  }
+  startRace(now = Date.now()) {
+    const dr = this.dr;
+    if (!dr || dr.stage !== "betting") return false;
+    for (const [pid, b] of Object.entries(dr.bets)) {
+      const p = this.players[pid];
+      if (!p || b.stake > p.carrots) { delete dr.bets[pid]; continue; }
+      p.carrots -= b.stake; p.score = p.carrots;
+      p.staked = (p.staked || 0) + b.stake;
+      p.backs = p.backs || {}; p.backs[b.on] = (p.backs[b.on] || 0) + 1;
+    }
+    dr.race = runRace(dr.field.map(id => this.donkey(id)));
+    dr.stage = "running"; dr.startedAt = now;
+    return this.bump(now);
+  }
+  raceMs() { return DERBY_RULES.ticks * DERBY_RULES.tickMs; }
+  revealRace(now = Date.now()) {
+    const dr = this.dr;
+    if (!dr) return false;
+    if (dr.stage === "betting") this.startRace(now);
+    const mult = dr.gold ? DERBY_RULES.goldCupMultiplier : 1;
+    const settled = settleBets(dr.bets, dr.race.order[0], dr.prices, mult);
+    for (const pid of this.order) {
+      const p = this.players[pid], r = settled[pid];
+      if (r && r.won) {
+        p.carrots += r.back; p.won = (p.won || 0) + 1; p.streak++; p.best = Math.max(p.best, p.streak);
+        p.bestWin = Math.max(p.bestWin || 0, r.back);
+        p.bestOdds = Math.max(p.bestOdds || 0, oddsValue(r.odds) * mult);
+      } else p.streak = 0;
+      p.score = p.carrots;
+    }
+    this.dresults.push({ di: this.di, field: dr.field, order: dr.race.order, settled, gold: dr.gold });
+    this.phase = "reveal";
+    return this.bump(now);
   }
   /* ---------------- the word race ---------------- */
   startWords(words, now = Date.now()) {
@@ -1838,6 +2169,18 @@ class HostGame {
       if (now > wr.deadline + WORD_RULES.graceMs || (wr.allInAt && now - wr.allInAt >= WORD_RULES.endPauseMs)) { this.revealWord(now); changed = true; }
       return changed;
     }
+    if (this.game === "derby" && this.phase === "question" && this.dr) {
+      const dr = this.dr;
+      if (dr.stage === "betting") {
+        const allIn = this.allBetsIn(now);
+        if (allIn && !dr.allInAt) dr.allInAt = now;
+        if (!allIn) dr.allInAt = null;
+        if (now > dr.deadline + RULES.graceMs || (dr.allInAt && now - dr.allInAt >= RULES.earlyCloseMs)) { this.startRace(now); changed = true; }
+      } else if (dr.stage === "running" && now >= dr.startedAt + this.raceMs() + DERBY_RULES.revealPauseMs) {
+        this.revealRace(now); changed = true;
+      }
+      return changed;
+    }
     if (this.phase === "question" && this.cur) {
       const cur = this.cur;
       const waiting = this.order.filter(pid => this.isOnline(this.players[pid], now) && !cur.answers[pid]);
@@ -1874,26 +2217,36 @@ class HostGame {
       this.phase = "final"; this.wr = null; this.fin = this.finalResults();
       return this.bump(now);
     }
+    if (this.game === "derby") {
+      if (this.di + 1 < this.dsettings.races) return this.openRace(this.di + 1, now);
+      this.phase = "final"; this.dr = null; this.fin = this.finalResults();
+      return this.bump(now);
+    }
     if (this.qi + 1 < this.qs.length) return this.openQuestion(this.qi + 1, now);
     this.phase = "final"; this.cur = null; this.fin = this.finalResults();
     return this.bump(now);
   }
   skip(now = Date.now()) {
     if (this.phase !== "question") return false;
+    if (this.game === "derby") {
+      if (this.dr && this.dr.stage === "betting") this.startRace(now); else this.revealRace(now);
+      return true;
+    }
     if (this.game === "word") this.revealWord(now); else this.reveal(now);
     return true;
   }
   endEarly(now = Date.now()) {
-    if (this.phase === "question") { if (this.game === "word") this.revealWord(now); else this.reveal(now); }
+    if (this.phase === "question") { if (this.game === "derby") this.revealRace(now); else if (this.game === "word") this.revealWord(now); else this.reveal(now); }
     if (this.phase !== "reveal" && this.phase !== "question") return false;
-    this.phase = "final"; this.cur = null; this.wr = null; this.fin = this.finalResults();
+    this.phase = "final"; this.cur = null; this.wr = null; this.dr = null; this.fin = this.finalResults();
     return this.bump(now);
   }
   playAgain(now = Date.now()) {
     if (this.phase !== "final") return false;
     this.phase = "lobby"; this.round++; this.qs = []; this.qi = -1; this.cur = null; this.results = []; this.fin = null;
     this.ws = []; this.wi = -1; this.wr = null; this.wresults = [];
-    for (const pid of this.order) this.players[pid].score = 0;
+    this.dstable = []; this.di = -1; this.dr = null; this.dresults = [];
+    for (const pid of this.order) { this.players[pid].score = 0; this.players[pid].carrots = 0; }
     return this.bump(now);
   }
   close(now = Date.now()) { this.phase = "closed"; this.cur = null; return this.bump(now); }
@@ -1917,6 +2270,23 @@ class HostGame {
       if (hot && hot.best >= 3) awards.push({ key: "streak", id: hot.pid, detail: hot.best + " in a row" });
       return { rank: this.standings(), awards };
     }
+    if (this.game === "derby") {
+      const taken = {};                                   // spread them about a bit
+      const give = a => { if ((taken[a.id] || 0) >= 2) return; taken[a.id] = (taken[a.id] || 0) + 1; awards.push(a); };
+      const judge = best(ps, p => p.won || 0);
+      if (judge && judge.won) give({ key: "judge", id: judge.pid, detail: judge.won + (judge.won === 1 ? " winner picked" : " winners picked") });
+      const lucky = best(ps, p => p.bestOdds || 0);
+      if (lucky && lucky.bestOdds >= 4) give({ key: "lucky", id: lucky.pid, detail: "landed one at " + (Number.isInteger(lucky.bestOdds) ? lucky.bestOdds : lucky.bestOdds.toFixed(1)) + "/1" });
+      const brave = best(ps, p => p.bestWin || 0);
+      if (brave && brave.bestWin) give({ key: "brave", id: brave.pid, detail: brave.bestWin + " carrots in one race" });
+      const loyal = best(ps, p => Math.max(0, ...Object.values(p.backs || {})));
+      const loyalN = loyal ? Math.max(0, ...Object.values(loyal.backs || {})) : 0;
+      if (loyal && loyalN >= 3) {
+        const id = Object.keys(loyal.backs).find(k => loyal.backs[k] === loyalN), d = this.donkey(id);
+        give({ key: "loyal", id: loyal.pid, detail: "backed " + (d ? d.name : "the same donkey") + " " + loyalN + " times" });
+      }
+      return { rank: this.standings(), awards };
+    }
     const fast = ps.filter(p => p.speedN >= 2);
     if (fast.length) { const p = best(fast, p => -p.speedSum / p.speedN); awards.push({ key: "fast", id: p.pid, detail: (p.speedSum / p.speedN / 1000).toFixed(1) + "s average" }); }
     const sharp = best(ps, p => p.correct); if (sharp && sharp.correct) awards.push({ key: "sharp", id: sharp.pid, detail: sharp.correct + " right" });
@@ -1928,8 +2298,44 @@ class HostGame {
     const s = {
       k: "state", v: 1, gid: this.gid, rev: this.rev, ts: now, code: this.code, host: this.host, phase: this.phase, round: this.round,
       game: this.game, settings: this.settings, wsettings: this.wsettings, kicked: this.kicked,
-      players: this.order.map(pid => { const p = this.players[pid]; return { id: pid, name: p.name, av: p.av, score: p.score, on: this.isOnline(p, now), streak: p.streak, ans: !!(this.cur && this.cur.answers[pid]) }; })
+      players: this.order.map(pid => { const p = this.players[pid]; return { id: pid, name: p.name, av: p.av, score: p.score, on: this.isOnline(p, now), streak: p.streak, ans: !!(this.cur && this.cur.answers[pid]), carrots: p.carrots }; })
     };
+    if (this.game === "derby") s.dsettings = this.dsettings;
+    if (this.game === "derby" && (this.phase === "question" || this.phase === "reveal") && this.di >= 0) {
+      const dr = this.dr, done = this.phase === "reveal", last = this.dresults[this.dresults.length - 1];
+      const src = dr || { id: "r" + this.round + "." + this.di, n: this.di + 1, field: last ? last.field : [], prices: [], bets: {}, deadline: now, gold: false, stage: "reveal" };
+      const form = {};
+      for (const id of src.field) form[id] = this.dresults.map(r => r.order.indexOf(id) + 1).filter(x => x > 0).slice(-4);
+      s.d = {
+        id: src.id, n: src.n, of: this.dsettings.races, stage: done ? "reveal" : src.stage, gold: src.gold,
+        left: Math.max(0, src.deadline - now), secs: this.dsettings.secs,
+        purse: DERBY_RULES.purse, minStake: DERBY_RULES.minStake, stakes: DERBY_RULES.stakes,
+        ticks: DERBY_RULES.ticks, tickMs: DERBY_RULES.tickMs, furlong: DERBY_RULES.furlong,
+        field: src.field.map(id => {
+          const d = this.donkey(id) || { name: "?", silks: "#888" }, price = (src.prices || []).find(x => x.id === id);
+          return { id, name: d.name, silks: d.silks, odds: price ? price.odds : [1, 1], form: form[id] || [] };
+        }),
+        toppedUp: {}
+      };
+      for (const pid of this.order) if (this.players[pid].toppedUp) s.d.toppedUp[pid] = true;
+      if (src.stage === "betting") {
+        s.d.in = {};                                   // who has got a bet on, not what it is
+        for (const pid of Object.keys(src.bets)) s.d.in[pid] = true;
+      } else {
+        s.d.bets = {};
+        for (const [pid, b] of Object.entries(src.bets)) s.d.bets[pid] = { on: b.on, stake: b.stake };
+        if (src.stage === "running" && src.race) {
+          s.d.startedAt = src.startedAt; s.d.elapsed = Math.max(0, now - src.startedAt);
+          s.d.lanes = src.race.lanes;
+        }
+      }
+      if (done) {
+        const race = src.race || { order: last ? last.order : [], photo: false, lanes: [] };
+        s.d.order = race.order; s.d.photo = race.photo; s.d.lanes = race.lanes;
+        s.d.settled = last ? last.settled : {};
+      }
+      return s;
+    }
     if (this.game === "word" && (this.phase === "question" || this.phase === "reveal") && this.wi >= 0) {
       const wr = this.wr, done = this.phase === "reveal", last = this.wresults[this.wresults.length - 1];
       const src = wr || { id: "w" + this.round + "." + this.wi, boards: {}, solved: {}, deadline: now };
@@ -1969,15 +2375,16 @@ if (typeof module !== "undefined") module.exports = { RULES, DEFAULT_SETTINGS, p
    App: screens, controllers and sounds. Everyone renders the same
    public state; on the host's device the engine produces it.
    =================================================================== */
-const VERSION = "2.0";
+const VERSION = "3.0";
 const AVATARS = ["🦊", "🐸", "🐼", "🦉", "🐙", "🦄", "🐝", "🐯", "🐧", "🐢", "🐷", "🐉"];
 const AV_BG = ["#FF9A62", "#8EDB8A", "#E8E4F4", "#D6B08A", "#FF86B0", "#C9A4FF", "#FFD66E", "#FFA24C", "#9CCBFF", "#7ED9BC", "#FFB9CB", "#FF7A6E"];
 const REACTIONS = ["👏", "😂", "😮", "🔥", "🙈", "🎉"];
 const CODE_LETTERS = "BCDFGHJKLMNPQRSTVWXZ";
 const AWARD_TITLES = { fast: "Quickest on the buzzer", sharp: "Sharpest brain", near: "Nearest the mark", streak: "Hot streak",
-  solved: "Most words cracked", guesses: "Fewest guesses", first: "Fastest finger" };
+  solved: "Most words cracked", guesses: "Fewest guesses", first: "Fastest finger",
+  judge: "Best judge of a donkey", lucky: "Luckiest pants", brave: "Biggest haul", loyal: "Loyal to a fault" };
 const KEY_ROWS = ["QWERTYUIOP", "ASDFGHJKL", "\u21b5ZXCVBNM\u232b"];
-const GAME_NAMES = { quiz: "Quiz night", word: "Word race" };
+const GAME_NAMES = { quiz: "Quiz night", word: "Word race", derby: "Donkey derby" };
 const CHEERS = ["Correct!", "Da iawn!", "Spot on!", "Clever clogs!", "Nailed it!"];
 const TIMER_LABELS = { 30: "Relaxed", 20: "Normal", 12: "Quick" };
 
@@ -2034,7 +2441,8 @@ const S = {
   ui: { screen: "home", key: "", mode: "join", code: "", error: "", sheet: null },
   lastStateAt: 0, lastHello: 0, lastPublish: 0, publishTimer: null, joinAt: 0,
   wake: null, knownPlayers: null, soundedFor: "", seenQs: new Set(), lastLoop: 0,
-  wl: { id: null, guesses: [], draft: "", sentAt: 0, shake: 0 }
+  wl: { id: null, guesses: [], draft: "", sentAt: 0, shake: 0 },
+  dl: { id: null, on: null, stake: 0, sentAt: 0, start: 0, raceFor: "", lines: [], said: -1, raf: 0, lastSecs: -1, deadlineFor: "", deadline: 0 }
 };
 
 function relayUrlsFromQuery() {
@@ -2077,6 +2485,7 @@ function init() {
     if (/^[a-zA-Z]$/.test(e.key)) { e.preventDefault(); return wordKey(e.key.toUpperCase()); }
   });
   applyColourMode();
+  pickDonkeyGlyph();
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState !== "visible") return;
     if (S.role === "player") sendHello();
@@ -2209,10 +2618,18 @@ function onAction(msg) {
     changed = S.host.guess(msg.p, msg.r, msg.g, now);
     if (!changed) { changed = S.host.hello(msg.p, msg.n, msg.av, now); if (!changed) { clearTimeout(S.publishTimer); S.publishTimer = setTimeout(publishNow, 60); } }
   }
+  else if (msg.k === "bet") {
+    changed = S.host.bet(msg.p, msg.r, msg.on, msg.s, now);
+    if (!changed) { changed = S.host.hello(msg.p, msg.n, msg.av, now); if (!changed) { clearTimeout(S.publishTimer); S.publishTimer = setTimeout(publishNow, 60); } }
+  }
   else if (msg.k === "bye") changed = S.host.leave(msg.p, now);
   if (changed) hostChanged();
 }
 function hostStart() {
+  if (S.host.game === "derby") {
+    if (S.host.startDerby(Date.now())) hostChanged();
+    return;
+  }
   if (S.host.game === "word") {
     const seen = Store.get("recentWords", []);
     const words = pickWords(S.host.wsettings, seen);
@@ -2329,7 +2746,7 @@ function loop() {
 function screenKey() {
   const u = S.ui, r = S.room;
   if (u.screen !== "game" || !r) return u.screen + ":" + u.mode;
-  return ["game", r.phase, r.q ? r.q.id : r.w ? r.w.id : "", S.role, r.round, r.game].join(":");
+  return ["game", r.phase, r.q ? r.q.id : r.w ? r.w.id : r.d ? r.d.id + ":" + r.d.stage : "", S.role, r.round, r.game].join(":");
 }
 function render() {
   const main = $("#app"); if (!main) return;
@@ -2351,8 +2768,9 @@ function view() {
   if (u.screen === "ended") return viewEnded();
   if (!r) return viewConnecting();
   if (r.phase === "lobby") return viewLobby(r);
-  if (r.phase === "question") return r.game === "word" ? viewWordRound(r) : viewQuestion(r);
-  if (r.phase === "reveal") return r.game === "word" ? viewWordReveal(r) : viewReveal(r);
+  if (r.phase === "question") return r.game === "derby" ? (r.d && r.d.stage === "running" ? viewDerbyRace(r) : viewDerbyBetting(r))
+    : r.game === "word" ? viewWordRound(r) : viewQuestion(r);
+  if (r.phase === "reveal") return r.game === "derby" ? viewDerbyReveal(r) : r.game === "word" ? viewWordReveal(r) : viewReveal(r);
   if (r.phase === "final") return viewFinal(r);
   return viewEnded();
 }
@@ -2360,6 +2778,8 @@ function afterMount() {
   const sign = $(".marquee"); if (sign) buildBulbs(sign);
   const nameInput = $("#name"); if (nameInput && !nameInput.value && S.ui.screen === "setup") setTimeout(() => (S.ui.mode === "join" && $("#code") && !$("#code").value ? $("#code") : nameInput).focus({ preventScroll: true }), 60);
   const num = $("#numv"); if (num) num.value = "";
+  const r = S.room;
+  if (r && r.d && r.d.stage === "running" && $("#track")) startRaceAnimation(r);
 }
 
 function avatar(p, cls = "") {
@@ -2459,7 +2879,16 @@ function viewLobby(r) {
       <p class="hint settings-hint">Everyone races the same word: six guesses each, fewer guesses scores more.</p>
     </section>
     <div class="sticky-action"><button class="btn btn-primary btn-big start-btn" data-act="start">Start the word race</button></div>`;
-  const settings = hosting && r.game === "word" ? wordSettings : hosting ? `<section class="panel settings" aria-labelledby="set-title">
+  const dst = r.dsettings || { races: 8, secs: 20 };
+  const derbySettings = `<section class="panel settings" aria-labelledby="set-title">
+      <h3 class="section-label" id="set-title">Tonight’s race night</h3>
+      ${picker}
+      <div class="setting"><span class="setting-name" id="lbl-races">Races</span><div class="seg" role="radiogroup" aria-labelledby="lbl-races">${DERBY_RULES.races.map(v => `<button type="button" role="radio" data-act="dset" data-key="races" data-val="${v}" aria-checked="${dst.races === v}">${v}</button>`).join("")}</div></div>
+      <div class="setting"><span class="setting-name" id="lbl-dsecs">Time to bet</span><div class="seg" role="radiogroup" aria-labelledby="lbl-dsecs">${DERBY_RULES.timers.map(v => `<button type="button" role="radio" data-act="dset" data-key="secs" data-val="${v}" aria-checked="${dst.secs === v}">${v}s</button>`).join("")}</div></div>
+      <p class="hint settings-hint">Everyone starts with ${DERBY_RULES.purse} carrots and backs a donkey each race. The odds are worked out from each donkey’s real chance, and the last race pays double.</p>
+    </section>
+    <div class="sticky-action"><button class="btn btn-primary btn-big start-btn" data-act="start">Start the race night</button></div>`;
+  const settings = hosting && r.game === "derby" ? derbySettings : hosting && r.game === "word" ? wordSettings : hosting ? `<section class="panel settings" aria-labelledby="set-title">
       <h3 class="section-label" id="set-title">Tonight’s quiz</h3>
       ${picker}
       <div class="setting"><span class="setting-name" id="lbl-count">Questions</span><div class="seg" role="radiogroup" aria-labelledby="lbl-count">${seg("count", RULES.counts, v => v)}</div></div>
@@ -2645,6 +3074,212 @@ function patchWord(r) {
     : S.wl.guesses.length > used ? "Checking…" : "";
 }
 
+/* ---------------- the donkey derby ---------------- */
+/* 🫏 is a recent emoji; fall back to a horse on older phones rather than
+   showing everyone a row of empty boxes. */
+let DONKEY = "\u{1FACF}";
+function pickDonkeyGlyph() {
+  try {
+    const c = document.createElement("canvas").getContext("2d");
+    c.font = "20px sans-serif";
+    const donkey = c.measureText("\u{1FACF}").width, tofu = c.measureText("\u{10FFFD}").width;
+    if (Math.abs(donkey - tofu) < 0.5) DONKEY = "\u{1F434}";
+  } catch (e) {}
+}
+const carrots = n => fmt(n) + (n === 1 ? " carrot" : " carrots");
+function raceTitle(d) { return d.gold ? "The Gold Cup" : "Race " + d.n; }
+function runnerById(d, id) { return d.field.find(x => x.id === id) || { name: "?", silks: "#888", odds: [1, 1] }; }
+function formHTML(form) {
+  if (!form.length) return `<span class="form-none">first run</span>`;
+  return form.map(p => `<i class="pos p${p}">${p}</i>`).join("");
+}
+function viewDerbyBetting(r) {
+  const d = r.d, mine = me(), purse = mine ? mine.carrots : 0;
+  const card = d.field.map(run => `<li><button class="runner-row" data-act="runner" data-id="${esc(run.id)}" aria-pressed="false">
+      <span class="silks" style="--silks:${esc(run.silks)}"><span class="silks-donkey" aria-hidden="true">${DONKEY}</span></span>
+      <span class="runner-main"><span class="runner-name">${esc(run.name)}</span><span class="runner-form">${formHTML(run.form)}</span></span>
+      <span class="price led">${esc(oddsText(run.odds))}</span></button></li>`).join("");
+  const chips = d.stakes.map(v => `<button class="chip stake" data-act="stake" data-val="${v}">${v}</button>`).join("")
+    + `<button class="chip stake all" data-act="stake" data-val="all">All in</button>`;
+  return gantry(r) + `<section class="screen derby-bet" id="dscreen" data-stage="betting">
+    <div class="q-head"><span class="q-count">${esc(raceTitle(d))}${d.gold ? "" : ` <span>of ${d.of}</span>`}</span><span class="q-cat">${d.gold ? "Double odds" : "Donkey derby"}</span></div>
+    <div class="timer" id="timer"><div class="bulbrow" aria-hidden="true">${"<i></i>".repeat(12)}</div><span class="secs led" id="secs"></span></div>
+    <p class="purse" id="purse">You have <strong class="led">${fmt(purse)}</strong> carrots</p>
+    <ul class="racecard" id="racecard">${card}</ul>
+    <div class="stake-bar" id="stakebar" hidden><span class="stake-label">Stake</span><div class="chips">${chips}</div></div>
+    <p class="q-status" id="qstatus" role="status"></p>
+    <ul class="betters" id="betters"></ul>
+  </section>`;
+}
+function viewDerbyRace(r) {
+  const d = r.d;
+  const lanes = d.field.map(run => `<div class="lane" data-id="${esc(run.id)}" style="--silks:${esc(run.silks)}">
+      <span class="lane-name">${esc(run.name.split(" ")[0])}</span>
+      <span class="strip"><span class="runner"><span class="runner-donkey" aria-hidden="true">${DONKEY}</span></span><i class="post" aria-hidden="true"></i></span>
+    </div>`).join("");
+  return gantry(r) + `<section class="screen derby-race" id="dscreen" data-stage="running">
+    <div class="q-head"><span class="q-count">${esc(raceTitle(d))}${d.gold ? "" : ` <span>of ${d.of}</span>`}</span><span class="q-cat">They’re off!</span></div>
+    <div class="track" id="track">${lanes}</div>
+    <p class="commentary" id="commentary" role="status">And they’re away…</p>
+    <ul class="bets-strip" id="betsstrip">${betsStripHTML(r)}</ul>
+  </section>`;
+}
+function betsStripHTML(r) {
+  const d = r.d, bets = d.bets || {};
+  return r.players.map(p => {
+    const b = bets[p.id];
+    return `<li class="${p.id === S.pid ? "is-me" : ""}">${avatar(p, "mini")}<span class="pname">${esc(p.name)}</span>
+      ${b ? `<span class="on-who"><i class="dot" style="--silks:${esc(runnerById(d, b.on).silks)}"></i><span class="who-name">${esc(runnerById(d, b.on).name)}</span></span><span class="stake-n">${b.stake}</span>`
+          : `<span class="on-who sat-out">sat this one out</span>`}</li>`;
+  }).join("");
+}
+function viewDerbyReveal(r) {
+  const d = r.d, mine = d.settled && d.settled[S.pid];
+  const winner = runnerById(d, d.order[0]);
+  const v = mine && mine.won
+    ? { cls: "ok", title: d.photo ? "Got there!" : "You had it!", sub: `${esc(winner.name)} at ${oddsText(mine.odds)} · +${carrots(mine.back)}` }
+    : mine ? { cls: "meh", title: "Not this time", sub: `${esc(runnerById(d, mine.on).name)} didn’t oblige — ${mine.stake} carrots gone` }
+    : { cls: "meh", title: "You sat that one out", sub: "Get a bet on for the next race." };
+  const places = d.order.slice(0, 3).map((id, i) => {
+    const run = runnerById(d, id);
+    return `<li class="place-row place-${i + 1}"><span class="place-n">${i + 1}</span>
+      <span class="silks" style="--silks:${esc(run.silks)}"><span class="silks-donkey" aria-hidden="true">${DONKEY}</span></span>
+      <span class="runner-name">${esc(run.name)}</span><span class="price led">${esc(oddsText(run.odds))}</span></li>`;
+  }).join("");
+  const rows = r.players.map(p => {
+    const b = d.settled && d.settled[p.id];
+    if (!b) return `<li class="${p.id === S.pid ? "is-me" : ""}">${avatar(p, "mini")}<span class="pname">${esc(p.name)}</span><span class="on-who sat-out">no bet</span><span class="pts zero">—</span></li>`;
+    return `<li class="${p.id === S.pid ? "is-me" : ""} ${b.won ? "won" : ""}">${avatar(p, "mini")}<span class="pname">${esc(p.name)}</span>
+      <span class="on-who"><i class="dot" style="--silks:${esc(runnerById(d, b.on).silks)}"></i><span class="who-name">${esc(runnerById(d, b.on).name)}</span> <small>${b.stake}</small></span>
+      <span class="pts ${b.won ? "" : "zero"}">${b.won ? "+" + fmt(b.back) : "−" + b.stake}</span></li>`;
+  }).join("");
+  const last = d.n === d.of;
+  const next = S.role === "host"
+    ? `<button class="btn btn-primary btn-big" data-act="next">${last ? "See the final scores" : d.n + 1 === d.of ? "On to the Gold Cup" : "Next race"}</button>`
+    : `<p class="waiting-note">Waiting for <span id="hostname">${esc(hostName())}</span>…</p>`;
+  return gantry(r) + `<section class="screen derbyreveal">
+    <div class="verdict ${v.cls}"><p class="verdict-title">${esc(v.title)}</p><p class="verdict-sub">${v.sub}</p></div>
+    ${d.photo ? `<p class="photo-finish">Photo finish!</p>` : ""}
+    <ol class="places">${places}</ol>
+    <section class="panel"><h3 class="section-label">The book</h3><ul class="bet-results">${rows}</ul></section>
+    <section class="panel"><h3 class="section-label">Carrots</h3><ol class="standings" id="standings">${standingsHTML(r, false)}</ol></section>
+    ${reactionsHTML()}
+    <div class="next-wrap ${S.role === "host" ? "sticky-action" : ""}">${next}</div></section>`;
+}
+/* Tap a donkey, then tap a stake — two taps and you're on. */
+function pickRunner(id) {
+  const r = S.room; if (!r || !r.d || r.d.stage !== "betting") return;
+  S.dl.on = id; Sound.play("tap");
+  patchDerbyBet(r);
+}
+function placeStake(val) {
+  const r = S.room, d = r && r.d, mine = me();
+  if (!d || d.stage !== "betting" || !S.dl.on || !mine) return;
+  const stake = val === "all" ? mine.carrots : Math.min(Number(val), mine.carrots);
+  if (!stake || stake < d.minStake) return toast("You need at least " + d.minStake + " carrots for a bet.");
+  S.dl.stake = stake; S.dl.id = d.id; S.dl.sentAt = Date.now();
+  Sound.play("lock");
+  if (S.role === "host") { if (S.host.bet(S.pid, d.id, S.dl.on, stake, Date.now())) hostChanged(); }
+  else sendBet();
+  patchDerbyBet(S.room);
+}
+function sendBet() {
+  const r = S.room; if (!r || !r.d || S.role !== "player" || !S.dl.on || !S.dl.stake) return;
+  S.dl.sentAt = Date.now();
+  S.channel.send("a", { k: "bet", p: S.pid, n: S.profile.name, av: S.profile.av, r: r.d.id, on: S.dl.on, s: S.dl.stake });
+}
+function patchDerbyBet(r) {
+  const d = r.d; if (!d) return;
+  if (S.dl.id !== d.id) { S.dl.id = d.id; S.dl.on = null; S.dl.stake = 0; }
+  const mine = me(), purse = mine ? mine.carrots : 0;
+  document.querySelectorAll("[data-act=runner]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.id === S.dl.on)));
+  const bar = $("#stakebar"); if (bar) bar.hidden = !S.dl.on;
+  document.querySelectorAll("[data-act=stake]").forEach(b => {
+    const v = b.dataset.val === "all" ? purse : Number(b.dataset.val);
+    b.disabled = v > purse || v < d.minStake;
+    b.setAttribute("aria-pressed", String(!!S.dl.stake && v === S.dl.stake));
+  });
+  const p = $("#purse");
+  if (p) setHTML(p, `You have <strong class="led">${fmt(purse)}</strong> carrots${d.toppedUp && d.toppedUp[S.pid] ? ` <span class="topup">+ a few to keep you going</span>` : ""}`);
+  const st = $("#qstatus");
+  if (st) st.textContent = !S.dl.on ? "Pick a donkey." : !S.dl.stake ? "How many carrots?" : `You’re on ${runnerById(d, S.dl.on).name} for ${S.dl.stake} at ${oddsText(runnerById(d, S.dl.on).odds)}. Tap again to change it.`;
+  const list = $("#betters");
+  if (list) setHTML(list, r.players.map(pl => `<li class="${(d.in || {})[pl.id] ? "done" : ""}" title="${esc(pl.name)}">${avatar(pl, "mini")}<span class="tick" aria-hidden="true">✓</span><span class="sr">${esc(pl.name)} ${(d.in || {})[pl.id] ? "has a bet on" : "is choosing"}</span></li>`).join(""));
+}
+function patchDerbyTimer(r) {
+  const d = r.d, scr = $("#dscreen"); if (!scr || !d || d.stage !== "betting") return;
+  const now = performance.now();
+  if (S.dl.deadlineFor !== d.id) { S.dl.deadlineFor = d.id; S.dl.deadline = now + d.left; }
+  else S.dl.deadline = Math.min(S.dl.deadline, now + d.left);
+  const left = Math.max(0, S.dl.deadline - now), frac = Math.min(1, left / (d.secs * 1000));
+  const secs = Math.ceil(left / 1000);
+  const el = $("#secs"); if (el) el.textContent = String(secs);
+  const bulbs = scr.querySelectorAll(".bulbrow i"), lit = Math.ceil(frac * bulbs.length);
+  bulbs.forEach((b, i) => { b.className = i < lit ? (frac <= 0.25 ? "on warn" : "on") : ""; });
+  const timer = $("#timer"); if (timer) timer.classList.toggle("urgent", secs <= 8);
+  if (secs <= 5 && secs !== S.dl.lastSecs && secs > 0) Sound.play("tick");
+  S.dl.lastSecs = secs;
+  if (S.role === "player" && S.dl.stake && !(d.in || {})[S.pid] && Date.now() - S.dl.sentAt > 1500) sendBet();
+}
+/* Everyone animates the same race from its own clock, anchored on the
+   elapsed time the host publishes with it. */
+function startRaceAnimation(r) {
+  const d = r.d;
+  if (!d || d.stage !== "running" || !d.lanes) return;
+  if (S.dl.raceFor !== d.id) {
+    S.dl.raceFor = d.id; S.dl.start = performance.now() - (d.elapsed || 0);
+    S.dl.lines = commentaryLines(d); S.dl.said = -1;
+    Sound.play("go");
+  } else S.dl.start = Math.min(S.dl.start, performance.now() - (d.elapsed || 0));
+  cancelAnimationFrame(S.dl.raf);
+  const track = $("#track"); if (!track) return;
+  const lanes = d.field.map(run => ({ id: run.id, el: track.querySelector(`.lane[data-id="${run.id}"] .runner`), path: (d.lanes.find(l => l.id === run.id) || { path: [] }).path }));
+  const total = d.ticks * d.tickMs;
+  const step = () => {
+    const t = Math.max(0, Math.min(total, performance.now() - S.dl.start));
+    const pos = t / d.tickMs;
+    const i = Math.min(d.ticks - 1, Math.floor(pos)), frac = pos - i;
+    for (const l of lanes) {
+      if (!l.el || !l.path.length) continue;
+      const a = l.path[Math.max(0, i - 1)] || 0, b = l.path[i] || 0;
+      l.el.style.setProperty("--x", ((a + (b - a) * frac) / d.furlong * 100).toFixed(2) + "%");
+      l.el.classList.toggle("running", t < total);
+    }
+    const line = S.dl.lines.filter(x => x.t <= pos).pop();
+    if (line && S.dl.lines.indexOf(line) !== S.dl.said) {
+      S.dl.said = S.dl.lines.indexOf(line);
+      const c = $("#commentary"); if (c) { c.textContent = line.text; c.classList.remove("pop"); void c.offsetWidth; c.classList.add("pop"); }
+    }
+    if (t < total) S.dl.raf = requestAnimationFrame(step);
+  };
+  S.dl.raf = requestAnimationFrame(step);
+}
+function commentaryLines(d) {
+  const name = id => runnerById(d, id).name;
+  const at = {}, lines = [];
+  const lead = t => {
+    let bestId = null, bestAt = -1;
+    for (const l of d.lanes) { const v = l.path[t] || 0; if (v > bestAt) { bestAt = v; bestId = l.id; } }
+    return bestId;
+  };
+  let last = null;
+  for (let t = 3; t < d.ticks; t += 3) {
+    const id = lead(t);
+    if (id && id !== last) { lines.push({ t, text: last === null ? `${name(id)} goes straight to the front.` : `${name(id)} takes it up!` }); last = id; }
+    if (lines.length > 7) break;
+  }
+  for (const l of d.lanes) for (const e of l.events) {
+    if (e.k === "stop") lines.push({ t: e.t, text: `${name(l.id)} has stopped for a snack!` });
+    else lines.push({ t: e.t, text: `${name(l.id)} is finding another gear.` });
+  }
+  lines.push({ t: Math.round(d.ticks * 0.75), text: "Into the final stretch…" });
+  const finish = d.lanes.slice().sort((a, b) => (b.path[d.ticks - 1] || 0) - (a.path[d.ticks - 1] || 0));
+  lines.push({ t: d.ticks - 1, text: `${name(finish[0].id)} wins it!` });
+  lines.sort((a, b) => a.t - b.t || 0);
+  at.x = 0;
+  return lines.filter((l, i) => i === 0 || l.t !== lines[i - 1].t);
+}
+
 function verdictFor(r) {
   const q = r.q, p = r.res.picks[S.pid];
   const cheer = CHEERS[hashText(q.id).charCodeAt(0) % CHEERS.length];
@@ -2729,7 +3364,10 @@ function patch() {
   const gs = $("#gscore"); if (gs) gs.textContent = fmt(m ? m.score : 0);
   const gm = $("#gmid"); if (gm) gm.textContent = r.phase === "lobby" ? (S.role === "host" ? "You’re the host" : "In the lobby") : r.phase === "final" ? "Final scores" : placeText(r);
   if (r.phase === "lobby") patchLobby(r);
-  if (r.phase === "question") { if (r.game === "word") patchWord(r); else patchQuestion(r); }
+  if (r.phase === "question") {
+    if (r.game === "derby") { if (r.d && r.d.stage === "betting") patchDerbyBet(r); else { const s = $("#betsstrip"); if (s) setHTML(s, betsStripHTML(r)); } }
+    else if (r.game === "word") patchWord(r); else patchQuestion(r);
+  }
   if (r.phase === "reveal") { const st = $("#standings"); if (st) setHTML(st, standingsHTML(r, true)); const hn = $("#hostname"); if (hn) hn.textContent = hostName(); }
   patchBanner();
 }
@@ -2762,16 +3400,19 @@ function patchLobby(r) {
   document.querySelectorAll("[data-act=cat]").forEach(b => b.setAttribute("aria-pressed", String(st.cats.includes(b.dataset.cat))));
   const easy = $("#opt-easy"); if (easy) easy.checked = !!st.easy;
   const nums = $("#opt-numbers"); if (nums) nums.checked = !!st.numbers;
-  const wst = r.wsettings || {};
+  const wst = r.wsettings || {}, dst = r.dsettings || {};
   document.querySelectorAll("[data-act=wset]").forEach(b => b.setAttribute("aria-checked", String(wst[b.dataset.key] === Number(b.dataset.val))));
+  document.querySelectorAll("[data-act=dset]").forEach(b => b.setAttribute("aria-checked", String(dst[b.dataset.key] === Number(b.dataset.val))));
   document.querySelectorAll("[data-act=game]").forEach(b => b.setAttribute("aria-checked", String(r.game === b.dataset.val)));
   const tricky = $("#opt-tricky"); if (tricky) tricky.checked = !!wst.tricky;
   const wait = $("#lobby-wait"); if (wait) wait.textContent = me() ? `You’re in! Waiting for ${hostName()} to start the ${r.game === "word" ? "word race" : "quiz"}.` : "Joining…";
   const sum = $("#lobby-summary");
   if (sum) {
-    const w = r.wsettings || {};
+    const w = r.wsettings || {}, d = r.dsettings || {};
     sum.textContent = r.game === "word"
       ? `Word race · ${w.rounds} words · ${w.secs >= 120 ? w.secs / 60 + " minutes" : w.secs + " seconds"} each${w.tricky ? " · tricky words" : ""}`
+      : r.game === "derby"
+      ? `Donkey derby · ${d.races} races · ${d.secs} seconds to bet · ${DERBY_RULES.purse} carrots each`
       : `Quiz · ${st.count} questions · ${st.secs} seconds each · ${catSummary(st.cats)}`;
   }
 }
@@ -2782,6 +3423,11 @@ function patchQuestion(r) {
 }
 function patchLive() {
   const r = S.room;
+  if (r && r.game === "derby" && r.phase === "question" && r.d) {
+    if (r.d.stage === "betting") return patchDerbyTimer(r);
+    if (!S.dl.raf || S.dl.raceFor !== r.d.id) startRaceAnimation(r);
+    return;
+  }
   if (r && r.game === "word" && r.phase === "question" && r.w) return patchWordTimer(r);
   if (S.ui.screen === "connecting") { const help = $("#conn-help"); if (help && S.ui.mode === "join" && Date.now() - S.joinAt > 7000) help.hidden = false; return; }
   if (!r || r.phase !== "question" || !r.q) return;
@@ -2872,6 +3518,9 @@ function onClick(e) {
     case "game": if (S.host && S.host.setGame(el.dataset.val)) hostChanged(); return;
     case "wset": if (S.host && S.host.updateWordSettings({ [el.dataset.key]: Number(el.dataset.val) })) hostChanged(); return;
     case "wopt": if (S.host && S.host.updateWordSettings({ [el.dataset.key]: el.checked })) hostChanged(); return;
+    case "dset": if (S.host && S.host.updateDerbySettings({ [el.dataset.key]: Number(el.dataset.val) })) hostChanged(); return;
+    case "runner": return pickRunner(el.dataset.id);
+    case "stake": return placeStake(el.dataset.val);
     case "key": return wordKey(el.dataset.k);
     case "cb": Store.set("cb", !Store.get("cb", false)); applyColourMode(); return openMenu();
     case "next": if (S.host && S.host.next(Date.now())) hostChanged(); return;
@@ -2947,16 +3596,21 @@ function openMenu() {
   const items = [];
   items.push(`<button class="sheet-item" data-act="sound">${Sound.on ? "Turn sound off" : "Turn sound on"}</button>`);
   if (S.code) items.push(`<button class="sheet-item" data-act="share">Share the invite again</button>`);
-  const wordy = r && r.game === "word";
-  items.push(`<button class="sheet-item" data-act="cb">${Store.get("cb", false) ? "Use the usual colours" : "Switch to colour-blind friendly colours"}</button>`);
-  if (hosting && r && r.phase === "question") items.push(`<button class="sheet-item" data-act="skip">Skip this ${wordy ? "word" : "question"}</button>`);
-  if (hosting && r && (r.phase === "question" || r.phase === "reveal")) items.push(`<button class="sheet-item" data-act="end-now">End the ${wordy ? "game" : "quiz"} now</button>`);
+  const wordy = r && r.game === "word", derby = r && r.game === "derby";
+  if (!derby) items.push(`<button class="sheet-item" data-act="cb">${Store.get("cb", false) ? "Use the usual colours" : "Switch to colour-blind friendly colours"}</button>`);
+  if (hosting && r && r.phase === "question") {
+    const betting = derby && r.d && r.d.stage === "betting";
+    items.push(`<button class="sheet-item" data-act="skip">${betting ? "Close the book and race" : derby ? "Get to the result" : wordy ? "Skip this word" : "Skip this question"}</button>`);
+  }
+  if (hosting && r && (r.phase === "question" || r.phase === "reveal")) items.push(`<button class="sheet-item" data-act="end-now">End the ${derby ? "race night" : wordy ? "game" : "quiz"} now</button>`);
   if (hosting) items.push(`<button class="sheet-item danger" data-act="close-room">Close the room for everyone</button>`);
   else if (S.role === "player") items.push(`<button class="sheet-item danger" data-act="leave">Leave the game</button>`);
   openSheet(`<h2 class="sheet-title" id="sheet-title">Menu</h2>
     <div class="sheet-list">${items.join("")}</div>
     <details class="how"><summary>How scoring works</summary>
-      <p>${r && r.game === "word"
+      <p>${r && r.game === "derby"
+        ? "Back a donkey each race. A winning bet pays the odds on the card plus your stake back, and the last race pays double. Drop too low and you get a few carrots to keep you going."
+        : r && r.game === "word"
         ? "Crack the word and you score: 1,200 first go, then 1,000, 850, 700, 550 and 400 — plus 150 for getting there first."
         : "Right answers score up to 1,000 — the quicker you are, the more you get (never less than 500). For “nearest number” questions the closest guess gets 1,000, then 600 and 300, with a 200 bonus for being bang on. The final question counts double."}</p></details>
     <p class="net-line"><span class="lamp-dot" data-state="${st.up === 0 ? "bad" : st.up < st.total ? "part" : "good"}"></span>Connected to ${st.up} of ${st.total} game servers</p>
