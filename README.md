@@ -1,12 +1,12 @@
 # Clever Clogs — family game night
 
-**Version 2.0** — the quiz plus the new word race.
+**Version 3.0** — the quiz, the word race and the donkey derby.
 
-Two games for the family, each person on their own phone. One person starts a
+Three games for the family, each person on their own phone. One person starts a
 room and shares a four-letter code (or an invite link); everyone else joins, and
 the scores update on every phone. The host picks which game the room plays —
-**Quiz night** or the **Word race** — and can switch between them between games
-without anyone re-joining.
+**Quiz night**, the **Word race** or the **Donkey derby** — and can switch
+between them between games without anyone re-joining.
 
 One page, one link, one room code. It works on any phone, tablet or laptop with
 a browser.
@@ -47,7 +47,32 @@ Guesses have to be real words (about 8,400 of them are accepted). The answer
 never leaves the host's phone — it only ever sends back the tile colours — so
 there's nothing to peek at in another tab.
 
-Both games share the same room, scores screen, reactions and "Play again".
+## Donkey derby
+
+A race night. Everyone starts with 100 carrots and backs a donkey each race.
+
+- Five runners a race, drawn from a stable of 24. Tap a donkey, tap a stake
+  (5 / 10 / 25 / 50 / all in) and you're on — tap again to change your mind
+  while the book is open.
+- The race then runs on every phone at once: about twenty seconds, with
+  commentary, the odd donkey stopping for a snack, and a photo finish when it's
+  close. A winning bet pays the odds plus your stake back.
+- **The odds are honest.** Each donkey gets a hidden rating for the meeting, and
+  the host's phone simulates each race 600 times to work out every runner's real
+  chance of winning; the price on the card comes from that. The favourite wins
+  about a third of the time and the outsider about one race in nine, so the form
+  on the card is worth reading and a long shot is worth a punt.
+- Fields are matched on ability, the way a handicapper would, so races are
+  contests rather than processions.
+- **Nobody gets knocked out.** Drop below a stake and you get a few carrots to
+  keep you going, and the last race is the **Gold Cup** at double odds, so a
+  shocking night can still be rescued.
+- Awards for most winners picked, the longest-odds win, the biggest haul and
+  backing the same donkey to the bitter end.
+
+It's play money throughout — carrots, not cash, and nothing real is staked.
+
+All three games share the same room, scores screen, reactions and "Play again".
 
 ## Put it online (one-off, ~2 minutes)
 
@@ -56,7 +81,7 @@ encryption needs a secure page).
 
 **GitHub Pages**
 1. Create a new public repo, e.g. `clever-clogs`, and upload the page as `index.html`
-   (the delivered file is named `clever-clogs-v2.0.html` — rename it on the way in,
+   (the delivered file is named `clever-clogs-v3.0.html` — rename it on the way in,
    or use GitHub's "rename" after uploading).
 2. Settings → Pages → Build and deployment → Deploy from a branch → `main` / root → Save.
 3. After a minute it's live at `https://<your-username>.github.io/clever-clogs/`.
@@ -76,7 +101,7 @@ Send the link to the family once; after that, the host shares invite links
 1. Host: open the link → **Start a game** → name + mascot → **Open the room**.
 2. Tap **Share invite** (WhatsApp etc.) or read out the four-letter code.
 3. Everyone else opens the link → name + mascot → **Join the game**.
-4. Host picks **Quiz night** or **Word race**, sets it up, and taps start.
+4. Host picks **Quiz night**, **Word race** or **Donkey derby**, sets it up, and taps start.
 
 The host's phone runs the game, so keep that screen on (the page asks the phone
 not to sleep where it can). If it does drop out, everyone sees "Waiting for …'s
@@ -101,7 +126,8 @@ is green when connected (amber = some relays unreachable, red = none).
 - **Nothing to spoil.** The published state carries the question's options or the
   word race's tile colours — never the right answer or the word itself until the
   reveal. Your own letters are kept on your own phone, so a refresh mid-word puts
-  your grid back.
+  your grid back. In the derby the race is only sent out once the book has closed,
+  and who backed what stays private until the off.
 - **Private-ish rooms.** The room code is hashed into the topic name and into an
   AES-GCM key, so the relays only ever see scrambled bytes. A four-letter code is
   short, so treat this as keeping casual snoopers out rather than strong security —
@@ -123,8 +149,9 @@ the same link, which the invite button preserves.
 src/questions.js   question bank + categories
 src/words.js       word lists: everyday answers, tricky answers, allowed guesses
 src/wordgame.js    tile colours, word picking, word-race scoring
+src/derby.js       the stable, the race simulation, honest odds, payouts
 src/relay.js       tiny MQTT 3.1.1 client, multi-broker relay, room encryption
-src/engine.js      both games: question picking, scoring, host state machine
+src/engine.js      all three games: picking, scoring, host state machine
 src/app.js         screens, controls, keyboard, sounds, effects
 src/styles.css     the look
 src/index.html     page template
@@ -139,10 +166,12 @@ Bump it whenever you send a new copy out, so the family can tell what they're on
 - Question bank check: `node test/check-questions.js`
 - Engine tests: `node test/engine.test.js`
 - Word race tests (tile colours, scoring, a whole game): `node test/word.test.js`
+- Derby tests (the simulation, that the odds match the real chances): `node test/derby.test.js`
 - Relay tests against a strict local broker: `node test/relay.test.js`
 - Full browser runs (need Playwright + Chromium):
   `node test/e2e.js` — quiz with host + two players + late joiner, reloads, a broker outage
   `node test/e2e-word.js` — word race with three players, then switching back to the quiz
+  `node test/e2e-derby.js` — a race night: betting, the race in sync on three phones, the Gold Cup
 
 ### Adding questions
 
@@ -169,8 +198,15 @@ of `src/questions.js`.
 letters, and make sure every answer also appears in the allowed list —
 `node test/word.test.js` checks that.
 
+### Adding donkeys
+
+`STABLE` at the top of `src/derby.js` is a list of `{n: "Name", s: "#silks"}`.
+Ratings are drawn fresh each meeting, so a new donkey needs nothing but a name
+and a colour. `node test/derby.test.js` checks the odds still match reality.
+
 ## Versions
 
+- **3.0** — the donkey derby added: betting, a live race on every phone, honest odds.
 - **2.0** — the word race added; the host picks the game in the lobby. Colour-blind
   palette in the ••• menu.
 - **1.1** — music by decade: ’60s through 2020s, off by default, with All / None shortcuts.
