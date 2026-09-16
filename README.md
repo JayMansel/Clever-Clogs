@@ -1,6 +1,6 @@
 # Clever Clogs — family game night
 
-**Version 3.0** — the quiz, the word race and the donkey derby.
+**Version 3.1** — the quiz, the word race and the donkey derby, with music by genre.
 
 Three games for the family, each person on their own phone. One person starts a
 room and shares a four-letter code (or an invite link); everyone else joins, and
@@ -13,16 +13,18 @@ a browser.
 
 ## Quiz night
 
-- 686 questions across 11 everyday categories (General Knowledge, Food & Drink, Film & TV,
+- Over 1,000 questions. 11 everyday categories (General Knowledge, Food & Drink, Film & TV,
   Music, Geography, History, Science, Animals & Nature, Sport, **Wales**, Words & Phrases)
 - **Music through the decades**: ’60s, ’70s, ’80s, ’90s, Noughties, 2010s and 2020s —
   30-odd questions each, so any decade can carry a full 20-question game on its own
+- **Music by genre**: Rock & Indie, Pop, Soul/Motown/Disco, Dance & Electronic,
+  Hip-hop & R&B, Metal & Punk, Country & Folk, Musicals & Showtunes — 35-odd each
 - Three question types: multiple choice, true/false, and "nearest number wins"
 - Points for right answers and speed (1,000 down to 500), final question counts double
 - Host settings: 10/15/20 questions, Relaxed 30s / Normal 20s / Quick 12s,
-  pick categories, "easier questions only", number rounds on/off. The decades are
-  off by default (so a normal game stays a mixed bag); tap them on, or use the
-  All / None shortcuts for a music night.
+  pick categories, "easier questions only", number rounds on/off. The decades and
+  genres are off by default (so a normal game stays a mixed bag); tap them on, or
+  use each group's All / None shortcuts for a music night.
 - Reveal after every question (who picked what, a "did you know?" fact, standings)
 - Questions aren't repeated across games on the host's device until the bank runs low
 
@@ -81,7 +83,7 @@ encryption needs a secure page).
 
 **GitHub Pages**
 1. Create a new public repo, e.g. `clever-clogs`, and upload the page as `index.html`
-   (the delivered file is named `clever-clogs-v3.0.html` — rename it on the way in,
+   (the delivered file is named `clever-clogs-v3.1.html` — rename it on the way in,
    or use GitHub's "rename" after uploading).
 2. Settings → Pages → Build and deployment → Deploy from a branch → `main` / root → Save.
 3. After a minute it's live at `https://<your-username>.github.io/clever-clogs/`.
@@ -184,7 +186,8 @@ Append to `QUESTION_BANK` in `src/questions.js`:
 ```
 
 `c` is one of: `gk`, `food`, `screen`, `music`, `geo`, `hist`, `sci`, `nature`,
-`sport`, `wales`, `words`, or a decade — `m60`, `m70`, `m80`, `m90`, `m00`, `m10`, `m20`.
+`sport`, `wales`, `words`; a decade — `m60`, `m70`, `m80`, `m90`, `m00`, `m10`, `m20`;
+or a genre — `grock`, `gpop`, `gsoul`, `gdance`, `ghip`, `gmetal`, `gcountry`, `gshow`.
 `d` is difficulty 1–3. Use curly quotes/apostrophes (’ ‘ “ ”) in text, and never quote
 song lyrics — titles, artists, years and facts only. Then run the check script and
 `node build.js`. New categories go in `CATEGORIES` and `CATEGORY_GROUPS` at the top
@@ -206,6 +209,7 @@ and a colour. `node test/derby.test.js` checks the odds still match reality.
 
 ## Versions
 
+- **3.1** — music by genre: eight new quiz categories, 320 questions, off by default like the decades.
 - **3.0** — the donkey derby added: betting, a live race on every phone, honest odds.
 - **2.0** — the word race added; the host picks the game in the lobby. Colour-blind
   palette in the ••• menu.
